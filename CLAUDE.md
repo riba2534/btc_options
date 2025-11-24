@@ -1,90 +1,120 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文档为 Claude Code (claude.ai/code) 在与本仓库代码协作时提供指导。
 
-## Project Overview
+## 项目概述
 
-This is a React-based web application for Bitcoin options strategy analysis and education. It provides interactive P&L charts, detailed strategy explanations, and AI-powered insights using Google Gemini API.
+这是一个**比特币期权策略展示网站**，使用 React + TypeScript + Vite 构建。网站主要用于展示和教学各种比特币期权交易策略，包含交互式盈亏图表和策略详解。
 
-## Development Commands
+**重要提示：这是一个纯前端展示网站，仅用于策略可视化展示和教育目的。**
+
+## 常用命令
 
 ```bash
-# Install dependencies
+# 安装依赖
 npm install
 
-# Run development server (port 3000)
+# 启动开发服务器（端口 3000）
 npm run dev
 
-# Build for production
+# 构建生产版本
 npm run build
 
-# Preview production build
+# 预览生产构建
 npm run preview
 ```
 
-## Architecture
+## 项目架构
 
-### Component Structure
-- **App.tsx**: Main application with responsive sidebar navigation and strategy categorization
-- **StrategyDetail.tsx**: Core strategy analysis component with P&L calculations and scenario analysis
-- **PnLChart.tsx**: Interactive chart component using Recharts for P&L visualization
+### 组件结构
+- **App.tsx**: 主应用组件
+  - 响应式侧边栏导航
+  - 策略分类展示（看涨/看跌/中性/波动率）
+  - 移动端和桌面端适配
 
-### Key Files
-- **constants.ts**: Contains 20+ Bitcoin options strategy definitions with Chinese/English names and risk analysis
-- **types.ts**: TypeScript interfaces for Strategy, OptionLeg, ChartPoint, and StrategyCategory
-- **services/geminiService.ts**: Google Gemini API integration for AI-powered strategy insights
-- **vite.config.ts**: Build configuration with port 3000 and environment variable handling
+- **StrategyDetail.tsx**: 策略详情展示组件
+  - 盈亏计算和展示
+  - 策略构成说明
+  - 情景分析表
+  - 风险收益特征
 
-### Technology Stack
-- React 19.2.0 with TypeScript
-- Vite 6.2.0 for build tooling
-- Recharts 3.5.0 for charting
-- Tailwind CSS (CDN)
-- Google Gemini API for AI features
+- **PnLChart.tsx**: 盈亏图表组件（基于 Recharts）
+  - 动态盈亏曲线
+  - 颜色区分盈利/亏损区域
+  - 响应式设计
 
-## Environment Setup
+### 核心文件
+- **constants.ts**: 包含 20+ 种期权策略的完整定义
+  - 策略中英文名称
+  - 风险档案描述
+  - 情景分析数据
+  - 策略优劣分析
 
-### Required Environment Variable
+- **types.ts**: TypeScript 类型定义
+  - Strategy（策略）
+  - OptionLeg（期权腿）
+  - ChartPoint（图表数据点）
+  - StrategyCategory（策略类别枚举）
+
+- **vite.config.ts**: Vite 构建配置
+  - 开发服务器端口 3000
+  - 环境变量注入（GEMINI_API_KEY）
+
+### 技术栈
+- React 19.2.0 + TypeScript
+- Vite 6.2.0
+- Recharts 3.5.0（图表库）
+- Tailwind CSS（CDN 引入）
+
+## 环境配置
+
+### 环境变量（可选）
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### Local Development
-1. Create `.env.local` file in project root
-2. Add `GEMINI_API_KEY` to the file
-3. Run `npm run dev` to start development server
+该变量用于 AI 功能，如未配置，AI 功能将不可用，但网站其他功能正常使用。
 
-## Deployment
+### 本地开发
+1. 在项目根目录创建 `.env.local` 文件
+2. 添加 `GEMINI_API_KEY`（可选）
+3. 运行 `npm run dev` 启动开发服务器
 
-This project uses GitHub Actions for automated deployment to GitHub Pages:
+## 部署信息
 
-- **Workflow**: `.github/workflows/deploy.yml`
-- **Trigger**: Push to main branch
-- **Domain**: option.riba2534.cn
-- **Build Output**: `/dist` directory
+### GitHub Pages 自动部署
+- **工作流**: `.github/workflows/deploy.yml`
+- **触发条件**: 推送代码到 main 分支
+- **域名**: option.riba2534.cn
+- **构建输出**: `/dist` 目录
 
-The workflow requires `GEMINI_API_KEY` to be configured as a GitHub secret (Settings > Secrets and variables > Actions).
+### 部署配置
+- 仓库 Settings > Pages > Source: GitHub Actions
+- 需要配置 GitHub Secret: `GEMINI_API_KEY`（可选）
 
-## Key Development Patterns
+## 开发规范
 
-### Adding New Strategies
-1. Define strategy in `constants.ts` following existing structure
-2. Include Chinese and English names, risk profile, scenarios, and Greeks analysis
-3. Ensure strategy category matches StrategyCategory enum
+### 修改策略数据
+- 所有策略数据在 `constants.ts` 中定义
+- 新增策略需包含：中英文名称、策略说明、风险描述、希腊字母值、情景分析
+- 风险等级类型: 'limited' | 'unlimited' | 'high' | 'low' | 'medium'
+- 策略类别需匹配 StrategyCategory 枚举值
 
-### Working with Charts
-- P&L calculations are performed in `StrategyDetail.tsx`
-- Chart data format uses ChartPoint interface from `types.ts`
-- Color coding: green for profit, red for loss
+### 修改盈亏计算
+- 盈亏计算逻辑在 `StrategyDetail.tsx` 的 `calculatePnL` 函数中
+- 计算范围: BTC 价格 40,000 - 140,000
+- 图表数据格式: `ChartPoint { price: number; pnl: number }`
 
-### API Integration
-- Gemini API calls are handled in `services/geminiService.ts`
-- Environment variables are injected via Vite's define configuration
-- API responses include strategy analysis and risk assessment
+### 样式修改
+- 使用 Tailwind CSS 类名
+- 主要颜色: 蓝色系（sky-*, blue-*）
+- 盈利: 绿色（green-500）
+- 亏损: 红色（red-500）
 
-## TypeScript Configuration
+## 注意事项
 
-- Target: ES2022
-- Strict mode enabled
-- React JSX transform
-- Path alias: `@` resolves to project root
+1. **这是一个纯前端静态网站**，所有数据在浏览器端计算和展示
+2. 盈亏图表计算结果仅供参考，不构成投资建议
+3. 策略数据存储在前端，不涉及后端数据库
+4. 网站使用 CDN 引入 Tailwind CSS 和 Recharts，无需额外配置
+5. 构建产物会被推送到 GitHub Pages，无需手动部署
