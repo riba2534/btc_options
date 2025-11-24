@@ -1,80 +1,66 @@
-# BTC 期权策略大师
+# BTC 期权策略展示网站
 
-一个专业的比特币期权策略分析和教育平台，提供交互式盈亏图表、详细策略解释和 AI 驱动的洞察分析。
+一个专注于比特币期权策略展示的教学网站，提供交互式盈亏图表和详细策略解析。
 
-## 🚀 功能特性
+**在线访问**: https://option.riba2534.cn
 
-### 📊 交互式盈亏分析
-- 实时盈亏计算和可视化
-- 动态图表更新，基于 BTC 价格变动
-- 情景分析（-20% 到 +20% 价格变动）
-- 盈亏平衡点可视化
+## ✨ 核心功能
 
-### 📚 教育内容
-- 20+ 种期权策略详解（中英文对照）
-- 风险档案分析
-- 每种策略的优缺点
-- 理想市场情景和时机
+### 📊 交互式盈亏图表
+- 实时计算和展示不同 BTC 价格下的盈亏情况
+- 动态图表展示策略的盈亏平衡点
+- 价格范围覆盖 40,000 - 140,000
 
-### 🤖 AI 智能分析
-- Google Gemini API 集成
-- 情境策略建议
-- 风险评估和 Greeks 分析
-- 实时咨询功能
+### 📚 策略详解
+- 20+ 种期权策略完整解析
+- 中英文名称对照
+- 策略构成和希腊字母值
+- 风险收益特征分析
+- 适用市场情景说明
 
-### 📱 响应式设计
-- 移动优先设计
-- 自适应侧边栏导航
-- 触摸友好界面
-- 优化图表渲染
+### 🎨 直观的界面
+- 策略分类展示（看涨/看跌/中性/波动率策略）
+- 响应式设计，支持移动端
+- 清晰的风险等级标识
+- 简洁的交互体验
 
-## 🛠️ 技术栈
+## 🛠️ 技术实现
 
-- **React 19.2.0** - 前端框架
-- **TypeScript** - 类型安全的 JavaScript
-- **Vite 6.2.0** - 构建工具和开发服务器
-- **Recharts 3.5.0** - 图表库
-- **Tailwind CSS** - 实用优先的 CSS 框架
-- **Google Gemini API** - AI 驱动的策略分析
+- **React 19** - UI 框架
+- **TypeScript** - 类型安全
+- **Vite** - 构建工具
+- **Recharts** - 图表渲染
+- **Tailwind CSS** - 样式框架
 
 ## 🚀 快速开始
 
 ### 环境要求
 - Node.js 20+
-- npm 或 yarn
+- npm
 
-### 安装和运行
-
-1. **克隆项目**
-   ```bash
-   git clone https://github.com/riba2534/btc_options.git
-   cd btc_options
-   ```
-
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
-
-3. **配置环境变量**
-   创建 `.env.local` 文件并添加你的 Gemini API 密钥：
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-
-4. **启动开发服务器**
-   ```bash
-   npm run dev
-   ```
-   应用将在 http://localhost:3000 启动
-
-### 构建和部署
+### 本地运行
 
 ```bash
-# 构建生产版本
+# 克隆项目
+git clone https://github.com/riba2534/btc_options.git
+cd btc_options
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 访问 http://localhost:3000
+```
+
+### 构建生产版本
+
+```bash
+# 构建
 npm run build
 
-# 预览生产版本
+# 预览
 npm run preview
 ```
 
@@ -84,20 +70,19 @@ npm run preview
 btc_options/
 ├── components/          # React 组件
 │   ├── PnLChart.tsx    # 盈亏图表组件
-│   └── StrategyDetail.tsx # 策略详情组件
-├── services/           # API 服务
-│   └── geminiService.ts # Gemini API 集成
-├── constants.ts        # 策略定义和常量
+│   └── StrategyDetail.tsx # 策略详情展示
+├── services/           # 服务层
+│   └── geminiService.ts # AI 服务（可选）
+├── constants.ts        # 策略数据常量
 ├── types.ts           # TypeScript 类型定义
 ├── App.tsx            # 主应用组件
-├── index.tsx          # React 入口点
-├── index.html         # HTML 模板
-└── vite.config.ts     # 构建配置
+├── index.tsx          # React 入口
+└── vite.config.ts     # Vite 配置
 ```
 
-## 🎯 支持的策略
+## 📖 支持的策略类型
 
-### 看涨策略
+### 看张策略
 - 买入看涨期权 (Long Call)
 - 卖出看跌期权 (Short Put)
 - 牛市价差 (Bull Call Spread)
@@ -120,58 +105,41 @@ btc_options/
 - 对角价差 (Diagonal Spread)
 - 比率价差 (Ratio Spread)
 
+## 🎯 使用说明
+
+1. 打开网站，选择策略类型（看涨/看跌/中性/波动率）
+2. 从侧边栏选择具体策略
+3. 查看策略详解、构成、希腊字母值和盈亏图表
+4. 通过图表了解不同价格下的盈亏情况
+5. 查看策略适用场景和优缺点
+
 ## 🚀 部署
 
-项目使用 GitHub Actions 自动部署到 GitHub Pages：
+本项目使用 GitHub Actions 自动部署到 GitHub Pages。
 
-- **工作流**：`.github/workflows/deploy.yml`
-- **触发条件**：推送到 main 分支
-- **自定义域名**：option.riba2534.cn
+**配置步骤**：
 
-### 手动部署步骤
+1. 进入仓库 Settings > Pages
+2. 选择 "GitHub Actions" 作为部署源
+3. 可选：配置自定义域名
 
-1. **启用 GitHub Pages**
-   - 进入仓库 Settings > Pages
-   - 选择 "GitHub Actions" 作为部署源
+每次推送到 main 分支将自动触发部署。
 
-2. **配置环境变量**（可选）
-   - Settings > Secrets and variables > Actions
-   - 添加 `GEMINI_API_KEY` 密钥
+## ⚠️ 免责声明
 
-3. **配置自定义域名**（可选）
-   - Settings > Pages > Custom domain
-   - 输入 `option.riba2534.cn`
-
-## 🔧 开发指南
-
-### 添加新策略
-
-1. 在 `constants.ts` 中定义策略，遵循现有结构
-2. 包含中英文名称、风险档案、情景分析和 Greeks 说明
-3. 确保策略类别匹配 StrategyCategory 枚举
-
-### 修改图表
-
-- 盈亏计算在 `StrategyDetail.tsx` 中执行
-- 图表数据格式使用 `types.ts` 中的 ChartPoint 接口
-- 颜色编码：绿色表示盈利，红色表示亏损
-
-### API 集成
-
-- Gemini API 调用在 `services/geminiService.ts` 中处理
-- 环境变量通过 Vite 的 define 配置注入
-- API 响应包含策略分析和风险评估
+- 本项目仅用于教学和信息展示目的
+- 盈亏计算结果仅供参考，不构成投资建议
+- 加密货币交易存在高风险，请谨慎决策
+- 使用前请确保你理解期权交易的风险
 
 ## 📄 许可证
 
 MIT License
 
-## 🤝 贡献
+## 🤝 参与贡献
 
 欢迎提交 Issues 和 Pull Requests！
 
 ---
 
-**在线访问**：https://option.riba2534.cn
-
-**AI Studio 项目**：https://ai.studio/apps/drive/17-aJsK7HEuDmUgK53kCFEVAQip_s4x4B
+**项目地址**: https://github.com/riba2534/btc_options
