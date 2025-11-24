@@ -1,20 +1,177 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# BTC 期权策略大师
 
-# Run and deploy your AI Studio app
+一个专业的比特币期权策略分析和教育平台，提供交互式盈亏图表、详细策略解释和 AI 驱动的洞察分析。
 
-This contains everything you need to run your app locally.
+## 🚀 功能特性
 
-View your app in AI Studio: https://ai.studio/apps/drive/17-aJsK7HEuDmUgK53kCFEVAQip_s4x4B
+### 📊 交互式盈亏分析
+- 实时盈亏计算和可视化
+- 动态图表更新，基于 BTC 价格变动
+- 情景分析（-20% 到 +20% 价格变动）
+- 盈亏平衡点可视化
 
-## Run Locally
+### 📚 教育内容
+- 20+ 种期权策略详解（中英文对照）
+- 风险档案分析
+- 每种策略的优缺点
+- 理想市场情景和时机
 
-**Prerequisites:**  Node.js
+### 🤖 AI 智能分析
+- Google Gemini API 集成
+- 情境策略建议
+- 风险评估和 Greeks 分析
+- 实时咨询功能
 
+### 📱 响应式设计
+- 移动优先设计
+- 自适应侧边栏导航
+- 触摸友好界面
+- 优化图表渲染
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ 技术栈
+
+- **React 19.2.0** - 前端框架
+- **TypeScript** - 类型安全的 JavaScript
+- **Vite 6.2.0** - 构建工具和开发服务器
+- **Recharts 3.5.0** - 图表库
+- **Tailwind CSS** - 实用优先的 CSS 框架
+- **Google Gemini API** - AI 驱动的策略分析
+
+## 🚀 快速开始
+
+### 环境要求
+- Node.js 20+
+- npm 或 yarn
+
+### 安装和运行
+
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/riba2534/btc_options.git
+   cd btc_options
+   ```
+
+2. **安装依赖**
+   ```bash
+   npm install
+   ```
+
+3. **配置环境变量**
+   创建 `.env.local` 文件并添加你的 Gemini API 密钥：
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+4. **启动开发服务器**
+   ```bash
+   npm run dev
+   ```
+   应用将在 http://localhost:3000 启动
+
+### 构建和部署
+
+```bash
+# 构建生产版本
+npm run build
+
+# 预览生产版本
+npm run preview
+```
+
+## 📁 项目结构
+
+```
+btc_options/
+├── components/          # React 组件
+│   ├── PnLChart.tsx    # 盈亏图表组件
+│   └── StrategyDetail.tsx # 策略详情组件
+├── services/           # API 服务
+│   └── geminiService.ts # Gemini API 集成
+├── constants.ts        # 策略定义和常量
+├── types.ts           # TypeScript 类型定义
+├── App.tsx            # 主应用组件
+├── index.tsx          # React 入口点
+├── index.html         # HTML 模板
+└── vite.config.ts     # 构建配置
+```
+
+## 🎯 支持的策略
+
+### 看涨策略
+- 买入看涨期权 (Long Call)
+- 卖出看跌期权 (Short Put)
+- 牛市价差 (Bull Call Spread)
+- 合成多头 (Synthetic Long)
+
+### 看跌策略
+- 买入看跌期权 (Long Put)
+- 卖出看涨期权 (Short Call)
+- 熊市价差 (Bear Put Spread)
+- 合成空头 (Synthetic Short)
+
+### 中性策略
+- 跨式组合 (Long Straddle)
+- 宽跨式组合 (Long Strangle)
+- 铁鹰价差 (Iron Condor)
+- 蝶式价差 (Butterfly Spread)
+
+### 波动率策略
+- 日历价差 (Calendar Spread)
+- 对角价差 (Diagonal Spread)
+- 比率价差 (Ratio Spread)
+
+## 🚀 部署
+
+项目使用 GitHub Actions 自动部署到 GitHub Pages：
+
+- **工作流**：`.github/workflows/deploy.yml`
+- **触发条件**：推送到 main 分支
+- **自定义域名**：option.riba2534.cn
+
+### 手动部署步骤
+
+1. **启用 GitHub Pages**
+   - 进入仓库 Settings > Pages
+   - 选择 "GitHub Actions" 作为部署源
+
+2. **配置环境变量**（可选）
+   - Settings > Secrets and variables > Actions
+   - 添加 `GEMINI_API_KEY` 密钥
+
+3. **配置自定义域名**（可选）
+   - Settings > Pages > Custom domain
+   - 输入 `option.riba2534.cn`
+
+## 🔧 开发指南
+
+### 添加新策略
+
+1. 在 `constants.ts` 中定义策略，遵循现有结构
+2. 包含中英文名称、风险档案、情景分析和 Greeks 说明
+3. 确保策略类别匹配 StrategyCategory 枚举
+
+### 修改图表
+
+- 盈亏计算在 `StrategyDetail.tsx` 中执行
+- 图表数据格式使用 `types.ts` 中的 ChartPoint 接口
+- 颜色编码：绿色表示盈利，红色表示亏损
+
+### API 集成
+
+- Gemini API 调用在 `services/geminiService.ts` 中处理
+- 环境变量通过 Vite 的 define 配置注入
+- API 响应包含策略分析和风险评估
+
+## 📄 许可证
+
+MIT License
+
+## 🤝 贡献
+
+欢迎提交 Issues 和 Pull Requests！
+
+---
+
+**在线访问**：https://option.riba2534.cn
+
+**AI Studio 项目**：https://ai.studio/apps/drive/17-aJsK7HEuDmUgK53kCFEVAQip_s4x4B
