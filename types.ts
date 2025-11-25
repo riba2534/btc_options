@@ -36,3 +36,10 @@ export interface ChartPoint {
   price: number;
   pnl: number;
 }
+
+export interface KeyPoint {
+  price: number;
+  pnl: number;
+  type: 'breakeven' | 'max-profit' | 'max-loss';
+  label: string;
+}

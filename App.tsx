@@ -1,7 +1,60 @@
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, useCallback, memo } from 'react';
 import { STRATEGIES, DEFAULT_BTC_PRICE } from '@/constants';
 const StrategyDetail = React.lazy(() => import('@/components/StrategyDetail'));
-import { StrategyCategory } from '@/types';
+import { StrategyCategory, Strategy } from '@/types';
+
+/**
+ * Fixed category display order for sidebar.
+ * 
+ * NOTE: This array is derived from StrategyCategory enum values.
+ * If you add a new category to the enum, you MUST add it here too,
+ * otherwise the new category won't appear in the sidebar.
+ * 
+ * To ensure all categories are included, this array should match
+ * Object.values(StrategyCategory) in your preferred display order.
+ */
+const CATEGORY_ORDER: StrategyCategory[] = Object.values(StrategyCategory);
+
+// Pre-parse all strategy names at module load (runs once)
+const PARSED_NAMES = new Map<string, { cn: string; en: string }>();
+const NAME_REGEX = /^(.*?)\s*[（(]\s*(.+?)\s*[）)]\s*$/;
+STRATEGIES.forEach(strategy => {
+  const m = strategy.name.match(NAME_REGEX);
+  PARSED_NAMES.set(strategy.id, m
+    ? { cn: m[1].trim(), en: m[2].trim() }
+    : { cn: strategy.name.trim(), en: '' }
+  );
+});
+
+// Memoized sidebar button component to prevent unnecessary re-renders
+interface SidebarButtonProps {
+  strategy: Strategy;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+}
+
+const SidebarButton = memo<SidebarButtonProps>(({ strategy, isSelected, onSelect }) => {
+  const nameParts = PARSED_NAMES.get(strategy.id) || { cn: strategy.name, en: '' };
+
+  return (
+    <button
+      onClick={() => onSelect(strategy.id)}
+      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors ${isSelected
+        ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-200'
+        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+      }`}
+    >
+      <div className="flex flex-col">
+        <span>{nameParts.cn}</span>
+        {nameParts.en && (
+          <span className="text-xs opacity-70 font-normal truncate mt-0.5">{nameParts.en}</span>
+        )}
+      </div>
+    </button>
+  );
+});
+
+SidebarButton.displayName = 'SidebarButton';
 
 const App: React.FC = () => {
   const [selectedStrategyId, setSelectedStrategyId] = useState<string>(STRATEGIES[0].id);
@@ -37,7 +90,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Group strategies by category for sidebar
+  // Group strategies by category for sidebar (static, computed once)
   const strategiesByCategory = useMemo(() => {
     return STRATEGIES.reduce((acc, strategy) => {
       if (!acc[strategy.category]) {
@@ -48,25 +101,16 @@ const App: React.FC = () => {
     }, {} as Record<StrategyCategory, typeof STRATEGIES>);
   }, []);
 
-  // Helper: parse name into Chinese (top) and English (bottom)
-  const parseNameParts = (name: string): { cn: string; en: string } => {
-    // Match either ASCII () or full-width （） parentheses
-    const m = name.match(/^(.*?)\s*[（(]\s*(.+?)\s*[）)]\s*$/);
-    if (m) {
-      return { cn: m[1].trim(), en: m[2].trim() };
-    }
-    // Fallback: no parentheses found
-    return { cn: name.trim(), en: '' };
-  };
+  // Memoized callbacks to prevent child re-renders
+  const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
-  const handleStrategySelect = (id: string) => {
+  const handleStrategySelect = useCallback((id: string) => {
     setSelectedStrategyId(id);
-    if (isMobile) {
+    if (window.innerWidth < 1024) {
       setIsSidebarOpen(false); // Auto close on mobile selection
     }
-  };
+  }, []);
 
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden relative">
@@ -75,14 +119,14 @@ const App: React.FC = () => {
       {isMobile && isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/30 z-40 backdrop-blur-sm transition-opacity"
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out
+          fixed lg:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out sidebar-animate
           ${isSidebarOpen ? 'translate-x-0 w-80 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:overflow-hidden'}
         `}
       >
@@ -100,41 +144,27 @@ const App: React.FC = () => {
             </div>
             {/* Close button for mobile */}
             <button
-              onClick={() => setIsSidebarOpen(false)}
+              onClick={closeSidebar}
               className="lg:hidden p-2 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 18 18" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 custom-scrollbar space-y-4">
-            {(Object.keys(strategiesByCategory) as StrategyCategory[]).map((category) => (
+            {CATEGORY_ORDER.filter(cat => strategiesByCategory[cat]?.length > 0).map((category) => (
               <div key={category}>
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 sticky top-0 bg-white/95 backdrop-blur py-1 z-10">
                   {category}
                 </h3>
                 <div className="space-y-1">
                   {strategiesByCategory[category].map((strategy) => (
-                    <button
+                    <SidebarButton
                       key={strategy.id}
-                      onClick={() => handleStrategySelect(strategy.id)}
-                      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors ${selectedStrategyId === strategy.id
-                        ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-200'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                        }`}
-                    >
-                      {(() => {
-                        const { cn, en } = parseNameParts(strategy.name);
-                        return (
-                          <div className="flex flex-col">
-                            <span>{cn}</span>
-                            {en && (
-                              <span className="text-xs opacity-70 font-normal truncate mt-0.5">{en}</span>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </button>
+                      strategy={strategy}
+                      isSelected={selectedStrategyId === strategy.id}
+                      onSelect={handleStrategySelect}
+                    />
                   ))}
                 </div>
               </div>
@@ -170,7 +200,13 @@ const App: React.FC = () => {
           </button>
         </div>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={
+          <div className="flex-1 p-8 animate-pulse">
+            <div className="h-8 bg-slate-200 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-slate-200 rounded w-1/2 mb-8"></div>
+            <div className="aspect-[4/3] max-h-[600px] bg-slate-200 rounded-2xl"></div>
+          </div>
+        }>
           <StrategyDetail strategy={selectedStrategy} btcPrice={btcPrice} />
         </Suspense>
       </main>
