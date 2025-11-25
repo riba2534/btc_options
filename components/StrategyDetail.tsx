@@ -1,6 +1,6 @@
-import React, { useMemo, useRef, useEffect } from 'react';
-import { Strategy, ChartPoint, StrategyCategory } from '../types';
-import PnLChart from './PnLChart';
+import React, { useMemo, useRef, useEffect, Suspense } from 'react';
+import { Strategy, ChartPoint, StrategyCategory } from '@/types';
+const PnLChartLazy = React.lazy(() => import('@/components/PnLChart'));
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 interface StrategyDetailProps {
@@ -154,7 +154,9 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         </div>
       ) : (
         <div className="w-full">
-          <PnLChart key={strategy.id} data={pnlData} currentPrice={btcPrice} />
+          <Suspense fallback={<div className="w-full aspect-[1/1] max-h-[800px] bg-white rounded-2xl border border-slate-200 p-6 shadow-sm" />}>
+            <PnLChartLazy key={strategy.id} data={pnlData} currentPrice={btcPrice} />
+          </Suspense>
         </div>
       )}
 
@@ -422,4 +424,4 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   );
 };
 
-export default StrategyDetail;
+export default React.memo(StrategyDetail);
