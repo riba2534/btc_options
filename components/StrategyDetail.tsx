@@ -1,59 +1,78 @@
-import React, { useMemo, useRef, useEffect, Suspense } from 'react';
-import { Strategy, ChartPoint, StrategyCategory } from '@/types';
+import React, { useMemo, useRef, useEffect, Suspense, memo, useCallback } from 'react';
+import { Strategy, ChartPoint, StrategyCategory, KeyPoint } from '@/types';
 const PnLChartLazy = React.lazy(() => import('@/components/PnLChart'));
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 interface StrategyDetailProps {
   strategy: Strategy;
   btcPrice: number;
 }
 
-const OptionBasicsView: React.FC<{ btcPrice: number }> = ({ btcPrice }) => {
-  const generateData = (type: 'Call' | 'Put', action: 'Buy' | 'Sell') => {
-    const strike = btcPrice;
-    const premium = btcPrice * 0.05;
-    const range = 0.2;
-    const points = [];
-    for (let price = btcPrice * (1 - range); price <= btcPrice * (1 + range); price += btcPrice * 0.01) {
-      let pnl = 0;
-      if (type === 'Call') {
-        const intrinsic = Math.max(0, price - strike);
-        pnl = action === 'Buy' ? intrinsic - premium : premium - intrinsic;
-      } else {
-        const intrinsic = Math.max(0, strike - price);
-        pnl = action === 'Buy' ? intrinsic - premium : premium - intrinsic;
-      }
-      points.push({ price: Math.round(price), pnl: Math.round(pnl) });
-    }
-    return points;
-  };
+// Pre-generate basic option chart data (static, doesn't change with btcPrice ratio)
+const generateBasicData = (type: 'Call' | 'Put', action: 'Buy' | 'Sell', btcPrice: number) => {
+  const strike = btcPrice;
+  const premium = btcPrice * 0.05;
+  const range = 0.2;
+  const step = btcPrice * 0.02; // Reduced from 0.01 to 0.02 (half the points)
+  const points: Array<{ price: number; pnl: number }> = [];
 
-  const MiniChart = ({ title, data, color }: { title: string, data: any[], color: string }) => (
-    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
-      <h4 className="font-bold text-slate-700 mb-2">{title}</h4>
-      <div className="h-40 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="price" hide />
-            <YAxis hide />
-            <ReferenceLine y={0} stroke="#94a3b8" />
-            <Line type="monotone" dataKey="pnl" stroke={color} strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+  for (let price = btcPrice * (1 - range); price <= btcPrice * (1 + range); price += step) {
+    const intrinsic = type === 'Call'
+      ? Math.max(0, price - strike)
+      : Math.max(0, strike - price);
+    const pnl = action === 'Buy' ? intrinsic - premium : premium - intrinsic;
+    points.push({ price: Math.round(price), pnl: Math.round(pnl) });
+  }
+  return points;
+};
+
+// Memoized MiniChart component
+interface MiniChartProps {
+  title: string;
+  data: Array<{ price: number; pnl: number }>;
+  color: string;
+}
+
+const MiniChart = memo<MiniChartProps>(({ title, data, color }) => (
+  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
+    <h4 className="font-bold text-slate-700 mb-2">{title}</h4>
+    <div className="h-40 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis dataKey="price" hide />
+          <YAxis hide />
+          <ReferenceLine y={0} stroke="#94a3b8" />
+          <Line type="monotone" dataKey="pnl" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
-  );
+  </div>
+));
+
+MiniChart.displayName = 'MiniChart';
+
+// Memoized OptionBasicsView
+const OptionBasicsView = memo<{ btcPrice: number }>(({ btcPrice }) => {
+  // Memoize chart data generation
+  const chartData = useMemo(() => ({
+    longCall: generateBasicData('Call', 'Buy', btcPrice),
+    shortCall: generateBasicData('Call', 'Sell', btcPrice),
+    longPut: generateBasicData('Put', 'Buy', btcPrice),
+    shortPut: generateBasicData('Put', 'Sell', btcPrice),
+  }), [btcPrice]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <MiniChart title="买入看涨 (Long Call)" data={generateData('Call', 'Buy')} color="#10b981" />
-      <MiniChart title="卖出看涨 (Short Call)" data={generateData('Call', 'Sell')} color="#ef4444" />
-      <MiniChart title="买入看跌 (Long Put)" data={generateData('Put', 'Buy')} color="#10b981" />
-      <MiniChart title="卖出看跌 (Short Put)" data={generateData('Put', 'Sell')} color="#ef4444" />
+      <MiniChart title="买入看涨 (Long Call)" data={chartData.longCall} color="#10b981" />
+      <MiniChart title="卖出看涨 (Short Call)" data={chartData.shortCall} color="#ef4444" />
+      <MiniChart title="买入看跌 (Long Put)" data={chartData.longPut} color="#10b981" />
+      <MiniChart title="卖出看跌 (Short Put)" data={chartData.shortPut} color="#ef4444" />
     </div>
   );
-};
+});
+
+OptionBasicsView.displayName = 'OptionBasicsView';
 
 const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) => {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -73,7 +92,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     });
   }, [strategy, btcPrice]);
 
-  const calculateTotalPnl = (price: number) => {
+  // Memoized PnL calculator to avoid code duplication and ensure consistent calculation
+  const calculateTotalPnl = useCallback((price: number) => {
     let totalPnl = 0;
 
     // Calculate Option Legs P&L
@@ -96,14 +116,16 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     }
 
     return totalPnl;
-  };
+  }, [calculatedLegs, strategy.id, btcPrice]);
 
   const pnlData: ChartPoint[] = useMemo(() => {
     const points: ChartPoint[] = [];
     const range = 0.4; // +/- 40% range for chart
     const minPrice = btcPrice * (1 - range);
     const maxPrice = btcPrice * (1 + range);
-    const step = (maxPrice - minPrice) / 100; // Higher resolution
+    // Reduced points: 50 for better performance while maintaining smoothness
+    const numPoints = 50;
+    const step = (maxPrice - minPrice) / numPoints;
 
     for (let price = minPrice; price <= maxPrice; price += step) {
       const totalPnl = calculateTotalPnl(price);
@@ -112,16 +134,147 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     return points;
   }, [calculatedLegs, btcPrice, strategy.id]);
 
-  // Scenarios for the Table
+  // Calculate key points: breakeven, max profit, max loss
+  const keyPoints: KeyPoint[] = useMemo(() => {
+    if (!pnlData || pnlData.length < 2) return [];
+
+    const points: KeyPoint[] = [];
+    const addedPrices = new Set<number>(); // Avoid duplicate labels at same price
+    const tolerance = 50; // Tolerance for "same value" detection (for platforms)
+
+    // Find breakeven points (where PnL crosses zero)
+    let breakevenCount = 0;
+    for (let i = 1; i < pnlData.length; i++) {
+      const prev = pnlData[i - 1];
+      const curr = pnlData[i];
+
+      // Check if sign changes (crosses zero)
+      if ((prev.pnl < 0 && curr.pnl >= 0) || (prev.pnl >= 0 && curr.pnl < 0)) {
+        // Linear interpolation to find exact crossing point
+        const ratio = Math.abs(prev.pnl) / (Math.abs(prev.pnl) + Math.abs(curr.pnl));
+        const breakevenPrice = Math.round(prev.price + ratio * (curr.price - prev.price));
+
+        if (!addedPrices.has(breakevenPrice)) {
+          breakevenCount++;
+          points.push({
+            price: breakevenPrice,
+            pnl: 0,
+            type: 'breakeven',
+            label: `盈亏平衡${breakevenCount > 1 ? breakevenCount : ''}`
+          });
+          addedPrices.add(breakevenPrice);
+        }
+      }
+    }
+
+    // Find max profit value and all points with that value (for platform detection)
+    let maxProfitVal = pnlData[0].pnl;
+    let minLossVal = pnlData[0].pnl;
+
+    for (const point of pnlData) {
+      if (point.pnl > maxProfitVal) maxProfitVal = point.pnl;
+      if (point.pnl < minLossVal) minLossVal = point.pnl;
+    }
+
+    // Find all points at max profit level (platform detection)
+    const maxProfitPoints = pnlData.filter(p => Math.abs(p.pnl - maxProfitVal) < tolerance);
+    // Find all points at max loss level (platform detection)
+    const maxLossPoints = pnlData.filter(p => Math.abs(p.pnl - minLossVal) < tolerance);
+
+    // Helper to check if value is at edge and trending (unlimited)
+    // Uses percentage-based edge detection (5% of data points) for robustness
+    const isUnlimited = (points: typeof pnlData, isMax: boolean) => {
+      if (points.length === 0) return false;
+      const firstIdx = pnlData.indexOf(points[0]);
+      const lastIdx = pnlData.indexOf(points[points.length - 1]);
+
+      // Use 5% of data length as edge threshold (minimum 2 points)
+      const edgeThreshold = Math.max(2, Math.floor(pnlData.length * 0.05));
+      
+      // Check if at left/right edge using percentage-based threshold
+      const atLeftEdge = firstIdx <= edgeThreshold;
+      const atRightEdge = lastIdx >= pnlData.length - 1 - edgeThreshold;
+
+      // Number of points to sample for trend detection (at least 3)
+      const sampleSize = Math.max(3, edgeThreshold);
+
+      // If at edge and the edge shows a trend continuing, it's unlimited
+      if (atRightEdge && isMax) {
+        // Check if right edge is trending up (unlimited profit)
+        const lastN = pnlData.slice(-sampleSize);
+        if (lastN[lastN.length - 1].pnl > lastN[0].pnl + tolerance) return true;
+      }
+      if (atLeftEdge && isMax) {
+        // Check if left edge is trending up (unlimited profit on downside - like long put)
+        const firstN = pnlData.slice(0, sampleSize);
+        if (firstN[0].pnl > firstN[firstN.length - 1].pnl + tolerance) return true;
+      }
+      if (atRightEdge && !isMax) {
+        // Unlimited loss on upside (like naked call)
+        const lastN = pnlData.slice(-sampleSize);
+        if (lastN[lastN.length - 1].pnl < lastN[0].pnl - tolerance) return true;
+      }
+      if (atLeftEdge && !isMax) {
+        // Unlimited loss on downside (like naked put)
+        const firstN = pnlData.slice(0, sampleSize);
+        if (firstN[0].pnl < firstN[firstN.length - 1].pnl - tolerance) return true;
+      }
+      return false;
+    };
+
+    // Add max profit point
+    if (maxProfitVal > 0 && maxProfitPoints.length > 0) {
+      const unlimited = isUnlimited(maxProfitPoints, true);
+      // For platform: use middle point; for single point or edge: use the point itself
+      const targetPoint = maxProfitPoints.length > 2
+        ? maxProfitPoints[Math.floor(maxProfitPoints.length / 2)]
+        : maxProfitPoints[0];
+
+      if (!addedPrices.has(targetPoint.price)) {
+        const label = unlimited
+          ? `收益无限 ↗`
+          : `最大盈利 +$${(maxProfitVal / 1000).toFixed(1)}k`;
+        points.push({
+          price: targetPoint.price,
+          pnl: targetPoint.pnl,
+          type: 'max-profit',
+          label
+        });
+        addedPrices.add(targetPoint.price);
+      }
+    }
+
+    // Add max loss point
+    if (minLossVal < 0 && maxLossPoints.length > 0) {
+      const unlimited = isUnlimited(maxLossPoints, false);
+      // For platform: use middle point; for single point or edge: use the point itself
+      const targetPoint = maxLossPoints.length > 2
+        ? maxLossPoints[Math.floor(maxLossPoints.length / 2)]
+        : maxLossPoints[0];
+
+      if (!addedPrices.has(targetPoint.price)) {
+        const label = unlimited
+          ? `风险无限 ↘`
+          : `最大亏损 -$${(Math.abs(minLossVal) / 1000).toFixed(1)}k`;
+        points.push({
+          price: targetPoint.price,
+          pnl: targetPoint.pnl,
+          type: 'max-loss',
+          label
+        });
+        addedPrices.add(targetPoint.price);
+      }
+    }
+
+    return points;
+  }, [pnlData]);
+
+  // Scenarios for the Table - now using shared calculateTotalPnl for consistency
   const scenarioPoints = useMemo(() => {
     const percentages = [-0.20, -0.10, -0.05, 0, 0.05, 0.10, 0.20];
     return percentages.map(pct => {
       const price = btcPrice * (1 + pct);
-      return {
-        pct,
-        price,
-        pnl: calculateTotalPnl(price)
-      };
+      return { pct, price, pnl: calculateTotalPnl(price) };
     });
   }, [btcPrice, calculateTotalPnl]);
 
@@ -154,8 +307,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         </div>
       ) : (
         <div className="w-full">
-          <Suspense fallback={<div className="w-full aspect-[1/1] max-h-[800px] bg-white rounded-2xl border border-slate-200 p-6 shadow-sm" />}>
-            <PnLChartLazy key={strategy.id} data={pnlData} currentPrice={btcPrice} />
+          <Suspense fallback={<div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm animate-pulse" />}>
+            <PnLChartLazy key={strategy.id} data={pnlData} currentPrice={btcPrice} keyPoints={keyPoints} />
           </Suspense>
         </div>
       )}
@@ -217,7 +370,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                           {hasDifferentExpiry && (
                             <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full border hidden sm:inline-block
                               bg-amber-100 text-amber-700 border-amber-200">
-                              {((leg as any).expiryLabel) ? (leg as any).expiryLabel : (leg.action === 'Buy' ? '远月' : '近月')}
+                              {leg.expiryLabel ?? (leg.action === 'Buy' ? '远月' : '近月')}
                             </span>
                           )}
                         </div>
