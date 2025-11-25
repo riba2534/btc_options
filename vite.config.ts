@@ -17,6 +17,8 @@ export default defineConfig(({ mode }) => {
       },
       build: {
         outDir: 'dist',
+        // 确保 public 目录的文件被复制到 dist 根目录
+        copyPublicDir: true,
         rollupOptions: {
           output: {
             manualChunks: {
