@@ -1,6 +1,6 @@
 # BTC 期权策略展示网站
 
-一个专注于比特币期权策略展示的教学网站，提供交互式盈亏图表和详细策略解析。
+一个专注于BTC期权策略展示的教学网站，提供交互式盈亏图表和详细策略解析。
 
 **在线访问**: https://option.riba2534.cn
 
@@ -71,8 +71,8 @@ btc_options/
 ├── components/          # React 组件
 │   ├── PnLChart.tsx    # 盈亏图表组件
 │   └── StrategyDetail.tsx # 策略详情展示
-├── services/           # 服务层
-│   └── geminiService.ts # AI 服务（可选）
+
+
 ├── constants.ts        # 策略数据常量
 ├── types.ts           # TypeScript 类型定义
 ├── App.tsx            # 主应用组件
