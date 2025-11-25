@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { STRATEGIES, DEFAULT_BTC_PRICE } from './constants';
-import StrategyDetail from './components/StrategyDetail';
-import { StrategyCategory } from './types';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { STRATEGIES, DEFAULT_BTC_PRICE } from '@/constants';
+const StrategyDetail = React.lazy(() => import('@/components/StrategyDetail'));
+import { StrategyCategory } from '@/types';
 
 const App: React.FC = () => {
   const [selectedStrategyId, setSelectedStrategyId] = useState<string>(STRATEGIES[0].id);
@@ -9,33 +9,44 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
-  const selectedStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
+  const selectedStrategy = useMemo(() => (
+    STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0]
+  ), [selectedStrategyId]);
 
   // Handle window resize to determine mobile state
   useEffect(() => {
+    let rafId: number | null = null;
     const handleResize = () => {
       const mobile = window.innerWidth < 1024; // lg breakpoint
       setIsMobile(mobile);
-      if (mobile) {
-        setIsSidebarOpen(false); // Default closed on mobile
-      } else {
-        setIsSidebarOpen(true); // Default open on desktop
-      }
+      setIsSidebarOpen(!mobile);
+    };
+    const onResize = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        handleResize();
+        rafId = null;
+      });
     };
 
     handleResize(); // Initial check
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', onResize);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   // Group strategies by category for sidebar
-  const strategiesByCategory = STRATEGIES.reduce((acc, strategy) => {
-    if (!acc[strategy.category]) {
-      acc[strategy.category] = [];
-    }
-    acc[strategy.category].push(strategy);
-    return acc;
-  }, {} as Record<StrategyCategory, typeof STRATEGIES>);
+  const strategiesByCategory = useMemo(() => {
+    return STRATEGIES.reduce((acc, strategy) => {
+      if (!acc[strategy.category]) {
+        acc[strategy.category] = [];
+      }
+      acc[strategy.category].push(strategy);
+      return acc;
+    }, {} as Record<StrategyCategory, typeof STRATEGIES>);
+  }, []);
 
   // Helper: parse name into Chinese (top) and English (bottom)
   const parseNameParts = (name: string): { cn: string; en: string } => {
@@ -159,7 +170,9 @@ const App: React.FC = () => {
           </button>
         </div>
 
-        <StrategyDetail strategy={selectedStrategy} btcPrice={btcPrice} />
+        <Suspense fallback={null}>
+          <StrategyDetail strategy={selectedStrategy} btcPrice={btcPrice} />
+        </Suspense>
       </main>
     </div>
   );

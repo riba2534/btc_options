@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { ChartPoint } from '../types';
+import { ChartPoint } from '@/types';
 
 interface PnLChartProps {
   data: ChartPoint[];
@@ -39,7 +39,7 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice }) => {
       </div>
       
       <div className="flex-1 min-h-0 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart
             data={data}
             margin={{
@@ -137,4 +137,4 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice }) => {
   );
 };
 
-export default PnLChart;
+export default React.memo(PnLChart);
