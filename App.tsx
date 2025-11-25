@@ -37,6 +37,17 @@ const App: React.FC = () => {
     return acc;
   }, {} as Record<StrategyCategory, typeof STRATEGIES>);
 
+  // Helper: parse name into Chinese (top) and English (bottom)
+  const parseNameParts = (name: string): { cn: string; en: string } => {
+    // Match either ASCII () or full-width （） parentheses
+    const m = name.match(/^(.*?)\s*[（(]\s*(.+?)\s*[）)]\s*$/);
+    if (m) {
+      return { cn: m[1].trim(), en: m[2].trim() };
+    }
+    // Fallback: no parentheses found
+    return { cn: name.trim(), en: '' };
+  };
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleStrategySelect = (id: string) => {
@@ -98,12 +109,17 @@ const App: React.FC = () => {
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                     >
-                      <div className="flex flex-col">
-                        <span>{strategy.name.split('(')[0]}</span>
-                        <span className="text-xs opacity-70 font-normal truncate mt-0.5">
-                          {strategy.name.match(/\((.*?)\)/)?.[1] || ''}
-                        </span>
-                      </div>
+                      {(() => {
+                        const { cn, en } = parseNameParts(strategy.name);
+                        return (
+                          <div className="flex flex-col">
+                            <span>{cn}</span>
+                            {en && (
+                              <span className="text-xs opacity-70 font-normal truncate mt-0.5">{en}</span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </button>
                   ))}
                 </div>
