@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { Strategy, ChartPoint, StrategyCategory } from '../types';
 import PnLChart from './PnLChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -56,6 +56,13 @@ const OptionBasicsView: React.FC<{ btcPrice: number }> = ({ btcPrice }) => {
 };
 
 const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (rootRef.current) {
+      rootRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [strategy.id]);
 
   // --- Calculation Logic ---
   const calculatedLegs = useMemo(() => {
@@ -125,7 +132,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   const isBasics = strategy.category === StrategyCategory.BASICS;
 
   return (
-    <div className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 h-full overflow-y-auto w-full max-w-[1600px] mx-auto custom-scrollbar">
+    <div ref={rootRef} className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 h-full overflow-y-auto w-full max-w-[1600px] mx-auto custom-scrollbar">
       <header className="border-b border-slate-200 pb-4 md:pb-6 mt-10 md:mt-0">
         <div className="flex items-center gap-2 mb-3">
           <span className="px-2.5 py-1 text-[10px] md:text-xs font-bold rounded bg-slate-100 text-slate-600 uppercase tracking-wider border border-slate-200">
