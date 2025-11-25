@@ -4,10 +4,10 @@ const bullCallSpread: Strategy = {
   id: 'bull-call-spread',
   name: '牛市看涨价差 (Bull Call Spread)',
   category: StrategyCategory.BULLISH,
-  description: '买入低价Call，卖出高价Call。牺牲潜在暴利换取更低成本。',
+  description: '买低Call、卖高Call以降成本；用封顶收益换更高胜率与效率。',
   setup: '买入 Call A + 卖出 Call B (Strike B > A)',
-  riskProfile: '风险有限 (净权利金)，收益有限 (价差 - 成本)。',
-  idealScenario: 'BTC温和上涨。',
+  riskProfile: '风险有限（净成本）；收益有限（价差−成本）；Theta 略负、Vega 中性偏负。',
+  idealScenario: '温和上涨至上腿附近；IV 偏高更有利（卖出腿收入高）。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
     { type: 'Call', action: 'Sell', strikeOffset: 1.10, premiumRatio: 0.02 }
@@ -127,4 +127,3 @@ const bullCallSpread: Strategy = {
 };
 
 export default bullCallSpread;
-

@@ -76,13 +76,16 @@ const App: React.FC = () => {
         `}
       >
         <div className="w-80 flex flex-col h-full bg-white"> {/* Inner container to maintain width during transition */}
-          <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">₿</div>
-                <h1 className="font-bold text-xl tracking-tight text-slate-800">Option Strategy</h1>
+          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 px-2">
+                <img src="/favicon.svg" alt="BTC Options" className="h-10 w-10 rounded-md shadow-sm flex-shrink-0" />
+                <div className="min-w-0 text-center">
+                  <div className="text-slate-900 font-extrabold text-lg md:text-xl leading-tight">Option Strategy</div>
+                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">如果说衍生品是金融产品中的皇冠</div>
+                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">那么期权就是这顶皇冠上的明珠</div>
+                </div>
               </div>
-              <p className="text-xs text-slate-500 ml-11">常用期权策略构造详解</p>
             </div>
             {/* Close button for mobile */}
             <button
@@ -93,7 +96,7 @@ const App: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-6">
+          <div className="flex-1 overflow-y-auto p-3 custom-scrollbar space-y-4">
             {(Object.keys(strategiesByCategory) as StrategyCategory[]).map((category) => (
               <div key={category}>
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 sticky top-0 bg-white/95 backdrop-blur py-1 z-10">

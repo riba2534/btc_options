@@ -100,14 +100,15 @@ const protectivePut: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>行权价选择</strong>：常设在 -5% 至 -10%（如 $95k）</li>
-            <li><strong>到期时间</strong>：30–60 天，兼顾保护效果与成本</li>
-            <li><strong>搭配策略</strong>：与 Covered Call 组合为 Collar，降低保险成本</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>行权价选择</strong>：常设在 -5% 至 -10%（如 $95k）</li>
+          <li><strong>到期时间</strong>：30–60 天，兼顾保护效果与成本</li>
+          <li><strong>搭配策略</strong>：与 Covered Call 组合为 Collar，降低保险成本</li>
+          <li><strong>到期建议</strong>：中期保护 30–60 天；临近到期若仍需保护，提前滚动到新到期。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '下行保护：消除恐慌，无惧任何黑天鹅事件。',

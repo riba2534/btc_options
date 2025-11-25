@@ -16,7 +16,7 @@ const syntheticLong: Strategy = {
     explanation: `
         <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 p-5 rounded-lg mb-6">
           <p class="text-emerald-900 font-semibold mb-2">💡 策略核心思想</p>
-          <p class="text-emerald-800 text-sm">合成多头 (Synthetic Long) 通过<strong>买入Call + 卖出Put</strong>的组合，完美复制持有现货的损益曲线（Delta≈1）。这是一种极致的杠杆工具，让你用极少资金建立1 BTC的完整敞口，机构最爱。</p>
+          <p class="text-emerald-800 text-sm">合成多头 (Synthetic Long) 通过<strong>买入Call + 卖出Put</strong>的组合，完美复制持有现货的损益曲线（Delta≈1）。<strong>必须使用同一到期日、同一行权价（通常 ATM）</strong>，否则不能精确复制现货曲线。这是一种极致的杠杆工具，让你用极少资金建立 1 BTC 的完整敞口。</p>
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
@@ -37,6 +37,7 @@ const syntheticLong: Strategy = {
           <div class="bg-slate-50 p-4 rounded mt-3">
             <p class="text-sm text-slate-700 mb-2"><strong>净成本 ≈ $0</strong></p>
             <p class="text-xs text-slate-600">ATM Call和Put的权利金基本相等，相互抵消。你只需支付卖Put的保证金（通常是名义价值的10-20%）。</p>
+            <p class="text-xs text-slate-600 mt-1">到期约定：<strong>两腿使用同一到期日</strong>；若需续持，建议在到期前 15–30 天滚动。</p>
           </div>
         </div>
 

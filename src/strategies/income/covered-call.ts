@@ -4,10 +4,10 @@ const coveredCall: Strategy = {
   id: 'covered-call',
   name: '备兑看涨 (Covered Call)',
   category: StrategyCategory.INCOME,
-  description: '持币卖Call。币本位增强收益神器。',
+  description: '持币卖出 OTM Call 获取现金流；上方收益封顶。',
   setup: '持有现货 + 卖出 Call',
-  riskProfile: '下行风险同现货，上行收益封顶。',
-  idealScenario: 'BTC慢牛或横盘。',
+  riskProfile: '下行风险同现货；上行封顶；Theta 正、Vega 负；存在卖飞风险。',
+  idealScenario: '慢牛或震荡、希望用权利金降低持仓成本；IV 高位更优。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.10, premiumRatio: 0.03 }
   ],
@@ -100,14 +100,15 @@ const coveredCall: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>行权价选择</strong>：设在目标卖出价或强阻力位（如 +10%）</li>
-            <li><strong>到期时间</strong>：14–30 天，Theta 效率较高</li>
-            <li><strong>分批卖出</strong>：分仓卖 Call，降低一次性卖飞风险</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>行权价选择</strong>：设在目标卖出价或强阻力位（如 +10%）</li>
+          <li><strong>到期时间</strong>：14–30 天，Theta 效率较高</li>
+          <li><strong>分批卖出</strong>：分仓卖 Call，降低一次性卖飞风险</li>
+          <li><strong>到期建议</strong>：常用 14–30 天；临近到期价格接近行权价时，提前滚动或平仓。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '收益增强：在持币待涨的过程中额外获取年化10%-30%的现金流。',

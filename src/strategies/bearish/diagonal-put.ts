@@ -9,8 +9,8 @@ const diagonalPut: Strategy = {
   riskProfile: '风险有限（净成本），收益有限（近月价差 + 远月保值）。',
   idealScenario: '温和下跌、近月 Theta 快衰减，IV 上升。',
   legs: [
-    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.06 },
-    { type: 'Put', action: 'Sell', strikeOffset: 0.90, premiumRatio: 0.02 }
+    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.06, expiryLabel: '远月' },
+    { type: 'Put', action: 'Sell', strikeOffset: 0.90, premiumRatio: 0.02, expiryLabel: '近月' }
   ],
   detailedAnalysis: {
     explanation: `
@@ -57,15 +57,15 @@ const diagonalPut: Strategy = {
         <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，温和看跌</p>
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-            <p class="text-sm font-bold text-green-800">✅ 跌到 $90k</p>
+            <p class="text-sm font-bold text-green-800">✅ 跌到 $90k (-10%)</p>
             <p class="text-xs text-green-700 mt-1">近月归零，远月 ITM 增值；组合盈利 $3k+</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-            <p class="text-sm font-bold text-yellow-800">⚠️ 横盘 $100k</p>
+            <p class="text-sm font-bold text-yellow-800">⚠️ 横盘 $100k (0%)</p>
             <p class="text-xs text-yellow-700 mt-1">近月部分归零，远月持平；盈利有限</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-            <p class="text-sm font-bold text-red-800">❌ 上涨到 $110k</p>
+            <p class="text-sm font-bold text-red-800">❌ 上涨到 $110k (+10%)</p>
             <p class="text-xs text-red-700 mt-1">亏损接近净成本 $4k</p>
           </div>
         </div>

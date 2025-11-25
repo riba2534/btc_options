@@ -4,10 +4,10 @@ const longPut: Strategy = {
   id: 'long-put',
   name: '买入看跌期权 (Long Put)',
   category: StrategyCategory.BEARISH,
-  description: '基础做空策略。支付权利金，获得高价卖出的权利。',
+  description: '用固定权利金博取下跌；风险封顶，收益随跌幅扩张。',
   setup: '买入 Put',
-  riskProfile: '风险有限，收益巨大 (直到归零)。',
-  idealScenario: 'BTC大幅下跌。',
+  riskProfile: '风险有限（最多亏权利金）；Theta 负、Vega 正；对快速下跌与 IV 上升敏感。',
+  idealScenario: '短期显著下跌或破位；IV 低位建仓更优。',
   legs: [
     { type: 'Put', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.03 }
   ],

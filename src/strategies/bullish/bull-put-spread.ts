@@ -4,10 +4,10 @@ const bullPutSpread: Strategy = {
   id: 'bull-put-spread',
   name: '牛市看跌价差 (Bull Put Spread)',
   category: StrategyCategory.BULLISH,
-  description: '卖出高价Put，买入低价Put保护。一种“收租”式的看涨策略。',
+  description: '收权利金的看涨/不下跌策略；卖高Put收租、买低Put限损。',
   setup: '卖出 Put A + 买入 Put B (Strike A > B)',
-  riskProfile: '风险有限 (价差 - 权利金)，收益有限 (净权利金)。',
-  idealScenario: 'BTC上涨或横盘 (不跌破卖出价)。',
+  riskProfile: '风险有限（价差−净收）；收益有限（净收）；Theta 正、Vega 负；需保证金。',
+  idealScenario: '上涨或横盘且不跌破卖出价；IV 高位更适合收租。',
   legs: [
     { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.03 },
     { type: 'Put', action: 'Buy', strikeOffset: 0.85, premiumRatio: 0.01 }
@@ -141,4 +141,3 @@ const bullPutSpread: Strategy = {
 };
 
 export default bullPutSpread;
-

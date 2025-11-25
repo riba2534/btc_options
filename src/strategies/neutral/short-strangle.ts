@@ -4,10 +4,10 @@ const shortStrangle: Strategy = {
   id: 'short-strangle',
   name: '卖出宽跨式 (Short Strangle)',
   category: StrategyCategory.NEUTRAL,
-  description: '卖出OTM Call和Put。比跨式安全一点，容错空间更大。',
+  description: '卖出两侧虚值期权扩大盈利区间；收益有限、尾部风险无限。',
   setup: '卖出 OTM Call + 卖出 OTM Put',
-  riskProfile: '收益有限，风险无限。',
-  idealScenario: 'BTC在一定区间内震荡。',
+  riskProfile: '收益有限（净收）；风险无限；Theta 正、Vega 负；需严控尾部风险与保证金。',
+  idealScenario: '宽幅震荡且无重大事件；IV 高位预期回落。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.10, premiumRatio: 0.02 },
     { type: 'Put', action: 'Sell', strikeOffset: 0.90, premiumRatio: 0.02 }
@@ -102,14 +102,15 @@ const shortStrangle: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>边界设定</strong>：将上下行权价设在关键位外 8–12%</li>
-            <li><strong>到期与滚动</strong>：短期更利于 Theta；靠近边界时滚动调整</li>
-            <li><strong>提前平仓</strong>：收益达到 50–70% 时锁定利润</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>边界设定</strong>：将上下行权价设在关键位外 8–12%</li>
+          <li><strong>到期与滚动</strong>：短期更利于 Theta；靠近边界时滚动调整</li>
+          <li><strong>提前平仓</strong>：收益达到 50–70% 时锁定利润</li>
+          <li><strong>到期建议</strong>：14–30 天；临期 Gamma 增大，价格接近边界时提前管理与对冲。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '胜率提升：相比跨式策略，获利区间更宽，容错率更高。',

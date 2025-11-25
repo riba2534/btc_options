@@ -12,6 +12,8 @@ export interface OptionLeg {
   action: 'Buy' | 'Sell'; // Long or Short
   strikeOffset: number; // Percentage offset from spot price (e.g., 1.05 for 5% OTM)
   premiumRatio: number; // Approximate premium as % of spot price
+  // Optional expiry label for display (e.g., '近月', '远月')
+  expiryLabel?: string;
 }
 
 export interface Strategy {

@@ -16,7 +16,7 @@ const syntheticShort: Strategy = {
     explanation: `
       <div class="bg-gradient-to-r from-rose-50 to-red-50 border-l-4 border-rose-500 p-5 rounded-lg mb-6">
         <p class="text-rose-900 font-semibold mb-2">💡 策略核心思想</p>
-        <p class="text-rose-800 text-sm">合成空头通过 卖 Call + 买 Put（同价）复制做空现货的损益，Delta ≈ -1。以较低资金表达强烈看跌观点。</p>
+        <p class="text-rose-800 text-sm">合成空头通过 卖 Call + 买 Put（同价）复制做空现货的损益，Delta ≈ -1。<strong>必须使用同一到期日、同一行权价（通常 ATM）</strong>，否则不能精确复制现货的空头曲线。以较低资金表达强烈看跌观点。</p>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
@@ -32,6 +32,7 @@ const syntheticShort: Strategy = {
         </div>
         <div class="bg-slate-50 p-4 rounded mt-3">
           <p class="text-sm text-slate-700 mb-2"><strong>净成本 ≈ $0</strong>（仅需 Put 成本与保证金管理）</p>
+          <p class="text-xs text-slate-600 mt-1">到期约定：<strong>两腿使用同一到期日</strong>；若需续持，建议在到期前 15–30 天滚动。</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
@@ -57,7 +58,7 @@ const syntheticShort: Strategy = {
         <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，强烈看跌</p>
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-            <p class="text-sm font-bold text-green-800">✅ 跌到 $80k</p>
+            <p class="text-sm font-bold text-green-800">✅ 跌到 $80k (-20%)</p>
             <p class="text-xs text-green-700 mt-1">收益 ≈ $20k（复制做空现货的收益）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
@@ -65,7 +66,7 @@ const syntheticShort: Strategy = {
             <p class="text-xs text-yellow-700 mt-1">盈亏≈0（时间价值对冲）</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-            <p class="text-sm font-bold text-red-800">❌ 涨到 $120k</p>
+            <p class="text-sm font-bold text-red-800">❌ 涨到 $120k (+20%)</p>
             <p class="text-xs text-red-700 mt-1">亏损 ≈ $20k，需保证金管理</p>
           </div>
         </div>
