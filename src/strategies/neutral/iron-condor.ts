@@ -4,10 +4,10 @@ const ironCondor: Strategy = {
   id: 'iron-condor',
   name: '铁鹰式 (Iron Condor)',
   category: StrategyCategory.NEUTRAL,
-  description: '卖出宽跨式 + 买入更远期权做保护。最受欢迎的震荡策略。',
+  description: '双侧卖出并用远翼保护的宽区间收租；有限风险、有限收益。',
   setup: '卖出 OTM Call/Put + 买入 深OTM Call/Put',
-  riskProfile: '风险有限，收益有限。',
-  idealScenario: 'BTC在宽幅区间内震荡。',
+  riskProfile: '风险有限（翼宽−净收）；收益有限（净收）；Theta 正、Vega 负；四腿管理成本。',
+  idealScenario: '宽区间震荡、IV 回落；支撑阻力明确。',
   legs: [
     { type: 'Put', action: 'Sell', strikeOffset: 0.90, premiumRatio: 0.02 },
     { type: 'Put', action: 'Buy', strikeOffset: 0.85, premiumRatio: 0.01 },
@@ -104,14 +104,15 @@ const ironCondor: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>翼宽设置</strong>：常用 5k–10k；翼越宽越安全但净收越低</li>
-            <li><strong>到期选择</strong>：14–45 天兼顾 Theta 与管理成本</li>
-            <li><strong>分批管理</strong>：价格靠近边界时滚动或对冲</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>翼宽设置</strong>：常用 5k–10k；翼越宽越安全但净收越低</li>
+          <li><strong>到期选择</strong>：14–45 天兼顾 Theta 与管理成本</li>
+          <li><strong>分批管理</strong>：价格靠近边界时滚动或对冲</li>
+          <li><strong>到期建议</strong>：信用结构建议 30–45 天；临期 Gamma 增大，收益曲线陡峭，提前落袋降低尾部风险。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '风险严格受控：最大亏损已知且有限，适合稳健型投资者。',

@@ -103,14 +103,15 @@ const shortStraddle: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>选择到期</strong>：7–30 天更利于 Theta 收益</li>
-            <li><strong>动态对冲</strong>：用现货/期货对冲偏离的 Delta</li>
-            <li><strong>获利平仓</strong>：赚到 50–70% 权利金时提前落袋</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>选择到期</strong>：7–30 天更利于 Theta 收益</li>
+          <li><strong>动态对冲</strong>：用现货/期货对冲偏离的 Delta</li>
+          <li><strong>获利平仓</strong>：赚到 50–70% 权利金时提前落袋</li>
+          <li><strong>到期建议</strong>：事件驱动 7–14 天；常规 14–30 天。临期 Gamma 较高，靠近中心需提前管理。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '最大化权利金收入：ATM期权拥有最高的时间价值。',

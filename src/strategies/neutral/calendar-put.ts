@@ -9,8 +9,8 @@ const calendarPut: Strategy = {
   riskProfile: '风险有限（权利金差），收益有限（近月衰减带来的净值提升）。',
   idealScenario: '价格在行权价附近徘徊，近月 Theta 快速衰减，IV 上升。',
   legs: [
-    { type: 'Put', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
-    { type: 'Put', action: 'Sell', strikeOffset: 1.00, premiumRatio: 0.04 }
+    { type: 'Put', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05, expiryLabel: '远月' },
+    { type: 'Put', action: 'Sell', strikeOffset: 1.00, premiumRatio: 0.04, expiryLabel: '近月' }
   ],
   detailedAnalysis: {
     explanation: `
@@ -64,7 +64,7 @@ const calendarPut: Strategy = {
             <p class="text-xs text-green-700 mt-1">近月归零，远月价格因 IV↑ 上升，组合盈利 $2k+</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-            <p class="text-sm font-bold text-yellow-800">⚠️ 温和偏离：$110k / $90k</p>
+            <p class="text-sm font-bold text-yellow-800">⚠️ 温和偏离：$110k (+10%) / $90k (-10%)</p>
             <p class="text-xs text-yellow-700 mt-1">近月不归零，利润下降或持平</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">

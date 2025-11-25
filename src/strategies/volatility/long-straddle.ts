@@ -4,10 +4,10 @@ const longStraddle: Strategy = {
   id: 'long-straddle',
   name: '买入跨式 (Long Straddle)',
   category: StrategyCategory.VOLATILITY,
-  description: '买入ATM Call和Put。赌大变盘，方向不限。',
+  description: '同时买入 ATM Call/Put 做多波动率；方向中性。',
   setup: '买入 Call + 买入 Put (同Strike)',
-  riskProfile: '风险有限 (权利金)，收益无限。',
-  idealScenario: 'BTC发生剧烈暴涨或暴跌。',
+  riskProfile: '风险有限（总权利金）；收益无限；Theta 负、Vega 正；对单边大行情与 IV 上升敏感。',
+  idealScenario: '临近重大事件、方向不明但预期大幅波动；IV 低位更优。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
     { type: 'Put', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 }

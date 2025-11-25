@@ -4,10 +4,10 @@ const longCall: Strategy = {
   id: 'long-call',
   name: '买入看涨期权 (Long Call)',
   category: StrategyCategory.BULLISH,
-  description: '最基础的看涨策略。支付权利金，获得未来低价买入的权利。',
+  description: '用少量权利金博取上涨；风险封顶，收益随涨幅扩张。',
   setup: '买入 Call',
-  riskProfile: '风险有限 (权利金)，收益无限。',
-  idealScenario: 'BTC价格大幅上涨。',
+  riskProfile: '风险有限（最多亏权利金）；Theta 负、Vega 正；对快速上涨与 IV 上升敏感。',
+  idealScenario: '短期强势上行；IV 处低位或事件前 IV 预期上升。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.03 }
   ],
@@ -141,4 +141,3 @@ const longCall: Strategy = {
 };
 
 export default longCall;
-

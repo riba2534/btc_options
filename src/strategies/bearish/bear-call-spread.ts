@@ -4,10 +4,10 @@ const bearCallSpread: Strategy = {
   id: 'bear-call-spread',
   name: '熊市看涨价差 (Bear Call Spread)',
   category: StrategyCategory.BEARISH,
-  description: '卖出低价Call，买入高价Call保护。做空赚取权利金。',
+  description: '收权利金的看不涨策略；卖低Call收租、买高Call限损。',
   setup: '卖出 Call A + 买入 Call B (Strike A < B)',
-  riskProfile: '风险有限，收益有限 (净权利金)。',
-  idealScenario: 'BTC下跌或横盘 (不涨破卖出价)。',
+  riskProfile: '风险有限（价差−净收）；收益有限（净收）；Theta 正、Vega 负；需保证金。',
+  idealScenario: '下跌或横盘不破上方阻力；IV 高位更适合收租。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.05, premiumRatio: 0.03 },
     { type: 'Call', action: 'Buy', strikeOffset: 1.15, premiumRatio: 0.01 }

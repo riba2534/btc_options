@@ -110,17 +110,18 @@ const cashSecuredPut: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>行权价选择</strong>：设在技术支撑位或整数关口下方5-10%，提高不被行权的概率</li>
-            <li><strong>到期时间</strong>：30-45天最优，Theta Decay效率高。太短风险大，太长权利金少</li>
-            <li><strong>分批抄底</strong>：不要All In一次，分3-5批不同价位卖Put，降低平均成本</li>
-            <li><strong>滚动收租</strong>：到期未被行权后，立即卖下一期，月月收租。年化可达20-40%</li>
-            <li><strong>组合策略</strong>：持币后可加Covered Call（备兑看涨），双向收租</li>
-            <li><strong>Delta监控</strong>：Put的Delta越接近-0.3时，被行权概率约30%，可作参考</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>行权价选择</strong>：设在技术支撑位或整数关口下方5-10%，提高不被行权的概率</li>
+          <li><strong>到期时间</strong>：30-45天最优，Theta Decay效率高。太短风险大，太长权利金少</li>
+          <li><strong>分批抄底</strong>：不要All In一次，分3-5批不同价位卖Put，降低平均成本</li>
+          <li><strong>滚动收租</strong>：到期未被行权后，立即卖下一期，月月收租。年化可达20-40%</li>
+          <li><strong>组合策略</strong>：持币后可加Covered Call（备兑看涨），双向收租</li>
+          <li><strong>Delta监控</strong>：Put的Delta越接近-0.3时，被行权概率约30%，可作参考</li>
+          <li><strong>到期建议</strong>：常用 14–30 天或 30–45 天；接近行权价时提前滚动或平仓，保持现金担保安全边际。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '降低建仓成本：实际买入成本为行权价减去收取的权利金。',

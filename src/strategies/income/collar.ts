@@ -101,14 +101,15 @@ const collar: Strategy = {
           </ul>
         </div>
 
-        <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
-          <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>零成本目标</strong>：优先构建净成本≈0 的组合</li>
-            <li><strong>区间选择</strong>：Put 下方 8–12%，Call 上方 8–12%</li>
-            <li><strong>滚动管理</strong>：价格靠近边界时滚动调整行权价与到期</li>
-          </ul>
-        </div>
+      <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
+        <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
+          <li><strong>零成本目标</strong>：优先构建净成本≈0 的组合</li>
+          <li><strong>区间选择</strong>：Put 下方 8–12%，Call 上方 8–12%</li>
+          <li><strong>滚动管理</strong>：价格靠近边界时滚动调整行权价与到期</li>
+          <li><strong>到期建议</strong>：中期 30–60 天；根据市场变化，提前滚动维持保护与区间。</li>
+        </ul>
+      </div>
       `,
     pros: [
       '低成本对冲：以放弃部分潜在上涨收益为代价，获得免费的下行保护。',

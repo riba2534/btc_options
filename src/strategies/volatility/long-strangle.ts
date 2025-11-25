@@ -4,10 +4,10 @@ const longStrangle: Strategy = {
   id: 'long-strangle',
   name: '买入宽跨式 (Long Strangle)',
   category: StrategyCategory.VOLATILITY,
-  description: '买入OTM Call和Put。成本低，但需要更大波动。',
+  description: '买入两侧 OTM 期权低成本博大波动；方向中性。',
   setup: '买入 OTM Call + 买入 OTM Put',
-  riskProfile: '风险有限，收益无限。',
-  idealScenario: 'BTC发生超大幅度波动。',
+  riskProfile: '风险有限（总权利金）；收益无限；Theta 负、Vega 正；需更大波动穿越盈亏平衡。',
+  idealScenario: '预算有限、事件驱动的大波动；IV 低位更优。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.10, premiumRatio: 0.02 },
     { type: 'Put', action: 'Buy', strikeOffset: 0.90, premiumRatio: 0.02 }

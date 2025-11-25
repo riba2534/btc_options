@@ -130,6 +130,10 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
 
   const hasSpotPosition = ['covered-call', 'protective-put', 'collar'].includes(strategy.id);
   const isBasics = strategy.category === StrategyCategory.BASICS;
+  const hasDifferentExpiry = useMemo(() => {
+    const id = strategy.id.toLowerCase();
+    return id.includes('calendar') || id.includes('diagonal');
+  }, [strategy.id]);
 
   return (
     <div ref={rootRef} className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 h-full overflow-y-auto w-full max-w-[1600px] mx-auto custom-scrollbar">
@@ -167,6 +171,17 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
             </div>
             <div className="p-4 md:p-6">
               <div className="space-y-3 md:space-y-4">
+                {hasDifferentExpiry && (
+                  <div className="p-4 md:p-5 bg-amber-50 rounded-xl border border-amber-200">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 text-[10px] md:text-xs font-bold rounded bg-amber-200 text-amber-800 border border-amber-300">到期不同</span>
+                      <span className="text-sm md:text-base font-bold text-amber-900">本策略包含 <span className="underline decoration-amber-400">近月</span> 与 <span className="underline decoration-amber-400">远月</span> 两条腿</span>
+                    </div>
+                    <div className="text-xs md:text-sm text-amber-900">
+                      近月腿：Theta 衰减更快（更容易归零）；远月腿：用于方向表达与保值。到期管理需在近月临期前滚动或平仓。
+                    </div>
+                  </div>
+                )}
                 {hasSpotPosition && (
                   <div className="flex flex-col md:flex-row md:items-center justify-between p-4 md:p-5 bg-blue-50/50 rounded-xl border border-blue-100 gap-3 md:gap-0">
                     <div className="flex items-center gap-4 md:gap-5">
@@ -194,9 +209,15 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                         <span className="font-bold text-lg md:text-xl leading-none">1</span>
                       </div>
                       <div>
-                        <div className="font-bold text-slate-900 text-base md:text-lg flex items-center gap-2">
+                        <div className="font-bold text-slate-900 text-base md:text-lg flex items-center gap-2 flex-wrap">
                           <span>{leg.action === 'Buy' ? '买入' : '卖出'} {leg.type}</span>
                           <span className="text-[10px] md:text-xs font-normal text-slate-400 px-2 py-0.5 bg-slate-100 rounded-full border border-slate-200 hidden sm:inline-block">Option</span>
+                          {hasDifferentExpiry && (
+                            <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full border hidden sm:inline-block
+                              bg-amber-100 text-amber-700 border-amber-200">
+                              {((leg as any).expiryLabel) ? (leg as any).expiryLabel : (leg.action === 'Buy' ? '远月' : '近月')}
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs md:text-sm text-slate-500 flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                           <span>行权价: <span className="font-mono font-semibold text-slate-700">{formatMoney(leg.strike)}</span></span>
@@ -290,6 +311,54 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
           className="text-slate-700 leading-loose text-base md:text-lg strategy-content"
           dangerouslySetInnerHTML={{ __html: strategy.detailedAnalysis?.explanation || '' }}
         />
+        </div>
+
+        {/* Expanded Guide (auto-generated details) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
+          {(() => {
+            // Compute summary of legs
+            const callCount = strategy.legs.filter(l => l.type === 'Call').length;
+            const putCount = strategy.legs.filter(l => l.type === 'Put').length;
+            const classify = (leg: typeof strategy.legs[number]) => {
+              const off = leg.strikeOffset;
+              if (leg.type === 'Call') return off < 1 ? 'ITM' : off === 1 ? 'ATM' : 'OTM';
+              return off > 1 ? 'ITM' : off === 1 ? 'ATM' : 'OTM';
+            };
+            const dist = strategy.legs.reduce((acc, l) => { const c = classify(l); acc[c] = (acc[c]||0)+1; return acc; }, {} as Record<string, number>);
+            const netSide = strategy.legs.reduce((acc, l) => acc + (l.action === 'Buy' ? 1 : -1), 0);
+            const isCalendar = hasDifferentExpiry;
+            const expiryAdvice = isCalendar
+              ? '到期建议：远月 60–90 天；近月 14–30 天，近月临期前滚动。'
+              : netSide > 0
+              ? '到期建议：买方策略偏好 30–60 天，兼顾幅度与成本。'
+              : netSide < 0
+              ? '到期建议：卖方策略偏好 14–30 天（Theta效率更高）。'
+              : '到期建议：按事件窗口选择 7–30 天，避免过早被 Theta 吃掉。';
+            const mgmtAdvice = netSide < 0
+              ? ['收益达到 50–70% 时提前平仓落袋', '价格接近边界时滚动（外扩或移近中枢）', '关注 IV 回落对净卖方不利']
+              : ['权利金亏损 40–50% 时考虑止损', '事件后 IV 回落可能导致回吐，分批止盈', '选择流动性好的合约，降低点差与滑点'];
+            return (
+              <>
+                <div className="p-4 md:p-5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">参数与到期建议</div>
+                  <ul className="text-sm md:text-base text-slate-800 space-y-2 list-disc pl-5">
+                    <li>腿分布：Call {callCount} / Put {putCount}；ITM {dist['ITM']||0}，ATM {dist['ATM']||0}，OTM {dist['OTM']||0}</li>
+                    <li>行权价偏移：基准价 × offset（如 1.10 = +10%），买方更偏向 ATM/ITM，卖方更偏向 OTM</li>
+                    <li>{expiryAdvice}</li>
+                  </ul>
+                </div>
+                <div className="p-4 md:p-5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">管理与滚动建议</div>
+                  <ul className="text-sm md:text-base text-slate-800 space-y-2 list-disc pl-5">
+                    {mgmtAdvice.map((t, i) => (
+                      <li key={i}>{t}</li>
+                    ))}
+                    <li>临近到期 Gamma 增大，价格靠近行权价时盈亏更敏感</li>
+                  </ul>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
