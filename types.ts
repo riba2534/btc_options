@@ -1,4 +1,5 @@
 export enum StrategyCategory {
+  BASICS = '期权基础 (Option Basics)',
   BULLISH = '看涨策略 (Bullish)',
   BEARISH = '看跌策略 (Bearish)',
   NEUTRAL = '盘整/中性策略 (Neutral)',
