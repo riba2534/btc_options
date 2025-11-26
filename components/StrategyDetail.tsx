@@ -86,7 +86,10 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   // --- Calculation Logic ---
   const calculatedLegs = useMemo(() => {
     return strategy.legs.map(leg => {
-      const strike = Math.round(btcPrice * leg.strikeOffset / 100) * 100;
+      // Fix strike calculation: strikeOffset is a multiplier (e.g., 1.05 = +5%)
+      const rawStrike = btcPrice * leg.strikeOffset;
+      // Round to nearest $100 for readability
+      const strike = Math.round(rawStrike / 100) * 100;
       const premium = Math.round(btcPrice * leg.premiumRatio);
       return { ...leg, strike, premium };
     });
@@ -95,6 +98,22 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   // Memoized PnL calculator to avoid code duplication and ensure consistent calculation
   const calculateTotalPnl = useCallback((price: number) => {
     let totalPnl = 0;
+    const isCalendarStrategy = strategy.id.toLowerCase().includes('calendar');
+
+    // Approximate far-month time value (for calendar spreads):
+    // Creates a central hump around strike using a Gaussian-like shape.
+    const estimateFarMonthTimeValue = (leg: typeof calculatedLegs[number], price: number) => {
+      // Only for far-month legs in calendar strategies
+      if (!isCalendarStrategy) return 0;
+      if (!('expiryLabel' in leg) || leg.expiryLabel !== '远月') return 0;
+      // Amplitude: portion of premium retained at near-month expiry
+      const amp = Math.max(leg.premium * 0.5, leg.premium * 0.3);
+      // Width: ~8% of base price
+      const sigma = btcPrice * 0.08;
+      const dist = price - leg.strike;
+      const timeValue = amp * Math.exp(-0.5 * (dist / sigma) * (dist / sigma));
+      return Math.round(timeValue);
+    };
 
     // Calculate Option Legs P&L
     calculatedLegs.forEach(leg => {
@@ -106,11 +125,17 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         const intrinsic = Math.max(0, leg.strike - price);
         legPnl = leg.action === 'Buy' ? intrinsic - leg.premium : leg.premium - intrinsic;
       }
+
+      // Add approximate far-month time value for calendar legs
+      const tv = estimateFarMonthTimeValue(leg, price);
+      if (tv !== 0) {
+        legPnl += leg.action === 'Buy' ? tv : -tv;
+      }
       totalPnl += legPnl;
     });
 
     // Special handling for Spot positions (Covered Call / Protective Put / Collar)
-    if (['covered-call', 'protective-put', 'collar'].includes(strategy.id)) {
+    if (['covered-call', 'protective-put', 'collar', 'covered-strangle'].includes(strategy.id)) {
       const spotPnl = price - btcPrice;
       totalPnl += spotPnl;
     }
@@ -281,7 +306,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   // --- Rendering Helpers ---
   const formatMoney = (val: number) => `$${val.toLocaleString()}`;
 
-  const hasSpotPosition = ['covered-call', 'protective-put', 'collar'].includes(strategy.id);
+  const hasSpotPosition = ['covered-call', 'protective-put', 'collar', 'covered-strangle'].includes(strategy.id);
+  const isWheel = strategy.id === 'wheel';
   const isBasics = strategy.category === StrategyCategory.BASICS;
   const hasDifferentExpiry = useMemo(() => {
     const id = strategy.id.toLowerCase();
@@ -305,6 +331,37 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         <div className="w-full">
           <OptionBasicsView btcPrice={btcPrice} />
         </div>
+      ) : isWheel ? (
+        <div className="w-full">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                <span className="w-2 h-6 bg-amber-500 rounded-full"></span>
+                流程型策略示意 (Wheel Stages)
+              </h3>
+              <span className="text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Overview</span>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">Wheel 为流程型策略，不存在单一到期盈亏曲线。以下为两个阶段的示意图：阶段一卖出 OTM Put 收权利金；阶段二持币后卖出 OTM Call（备兑）。</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <MiniChart title="阶段一：卖出 OTM Put" data={generateBasicData('Put', 'Sell', btcPrice)} color="#ef4444" />
+              {(() => {
+                // Generate Covered Call approximation: Spot + Short Call
+                const strike = Math.round((btcPrice * 1.10) / 100) * 100; // +10%
+                const premium = Math.round(btcPrice * 0.03);
+                const range = 0.2;
+                const step = btcPrice * 0.02;
+                const points: Array<{ price: number; pnl: number }> = [];
+                for (let price = btcPrice * (1 - range); price <= btcPrice * (1 + range); price += step) {
+                  const intrinsic = Math.max(0, Math.round(price) - strike);
+                  const shortCallPnl = premium - intrinsic;
+                  const spotPnl = Math.round(price) - btcPrice;
+                  points.push({ price: Math.round(price), pnl: shortCallPnl + spotPnl });
+                }
+                return <MiniChart title="阶段二：备兑 Call（含现货）" data={points} color="#3b82f6" />;
+              })()}
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="w-full">
           <Suspense fallback={<div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm animate-pulse" />}>
@@ -314,7 +371,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       )}
 
       {/* Strategy Info Stack (Hidden for Basics) */}
-      {!isBasics && (
+      {!isBasics && !isWheel && (
         <div className="flex flex-col gap-6 md:gap-8">
           {/* Construction Example */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">

@@ -57,19 +57,23 @@ const longStraddle: Strategy = {
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
         <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-lg p-5 mb-6">
-          <p class="font-bold text-slate-900 mb-3">案例：重大事件前夜（不确定方向）</p>
+          <p class="font-bold text-slate-900 mb-3">案例：BTC ETF批准前夜，价格$100k，预期大幅波动</p>
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-              <p class="text-sm font-bold text-green-800">✅ 暴涨：涨到 $120k</p>
-              <p class="text-xs text-green-700 mt-1">Call 赚 ≈ $20k；总盈利 ≈ $10k（100%）</p>
+              <p class="text-sm font-bold text-green-800">✅ 场景1：ETF批准，暴涨至$120k</p>
+              <p class="text-xs text-green-700 mt-1">Call价值 ≈ $20k，Put作废；总盈利 ≈ $10k（100%回报）</p>
             </div>
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-              <p class="text-sm font-bold text-green-800">✅ 暴跌：跌到 $80k</p>
-              <p class="text-xs text-green-700 mt-1">Put 赚 ≈ $20k；总盈利 ≈ $10k（100%）</p>
+              <p class="text-sm font-bold text-green-800">✅ 场景2：ETF否决，暴跌至$80k</p>
+              <p class="text-xs text-green-700 mt-1">Put价值 ≈ $20k，Call作废；总盈利 ≈ $10k（100%回报）</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 横盘：收于 $102k</p>
-              <p class="text-xs text-red-700 mt-1">两腿几乎作废，亏损 ≈ $10k</p>
+              <p class="text-sm font-bold text-red-800">❌ 场景3：消息平淡，横盘收于$102k</p>
+              <p class="text-xs text-red-700 mt-1">两腿时间价值损耗，亏损 ≈ $10k（100%损失）</p>
+            </div>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
+              <p class="text-sm font-bold text-yellow-800">⚠️ 场景4：小幅波动至$108k</p>
+              <p class="text-xs text-yellow-700 mt-1">Call赚$8k，Put亏$5k，净亏$7k（仍需更大波动才能盈利）</p>
             </div>
           </div>
         </div>

@@ -17,8 +17,23 @@ const wheel: Strategy = {
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <p class="text-slate-700 mb-2"><strong>阶段一：</strong>卖 $90k Put 收权利金；若到期不被行权，重复该阶段</p>
-        <p class="text-slate-700 mb-2"><strong>阶段二：</strong>被行权持币后，卖 $110k Call 收权利金；到期后重复</p>
+        <div class="space-y-4">
+          <div class="bg-blue-50 p-4 rounded border border-blue-200">
+            <p class="font-bold text-blue-700 mb-2">🔄 阶段一：卖出 OTM Put 收租</p>
+            <p class="text-sm text-slate-700 mb-2">卖 $90k Put 收权利金 ≈ $2k；若到期不被行权，重复该阶段</p>
+            <p class="text-xs text-slate-600"><strong>目标</strong>：持续收租，降低未来建仓成本</p>
+          </div>
+          <div class="bg-green-50 p-4 rounded border border-green-200">
+            <p class="font-bold text-green-700 mb-2">📦 阶段二：被行权持币</p>
+            <p class="text-sm text-slate-700 mb-2">若价格跌至 $90k 以下，被行权以 $90k 买入 1 BTC</p>
+            <p class="text-xs text-slate-600"><strong>实际成本</strong>：$90k - 累计权利金（如已收3期，成本降至 $84k）</p>
+          </div>
+          <div class="bg-orange-50 p-4 rounded border border-orange-200">
+            <p class="font-bold text-orange-700 mb-2">💰 阶段三：持币卖 Call 收租</p>
+            <p class="text-sm text-slate-700 mb-2">持币后卖 $110k Call 收权利金 ≈ $2k；到期后重复</p>
+            <p class="text-xs text-slate-600"><strong>循环</strong>：被行权卖飞后，回到阶段一继续卖 Put</p>
+          </div>
+        </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
       <div class="grid md:grid-cols-3 gap-4 mb-6">
@@ -75,15 +90,22 @@ const wheel: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>执行纪律</strong>：滚动与被行权管理需有明确规则</li>
-          <li><strong>Vega 风险</strong>：低 IV 期权收租效果较弱</li>
+          <li><strong>执行纪律风险</strong>：必须严格遵守滚动规则，避免情绪化操作</li>
+          <li><strong>Vega 风险</strong>：低 IV 时期权利金收入减少，影响现金流</li>
+          <li><strong>暴跌风险</strong>：被行权持币后若继续暴跌，持币浮亏但权利金提供缓冲</li>
+          <li><strong>卖飞风险</strong>：上涨超过 Call 行权价时，收益封顶，错过超额涨幅</li>
+          <li><strong>流动性风险</strong>：需要确保期权合约有足够流动性，避免滑点过大</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
       <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
         <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-          <li><strong>分批与周期</strong>：按月或双周滚动，分批减少一次性风险</li>
-          <li><strong>行权价选择</strong>：Put 低 5–10%，Call 高 5–10%</li>
+          <li><strong>分批与周期管理</strong>：按月或双周滚动，分批建仓减少一次性风险</li>
+          <li><strong>行权价选择艺术</strong>：Put 设在支撑位下方 5–10%，Call 设在阻力位上方 5–10%</li>
+          <li><strong>资金管理</strong>：确保有足够保证金应对 Put 被行权，避免强制平仓</li>
+          <li><strong>IV 择时</strong>：在 IV 高位时卖期权，权利金收入更高</li>
+          <li><strong>止损策略</strong>：若价格快速突破行权价，考虑提前平仓或滚动到新价位</li>
+          <li><strong>税务规划</strong>：注意被行权产生的税务影响，合理规划持仓周期</li>
         </ul>
       </div>
     `,
