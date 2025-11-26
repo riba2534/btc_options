@@ -9,10 +9,11 @@ const boxSpread: Strategy = {
   riskProfile: '理论上风险与收益均锁定（更多偏套利教育）。',
   idealScenario: '价差与权利金错价可获套利空间。',
   legs: [
-    { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.06 },
-    { type: 'Call', action: 'Sell', strikeOffset: 1.05, premiumRatio: 0.02 },
-    { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.06 },
-    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.02 }
+    // 设置权利金使净成本 ≈ 价差（$105k−$95k = $10k），到期盈亏 ≈ 0
+    { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.06 }, // 6k
+    { type: 'Call', action: 'Sell', strikeOffset: 1.05, premiumRatio: 0.02 }, // -2k
+    { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.06 }, // -6k
+    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.02 }  // 2k
   ],
   detailedAnalysis: {
     explanation: `
@@ -25,7 +26,8 @@ const boxSpread: Strategy = {
         <p class="text-slate-700 mb-2">买 $95k Call（付 $6k） + 卖 $105k Call（收 $2k）</p>
         <p class="text-slate-700 mb-2">卖 $95k Put（收 $6k） + 买 $105k Put（付 $2k）</p>
         <div class="bg-slate-50 p-4 rounded mt-3">
-          <p class="text-sm text-slate-700 mb-2"><strong>理论收益</strong>：锁定价差 $10k（忽略费用与滑点）</p>
+          <p class="text-sm text-slate-700 mb-2"><strong>到期盈亏</strong>：理论上为常数 <em>价差 − 净成本</em>。示例中设置净成本 ≈ 价差（$10k），因此到期盈亏 ≈ $0。</p>
+          <p class="text-xs text-slate-500">若实际净成本小于价差，则到期固定获利；反之为固定亏损。现实执行需考虑资金利率、费用与滑点。</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>

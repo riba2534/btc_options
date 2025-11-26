@@ -6,7 +6,7 @@ const ironCondor: Strategy = {
   category: StrategyCategory.NEUTRAL,
   description: '双侧卖出并用远翼保护的宽区间收租；有限风险、有限收益。',
   setup: '卖出 OTM Call/Put + 买入 深OTM Call/Put',
-  riskProfile: '风险有限（翼宽−净收）；收益有限（净收）；Theta 正、Vega 负；四腿管理成本。',
+  riskProfile: '风险有限（翼宽−净收）；收益有限（净收）；Theta 正（时间衰减有利）、Vega 负（波动率上升不利）、Gamma 负（临期风险增大）；四腿管理成本。',
   idealScenario: '宽区间震荡、IV 回落；支撑阻力明确。',
   legs: [
     { type: 'Put', action: 'Sell', strikeOffset: 0.90, premiumRatio: 0.02 },
@@ -96,13 +96,15 @@ const ironCondor: Strategy = {
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
-        <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
-          <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-            <li><strong>Gamma 风险</strong>：接近边界与临期时盈亏曲率变陡</li>
-            <li><strong>Vega 风险</strong>：IV 上升时净卖方不利</li>
-            <li><strong>滑点成本</strong>：四腿结构，平仓与滚动存在滑点与费用</li>
-          </ul>
-        </div>
+      <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
+        <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
+          <li><strong>Gamma 风险（临期风险）</strong>：最后7-14天Gamma急剧增大，价格接近边界时盈亏曲线变陡，亏损加速</li>
+          <li><strong>Vega 风险（波动率风险）</strong>：隐含波动率上升时，期权价格上升对净卖方不利，可能产生未实现亏损</li>
+          <li><strong>滑点与交易成本</strong>：四腿结构开平仓存在较大滑点，佣金成本相对较高</li>
+          <li><strong>突破风险</strong>：价格突破保护翼时，最大亏损锁定但需要及时止损或滚动</li>
+          <li><strong>流动性风险</strong>：远翼期权流动性较差，平仓时可能面临较大买卖价差</li>
+        </ul>
+      </div>
 
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
       <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">

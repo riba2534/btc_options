@@ -6,7 +6,7 @@ const bullCallSpread: Strategy = {
   category: StrategyCategory.BULLISH,
   description: '买低Call、卖高Call以降成本；用封顶收益换更高胜率与效率。',
   setup: '买入 Call A + 卖出 Call B (Strike B > A)',
-  riskProfile: '风险有限（净成本）；收益有限（价差−成本）；Theta 略负、Vega 中性偏负。',
+  riskProfile: '风险有限（净成本）；收益有限（价差−成本）；Theta 略负、Vega 正但较弱。',
   idealScenario: '温和上涨至上腿附近；IV 偏高更有利（卖出腿收入高）。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
