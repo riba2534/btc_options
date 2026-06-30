@@ -11,7 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#-许可证)
 
-**[🌐 在线访问 → option.riba2534.cn](https://option.riba2534.cn)**
+**[🌐 在线访问 → option.red](https://option.red)**
 
 </div>
 
@@ -71,7 +71,7 @@
 | 图表 | Recharts 3 |
 | 样式 | Tailwind CSS 3（本地 PostCSS 构建，含 content 扫描与 safelist） |
 | 字体 | Inter（拉丁）+ JetBrains Mono（等宽数字） |
-| 部署 | GitHub Actions → GitHub Pages |
+| 部署 | GitHub Actions → Cloudflare Pages |
 
 ## 🚀 快速开始
 
@@ -184,9 +184,9 @@ interface Strategy {
 
 ## 🌐 部署
 
-- 通过 GitHub Actions 自动部署到 **GitHub Pages**（工作流见 `.github/workflows/deploy.yml`）。
-- 推送到 `main` 分支即自动触发 `npm ci → npm run build → 发布 dist/`。
-- 自定义域名由仓库根目录 `CNAME` 指定（当前为 `option.riba2534.cn`）。
+- 托管于 **Cloudflare Pages**，主域名 **[option.red](https://option.red)**。
+- 推送到 `main` 分支即触发 GitHub Actions 自动部署：`npm ci → npm run build → wrangler 部署到 Cloudflare Pages`（工作流见 `.github/workflows/deploy.yml`）。
+- 旧域名 `option.riba2534.cn` 已 **301 重定向**至 `option.red`。
 
 ## ⚠️ 免责声明
 
