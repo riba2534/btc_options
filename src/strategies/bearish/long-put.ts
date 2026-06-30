@@ -39,14 +39,14 @@ const longPut: Strategy = {
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
         <div class="grid md:grid-cols-3 gap-4 mb-6">
-          <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
-            <div class="text-xs text-red-600 font-bold mb-1">最大收益</div>
-            <div class="text-2xl font-bold text-red-700 mb-2">≈ 直到归零</div>
-            <p class="text-xs text-slate-600">价格越跌越赚（理论接近无限）</p>
-          </div>
           <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4">
-            <div class="text-xs text-emerald-600 font-bold mb-1">最大亏损</div>
-            <div class="text-2xl font-bold text-emerald-700 mb-2">权利金</div>
+            <div class="text-xs text-emerald-600 font-bold mb-1">最大收益</div>
+            <div class="text-2xl font-bold text-emerald-700 mb-2">Strike − Premium ≈ $92k</div>
+            <p class="text-xs text-slate-600">价格越跌越赚，最大收益 = 行权价 − 权利金 ≈ $92k（标的归零时封顶，区别于 Long Call 的无限上行）</p>
+          </div>
+          <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
+            <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
+            <div class="text-2xl font-bold text-red-700 mb-2">权利金</div>
             <p class="text-xs text-slate-600">若价格上涨或横盘，损失为固定成本</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
@@ -72,7 +72,7 @@ const longPut: Strategy = {
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
               <p class="text-sm font-bold text-yellow-800">⚠️ 小幅下跌至 $94k</p>
-              <p class="text-xs text-yellow-700 mt-1">内在价值 $1k，仍亏 $2k（Theta 抵消）</p>
+              <p class="text-xs text-yellow-700 mt-1">内在价值 $1k，仍亏 $2k（权利金 $3k > 内在价值 $1k，时间价值已耗尽）</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 上涨到 $110k</p>

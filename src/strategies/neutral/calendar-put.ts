@@ -61,11 +61,11 @@ const calendarPut: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 收敛：收于 $100k</p>
-            <p class="text-xs text-green-700 mt-1">近月归零，远月价格因 IV↑ 上升，组合盈利 $2k+</p>
+            <p class="text-xs text-green-700 mt-1">近月归零，远月价格因 IV↑ 上升，组合盈利约 $1.5k</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 温和偏离：$110k (+10%) / $90k (-10%)</p>
-            <p class="text-xs text-yellow-700 mt-1">近月不归零，利润下降或持平</p>
+            <p class="text-xs text-yellow-700 mt-1">价格偏离行权价后远月时间价值衰减，组合利润明显回落（约 +$0.1k，接近盈亏平衡）</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 远离 + IV 下降</p>
@@ -102,6 +102,7 @@ const calendarPut: Strategy = {
         <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
           <li><strong>滚动策略</strong>：近月临期时滚动维持结构</li>
           <li><strong>点位优化</strong>：以 ATM 为主，必要时轻微 ITM/OTM 调整</li>
+          <li><strong>到期选择</strong>：近月 14-30 天、远月 45-60 天，拉开 Theta 差以放大近月衰减收益。</li>
         </ul>
       </div>
     `,
@@ -110,7 +111,8 @@ const calendarPut: Strategy = {
       '净成本低、风险常仅限净投入。'
     ],
     cons: [
-      '对点位与 IV 敏感，事件后可能利润回吐。'
+      '对点位与 IV 敏感，事件后可能利润回吐。',
+      '事件后 Vega Crush 与近月被指派/点差滑点可能侵蚀已有利润。'
     ]
   }
 };

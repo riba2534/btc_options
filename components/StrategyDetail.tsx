@@ -74,12 +74,23 @@ const OptionBasicsView = memo<{ btcPrice: number }>(({ btcPrice }) => {
 
 OptionBasicsView.displayName = 'OptionBasicsView';
 
+// Per-category accent palette so the header signals the strategy family at a glance.
+const CATEGORY_STYLES: Record<StrategyCategory, { badge: string; accent: string }> = {
+  [StrategyCategory.BASICS]: { badge: 'bg-slate-100 text-slate-600 border-slate-200', accent: 'from-slate-400 to-slate-500' },
+  [StrategyCategory.BULLISH]: { badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', accent: 'from-emerald-400 to-green-500' },
+  [StrategyCategory.BEARISH]: { badge: 'bg-rose-50 text-rose-700 border-rose-200', accent: 'from-rose-400 to-red-500' },
+  [StrategyCategory.NEUTRAL]: { badge: 'bg-blue-50 text-blue-700 border-blue-200', accent: 'from-blue-400 to-cyan-500' },
+  [StrategyCategory.VOLATILITY]: { badge: 'bg-violet-50 text-violet-700 border-violet-200', accent: 'from-violet-400 to-purple-500' },
+  [StrategyCategory.INCOME]: { badge: 'bg-indigo-50 text-indigo-700 border-indigo-200', accent: 'from-indigo-400 to-purple-500' },
+};
+
 const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) => {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (rootRef.current) {
-      rootRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      rootRef.current.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
     }
   }, [strategy.id]);
 
@@ -98,16 +109,22 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   // Memoized PnL calculator to avoid code duplication and ensure consistent calculation
   const calculateTotalPnl = useCallback((price: number) => {
     let totalPnl = 0;
-    const isCalendarStrategy = strategy.id.toLowerCase().includes('calendar');
+    // Calendar AND diagonal spreads both have a far-dated leg that still
+    // carries time value at the near-month expiration shown on the chart.
+    const id = strategy.id.toLowerCase();
+    const isMultiExpiry = id.includes('calendar') || id.includes('diagonal');
 
-    // Approximate far-month time value (for calendar spreads):
-    // Creates a central hump around strike using a Gaussian-like shape.
+    // Approximate the far-month leg's residual time value at near-month expiry:
+    // a central hump around its strike (Gaussian-like), since time value peaks
+    // when the option is at-the-money.
     const estimateFarMonthTimeValue = (leg: typeof calculatedLegs[number], price: number) => {
-      // Only for far-month legs in calendar strategies
-      if (!isCalendarStrategy) return 0;
-      if (!('expiryLabel' in leg) || leg.expiryLabel !== '远月') return 0;
-      // Amplitude: portion of premium retained at near-month expiry
-      const amp = Math.max(leg.premium * 0.5, leg.premium * 0.3);
+      if (!isMultiExpiry) return 0;
+      // Mirror the display fallback: an explicit '远月' label, otherwise the
+      // long (Buy) leg is treated as the far-dated one.
+      const expiry = leg.expiryLabel ?? (leg.action === 'Buy' ? '远月' : '近月');
+      if (expiry !== '远月') return 0;
+      // Amplitude: portion of premium retained at near-month expiry.
+      const amp = leg.premium * 0.5;
       // Width: ~8% of base price
       const sigma = btcPrice * 0.08;
       const dist = price - leg.strike;
@@ -157,7 +174,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       points.push({ price: Math.round(price), pnl: Math.round(totalPnl) });
     }
     return points;
-  }, [calculatedLegs, btcPrice, strategy.id]);
+  }, [btcPrice, calculateTotalPnl]);
 
   // Calculate key points: breakeven, max profit, max loss
   const keyPoints: KeyPoint[] = useMemo(() => {
@@ -206,54 +223,23 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     // Find all points at max loss level (platform detection)
     const maxLossPoints = pnlData.filter(p => Math.abs(p.pnl - minLossVal) < tolerance);
 
-    // Helper to check if value is at edge and trending (unlimited)
-    // Uses percentage-based edge detection (5% of data points) for robustness
-    const isUnlimited = (points: typeof pnlData, isMax: boolean) => {
-      if (points.length === 0) return false;
-      const firstIdx = pnlData.indexOf(points[0]);
-      const lastIdx = pnlData.indexOf(points[points.length - 1]);
-
-      // Use 5% of data length as edge threshold (minimum 2 points)
-      const edgeThreshold = Math.max(2, Math.floor(pnlData.length * 0.05));
-      
-      // Check if at left/right edge using percentage-based threshold
-      const atLeftEdge = firstIdx <= edgeThreshold;
-      const atRightEdge = lastIdx >= pnlData.length - 1 - edgeThreshold;
-
-      // Number of points to sample for trend detection (at least 3)
-      const sampleSize = Math.max(3, edgeThreshold);
-
-      // If at edge and the edge shows a trend continuing, it's unlimited
-      if (atRightEdge && isMax) {
-        // Check if right edge is trending up (unlimited profit)
-        const lastN = pnlData.slice(-sampleSize);
-        if (lastN[lastN.length - 1].pnl > lastN[0].pnl + tolerance) return true;
-      }
-      if (atLeftEdge && isMax) {
-        // Check if left edge is trending up (unlimited profit on downside - like long put)
-        const firstN = pnlData.slice(0, sampleSize);
-        if (firstN[0].pnl > firstN[firstN.length - 1].pnl + tolerance) return true;
-      }
-      if (atRightEdge && !isMax) {
-        // Unlimited loss on upside (like naked call)
-        const lastN = pnlData.slice(-sampleSize);
-        if (lastN[lastN.length - 1].pnl < lastN[0].pnl - tolerance) return true;
-      }
-      if (atLeftEdge && !isMax) {
-        // Unlimited loss on downside (like naked put)
-        const firstN = pnlData.slice(0, sampleSize);
-        if (firstN[0].pnl < firstN[firstN.length - 1].pnl - tolerance) return true;
-      }
-      return false;
-    };
+    // "Unlimited" can only occur at the RIGHT edge (price → ∞). The downside is
+    // always bounded because price cannot fall below 0, so a steep left edge is
+    // a finite (window-clipped) extreme, never infinite.
+    const sampleSize = Math.max(3, Math.floor(pnlData.length * 0.05));
+    const lastN = pnlData.slice(-sampleSize);
+    const rightTrendUp = lastN[lastN.length - 1].pnl > lastN[0].pnl + tolerance;
+    const rightTrendDown = lastN[lastN.length - 1].pnl < lastN[0].pnl - tolerance;
 
     // Add max profit point
     if (maxProfitVal > 0 && maxProfitPoints.length > 0) {
-      const unlimited = isUnlimited(maxProfitPoints, true);
-      // For platform: use middle point; for single point or edge: use the point itself
-      const targetPoint = maxProfitPoints.length > 2
-        ? maxProfitPoints[Math.floor(maxProfitPoints.length / 2)]
-        : maxProfitPoints[0];
+      const unlimited = rightTrendUp;
+      // Unlimited → mark the right edge; platform → middle point; else the point.
+      const targetPoint = unlimited
+        ? pnlData[pnlData.length - 1]
+        : maxProfitPoints.length > 2
+          ? maxProfitPoints[Math.floor(maxProfitPoints.length / 2)]
+          : maxProfitPoints[0];
 
       if (!addedPrices.has(targetPoint.price)) {
         const label = unlimited
@@ -271,11 +257,12 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
 
     // Add max loss point
     if (minLossVal < 0 && maxLossPoints.length > 0) {
-      const unlimited = isUnlimited(maxLossPoints, false);
-      // For platform: use middle point; for single point or edge: use the point itself
-      const targetPoint = maxLossPoints.length > 2
-        ? maxLossPoints[Math.floor(maxLossPoints.length / 2)]
-        : maxLossPoints[0];
+      const unlimited = rightTrendDown;
+      const targetPoint = unlimited
+        ? pnlData[pnlData.length - 1]
+        : maxLossPoints.length > 2
+          ? maxLossPoints[Math.floor(maxLossPoints.length / 2)]
+          : maxLossPoints[0];
 
       if (!addedPrices.has(targetPoint.price)) {
         const label = unlimited
@@ -299,13 +286,14 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     const percentages = [-0.20, -0.10, -0.05, 0, 0.05, 0.10, 0.20];
     return percentages.map(pct => {
       const price = btcPrice * (1 + pct);
-      return { pct, price, pnl: calculateTotalPnl(price) };
+      return { pct, price, pnl: Math.round(calculateTotalPnl(price)) };
     });
   }, [btcPrice, calculateTotalPnl]);
 
   // --- Rendering Helpers ---
   const formatMoney = (val: number) => `$${val.toLocaleString()}`;
 
+  const catStyle = CATEGORY_STYLES[strategy.category] ?? CATEGORY_STYLES[StrategyCategory.BASICS];
   const hasSpotPosition = ['covered-call', 'protective-put', 'collar', 'covered-strangle'].includes(strategy.id);
   const isWheel = strategy.id === 'wheel';
   const isBasics = strategy.category === StrategyCategory.BASICS;
@@ -318,11 +306,12 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
     <div ref={rootRef} className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 h-full overflow-y-auto w-full max-w-[1600px] mx-auto custom-scrollbar">
       <header className="border-b border-slate-200 pb-4 md:pb-6 mt-10 md:mt-0">
         <div className="flex items-center gap-2 mb-3">
-          <span className="px-2.5 py-1 text-[10px] md:text-xs font-bold rounded bg-slate-100 text-slate-600 uppercase tracking-wider border border-slate-200">
+          <span className={`px-2.5 py-1 text-[10px] md:text-xs font-bold rounded uppercase tracking-wider border ${catStyle.badge}`}>
             {strategy.category}
           </span>
         </div>
         <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">{strategy.name}</h1>
+        <div className={`h-1 w-12 rounded-full mt-3 bg-gradient-to-r ${catStyle.accent}`}></div>
         <p className="text-sm md:text-xl text-slate-600 mt-2 md:mt-3 max-w-3xl">{strategy.description}</p>
       </header>
 
@@ -335,10 +324,10 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         <div className="w-full">
           <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
                 <span className="w-2 h-6 bg-amber-500 rounded-full"></span>
                 流程型策略示意 (Wheel Stages)
-              </h3>
+              </h2>
               <span className="text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">Overview</span>
             </div>
             <p className="text-sm text-slate-600 mb-4">Wheel 为流程型策略，不存在单一到期盈亏曲线。以下为两个阶段的示意图：阶段一卖出 OTM Put 收权利金；阶段二持币后卖出 OTM Call（备兑）。</p>
@@ -374,9 +363,9 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       {!isBasics && !isWheel && (
         <div className="flex flex-col gap-6 md:gap-8">
           {/* Construction Example */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] overflow-hidden">
             <div className="bg-slate-50/50 px-4 py-3 md:px-6 md:py-4 border-b border-slate-200 flex flex-col md:flex-row md:justify-between md:items-center gap-2 backdrop-blur">
-              <h3 className="font-bold text-slate-800 text-base md:text-lg">策略构造详情 (Construction)</h3>
+              <h2 className="font-bold text-slate-800 text-base md:text-lg">策略构造详情 (Construction)</h2>
               <span className="text-xs md:text-sm font-medium px-2 py-1 md:px-3 bg-white rounded border border-slate-200 text-slate-500 w-fit">
                 Base: {formatMoney(btcPrice)}
               </span>
@@ -469,34 +458,35 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
           </div>
 
           {/* P&L Scenario Table */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] overflow-hidden flex flex-col">
             <div className="bg-slate-50/50 px-4 py-3 md:px-6 md:py-4 border-b border-slate-200 backdrop-blur">
-              <h3 className="font-bold text-slate-800 text-base md:text-lg">
+              <h2 className="font-bold text-slate-800 text-base md:text-lg">
                 盈亏情景推演 (P&L Scenarios)
-              </h3>
+              </h2>
             </div>
-            <div className="overflow-x-auto w-full">
+            <div className="overflow-x-auto w-full" role="region" aria-label="盈亏情景表（可横向滚动）" tabIndex={0}>
               <table className="w-full text-sm text-left whitespace-nowrap md:whitespace-normal">
+                <caption className="sr-only">不同 BTC 到期价格下的策略盈亏推演</caption>
                 <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
                   <tr>
-                    <th className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider">BTC价格 (Exp Price)</th>
-                    <th className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider">涨跌幅 (Change)</th>
-                    <th className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider text-right">策略盈亏 (Profit/Loss)</th>
+                    <th scope="col" className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider">BTC价格 (Exp Price)</th>
+                    <th scope="col" className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider">涨跌幅 (Change)</th>
+                    <th scope="col" className="px-4 py-3 md:px-6 md:py-4 text-xs uppercase tracking-wider text-right">策略盈亏 (Profit/Loss)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {scenarioPoints.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-4 py-3 md:px-6 md:py-4 font-mono font-medium text-slate-700 text-sm md:text-base">{formatMoney(item.price)}</td>
+                    <tr key={idx} className={`transition-colors ${item.pct === 0 ? 'bg-blue-50/50 ring-1 ring-inset ring-blue-100' : 'hover:bg-slate-50/80'}`}>
+                      <td className="px-4 py-3 md:px-6 md:py-4 font-mono font-medium text-slate-700 text-sm md:text-base tabular-nums">{formatMoney(item.price)}</td>
                       <td className="px-4 py-3 md:px-6 md:py-4">
                         <span className={`px-2 md:px-2.5 py-0.5 md:py-1 rounded-md text-[10px] md:text-xs font-bold border ${item.pct > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                             item.pct < 0 ? 'bg-rose-50 text-rose-700 border-rose-100' :
                               'bg-slate-100 text-slate-600 border-slate-200'
                           }`}>
-                          {item.pct > 0 ? '+' : ''}{(item.pct * 100).toFixed(0)}%
+                          {item.pct > 0 ? '+' : ''}{(item.pct * 100).toFixed(0)}%{item.pct === 0 ? ' · 当前' : ''}
                         </span>
                       </td>
-                      <td className={`px-4 py-3 md:px-6 md:py-4 text-right font-mono font-bold text-sm md:text-base ${item.pnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      <td className={`px-4 py-3 md:px-6 md:py-4 text-right font-mono font-bold text-sm md:text-base tabular-nums ${item.pnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                         {item.pnl > 0 ? '+' : ''}{formatMoney(item.pnl)}
                       </td>
                     </tr>
@@ -509,15 +499,15 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       )}
 
       {/* Detailed Analysis Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-8">
-        <h3 className="font-bold text-slate-800 mb-4 md:mb-6 text-lg md:text-xl flex items-center gap-3 border-b border-slate-100 pb-4">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] p-4 md:p-8">
+        <h2 className="font-bold text-slate-800 mb-4 md:mb-6 text-lg md:text-xl flex items-center gap-3 border-b border-slate-100 pb-4">
           <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
           </div>
           {isBasics ? '期权核心概念 (Core Concepts)' : '策略详解 (Strategy Guide)'}
-        </h3>
+        </h2>
         <div className="prose prose-slate max-w-none mb-8 md:mb-10">
         <div 
           className="text-slate-700 leading-loose text-base md:text-lg strategy-content"

@@ -4,7 +4,7 @@ const longCallButterfly: Strategy = {
   id: 'long-call-butterfly',
   name: '买入看涨蝶式 (Long Call Butterfly)',
   category: StrategyCategory.NEUTRAL,
-  description: '利用三个行权价构建“利润尖塔”。低成本博取精准点位。',
+  description: '利用三个行权价构建“利润尖塔”。低成本押注精准点位。',
   setup: '买入 1x 低Call + 卖出 2x 中Call + 买入 1x 高Call',
   riskProfile: '风险极低，收益有限但倍率高。',
   idealScenario: 'BTC到期时精准停在中间行权价。',
@@ -100,6 +100,8 @@ const longCallButterfly: Strategy = {
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
             <li><strong>中心精度</strong>：偏离中间价时收益快速下降</li>
             <li><strong>Gamma 风险</strong>：靠近中间价的曲率变化导致盈亏敏感</li>
+            <li><strong>Theta</strong>：价格贴近中间价时时间衰减为正向助力，临近到期峰值更尖锐；远离中间价则 Theta 转为不利。</li>
+            <li><strong>Vega</strong>：整体偏空波动率（净卖 2× ATM 主导），隐含波动率上升会压缩当前市值，IV 下降通常有利于价格回归峰值。</li>
             <li><strong>流动性</strong>：中间腿（卖 2×）的流动性与点差需关注</li>
           </ul>
         </div>

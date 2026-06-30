@@ -15,7 +15,7 @@ const longCall: Strategy = {
     explanation: `
         <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 p-5 rounded-lg mb-6">
           <p class="text-emerald-900 font-semibold mb-2">💡 策略核心思想</p>
-          <p class="text-emerald-800 text-sm">买入看涨期权 (Long Call) 是最纯粹的杠杆做多工具。你用一小笔钱（权利金）博取BTC大涨的全部收益，下跌时损失有限。这是"小赌大"的经典策略。</p>
+          <p class="text-emerald-800 text-sm">买入看涨期权 (Long Call) 是最纯粹的杠杆做多工具。你用一小笔钱（权利金）博取BTC大涨的全部收益，下跌时损失有限。这是"以小博大"的经典策略。</p>
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
@@ -61,27 +61,27 @@ const longCall: Strategy = {
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
         <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-lg p-5 mb-6">
-          <p class="font-bold text-slate-900 mb-3">案例：2024年1月，BTC价格$45,000</p>
+          <p class="font-bold text-slate-900 mb-3">案例：BTC $100,000，预期短期突破上行</p>
           <div class="bg-white/70 rounded p-4 mb-3">
             <p class="text-sm text-slate-700 mb-2"><strong>买入操作：</strong></p>
             <ul class="text-sm text-slate-600 space-y-1 list-disc pl-5">
-              <li>买入1份 3月到期 $50,000 Call</li>
-              <li>支付权利金 $2,500</li>
-              <li>Delta ≈ 0.35（虚值期权）</li>
+              <li>买入1份 $105,000 Call（OTM）</li>
+              <li>支付权利金 $3,000</li>
+              <li>盈亏平衡点 = $108,000</li>
             </ul>
           </div>
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-              <p class="text-sm font-bold text-green-800">✅ 场景1：BTC涨到$60,000（+33%）</p>
-              <p class="text-xs text-green-700 mt-1">期权内在价值 = $10,000，减去成本$2,500，<strong>净赚$7,500（300%回报）</strong></p>
+              <p class="text-sm font-bold text-green-800">✅ 场景1：BTC涨到$120,000（+20%）</p>
+              <p class="text-xs text-green-700 mt-1">期权内在价值 = $15,000，减去成本$3,000，<strong>净赚$12,000（400%回报）</strong></p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-              <p class="text-sm font-bold text-yellow-800">⚠️ 场景2：BTC涨到$51,000（+13%）</p>
-              <p class="text-xs text-yellow-700 mt-1">期权价值$1,000，亏损$1,500。现货涨了13%，期权却亏钱（因Theta损耗）</p>
+              <p class="text-sm font-bold text-yellow-800">⚠️ 场景2：BTC涨到$107,000（+7%）</p>
+              <p class="text-xs text-yellow-700 mt-1">内在价值$2,000，仍低于$3,000成本，亏损$1,000；涨幅未覆盖权利金、未到$108,000盈亏平衡点（到期日无时间价值，故不归因Theta）</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 场景3：BTC跌到$40,000（-11%）</p>
-              <p class="text-xs text-red-700 mt-1">期权作废，损失全部$2,500权利金</p>
+              <p class="text-sm font-bold text-red-800">❌ 场景3：BTC跌到$90,000（-10%）</p>
+              <p class="text-xs text-red-700 mt-1">期权作废，损失全部$3,000权利金</p>
             </div>
           </div>
         </div>

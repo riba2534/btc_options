@@ -10,10 +10,10 @@ const boxSpread: Strategy = {
   idealScenario: '价差与权利金错价可获套利空间。',
   legs: [
     // 设置权利金使净成本 ≈ 价差（$105k−$95k = $10k），到期盈亏 ≈ 0
-    { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.06 }, // 6k
+    { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.07 }, // 7k
     { type: 'Call', action: 'Sell', strikeOffset: 1.05, premiumRatio: 0.02 }, // -2k
-    { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.06 }, // -6k
-    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.02 }  // 2k
+    { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.02 }, // -2k
+    { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.07 }  // 7k
   ],
   detailedAnalysis: {
     explanation: `
@@ -23,8 +23,8 @@ const boxSpread: Strategy = {
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
-        <p class="text-slate-700 mb-2">买 $95k Call（付 $6k） + 卖 $105k Call（收 $2k）</p>
-        <p class="text-slate-700 mb-2">卖 $95k Put（收 $6k） + 买 $105k Put（付 $2k）</p>
+        <p class="text-slate-700 mb-2">买 $95k Call（付 $7k） + 卖 $105k Call（收 $2k）</p>
+        <p class="text-slate-700 mb-2">卖 $95k Put（收 $2k） + 买 $105k Put（付 $7k）</p>
         <div class="bg-slate-50 p-4 rounded mt-3">
           <p class="text-sm text-slate-700 mb-2"><strong>到期盈亏</strong>：理论上为常数 <em>价差 − 净成本</em>。示例中设置净成本 ≈ 价差（$10k），因此到期盈亏 ≈ $0。</p>
           <p class="text-xs text-slate-500">若实际净成本小于价差，则到期固定获利；反之为固定亏损。现实执行需考虑资金利率、费用与滑点。</p>
@@ -54,15 +54,15 @@ const boxSpread: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 执行良好</p>
-            <p class="text-xs text-green-700 mt-1">成交接近理论价格，锁定价差</p>
+            <p class="text-xs text-green-700 mt-1">净付 $10k 建仓，到期任意价位均收回 $10k 内在值，扣 $120 手续费后净盈亏约 -$120 ≈ 打平（理论锁定）。</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 中性</p>
-            <p class="text-xs text-yellow-700 mt-1">点差/费用抵消部分收益</p>
+            <p class="text-xs text-yellow-700 mt-1">净付 $10.3k（含 $300 点差），到期收回 $10k，净亏约 $300。</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 执行不佳</p>
-            <p class="text-xs text-red-700 mt-1">滑点/费用过高导致无利可图</p>
+            <p class="text-xs text-red-700 mt-1">净付 $10.8k（滑点 + 费用 $800），到期收回 $10k，净亏约 $800。</p>
           </div>
         </div>
       </div>
@@ -87,6 +87,7 @@ const boxSpread: Strategy = {
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>现实执行风险</strong>：理论与实际存在差距</li>
           <li><strong>费用与滑点</strong>：可能吞噬掉全部理论收益</li>
+          <li><strong>Delta/Gamma/Vega/Theta</strong>：盒式组合方向与波动率敞口近似为零（各希腊字母 ≈ 0），理论上无市场风险，主要风险来自执行成本与美式期权的提前行权（尤其卖出的腿）。</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
@@ -98,10 +99,12 @@ const boxSpread: Strategy = {
       </div>
     `,
     pros: [
-      '理论上可锁定价差，具备套利教学意义。'
+      '理论上可锁定价差，具备套利教学意义。',
+      '方向、波动率与时间价值风险近似中性，适合作为期权定价与无套利原理的教学范例。'
     ],
     cons: [
-      '现实世界中费用与滑点可能使策略无利可图。'
+      '现实世界中费用与滑点可能使策略无利可图。',
+      '美式期权存在提前行权风险，且需占用与价差等额的保证金/资金，资金利率会侵蚀理论收益。'
     ]
   }
 };

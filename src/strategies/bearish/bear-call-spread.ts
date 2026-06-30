@@ -70,7 +70,7 @@ const bearCallSpread: Strategy = {
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 暴涨到 $120k</p>
-              <p class="text-xs text-red-700 mt-1">接近最大亏损 $8k</p>
+              <p class="text-xs text-red-700 mt-1">已达最大亏损 $8k（价格突破 $115k 后亏损封顶）</p>
             </div>
           </div>
         </div>
@@ -118,7 +118,8 @@ const bearCallSpread: Strategy = {
       '风险锁定：买入的保护性Call限制了极端上涨行情的亏损上限。'
     ],
     cons: [
-      '盈亏比不佳：通常最大亏损高于最大盈利，属于“高胜率、低赔率”策略。'
+      '盈亏比不佳：通常最大亏损高于最大盈利，属于“高胜率、低赔率”策略。',
+      '占用保证金且收益封顶：作为净卖方需冻结约价差宽度规模的保证金（此处约 $8k），资金利用率受限，而最大收益仅为净权利金 $2k。'
     ]
   }
 };

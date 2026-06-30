@@ -49,9 +49,9 @@ const collar: Strategy = {
             <p class="text-xs text-slate-600">例：($110k − $100k) − $0 = <strong>$10k</strong></p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-            <div class="text-xs text-blue-600 font-bold mb-1">盈利区间</div>
-            <div class="text-lg font-bold text-blue-700 mb-2">[$90k, $110k]</div>
-            <p class="text-xs text-slate-600">区间外由两翼规则接管</p>
+            <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
+            <div class="text-lg font-bold text-blue-700 mb-2">$100k</div>
+            <p class="text-xs text-slate-600">$90k–$110k 内盈亏随现货线性变动，仅 P>$100k 才盈利</p>
           </div>
         </div>
 
@@ -59,9 +59,9 @@ const collar: Strategy = {
         <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-lg p-5 mb-6">
           <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，搭建零成本 Collar</p>
           <div class="space-y-2">
-            <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-              <p class="text-sm font-bold text-green-800">✅ 区间内：$95k–$108k</p>
-              <p class="text-xs text-green-700 mt-1">持币收益与权利金抵扣相互作用，稳健</p>
+            <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
+              <p class="text-sm font-bold text-blue-800">ℹ️ 区间内随现货线性变动：$95k–$108k</p>
+              <p class="text-xs text-blue-700 mt-1">$95k 约 −$5k、$100k 持平、$108k 约 +$8k（盈亏平衡 $100k）</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
               <p class="text-sm font-bold text-blue-800">ℹ️ 上涨至 $120k</p>
@@ -98,6 +98,7 @@ const collar: Strategy = {
             <li><strong>错过上行</strong>：价格大涨时超额收益被截断</li>
             <li><strong>执行细节</strong>：到期前滚动影响净成本与区间</li>
             <li><strong>IV 变化</strong>：IV 高低影响 Put 与 Call 的成本与收入</li>
+            <li><strong>Delta/Vega</strong>：现货多头被买 Put、卖 Call 部分对冲，组合净 Delta 显著降低、区间内方向性敏感度减弱；买 Put 的正 Vega 与卖 Call 的负 Vega 大致抵消，IV 整体抬升时对组合价值影响有限，但偏斜（skew）变化仍会改变 Put/Call 相对成本。</li>
           </ul>
         </div>
 
@@ -116,7 +117,8 @@ const collar: Strategy = {
       '资产保值：非常适合在不确定性较高的市场环境中保护本金。'
     ],
     cons: [
-      '收益封顶：若市场大涨，超额收益将被Call端截断。'
+      '收益封顶：若市场大涨，超额收益将被Call端截断。',
+      '机会成本：若行情在 [$90k, $110k] 区间内震荡，组合收益基本等同于单纯持币，卖出的 Call 与买入的 Put 相互抵消，权利金对冲并未带来超额回报。'
     ]
   }
 };

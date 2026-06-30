@@ -20,7 +20,7 @@
 ## 项目速览
 
 - 类型：纯前端静态网站（教学展示 BTC 期权策略）
-- 技术栈：React + TypeScript + Vite + Recharts（图表）+ Tailwind（CDN）
+- 技术栈：React + TypeScript + Vite + Recharts（图表）+ Tailwind（本地 PostCSS 构建，见 `tailwind.config.js`/`postcss.config.js`/`index.css`）
 - 计算：所有盈亏计算在浏览器端进行（无后端）
 - 入口：`index.tsx`，主组件：`App.tsx`
 - 数据：策略数据模块化存放于 `src/strategies/**`

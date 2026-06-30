@@ -72,15 +72,15 @@ const bullPutSpread: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 场景1：BTC涨到或维持在 $100k+</p>
-              <p class="text-xs text-green-700 mt-1">两个Put都作废，保留全部 $2,000 权利金（100%收益率）。期权不用行权，省心省事。</p>
+              <p class="text-xs text-green-700 mt-1">两个Put都作废，保留全部 $2,000 权利金（达到最大收益）。期权不用行权，省心省事。</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
               <p class="text-sm font-bold text-yellow-800">⚠️ 场景2：BTC微跌到 $98k</p>
               <p class="text-xs text-yellow-700 mt-1">Put仍未实值，继续保留 $2,000。只要不跌破 $95k 都安全。</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 场景3：BTC暴跌到 $88k</p>
-              <p class="text-xs text-red-700 mt-1">卖出的Put被行权，但买入的Put提供保护。最大亏损 $8,000。若没有买入保护，亏损会更大。</p>
+              <p class="text-sm font-bold text-red-800">❌ 场景3：BTC暴跌到 $80k</p>
+              <p class="text-xs text-red-700 mt-1">卖出的$95k Put被行权（亏$12k），但买入的$85k Put此时已实值提供保护（赚$4k），合计达到最大亏损 $8,000。若没有买入保护，单卖Put将亏 $12,000，损失更大。</p>
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@ const bullPutSpread: Strategy = {
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
         <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-            <li><strong>盈亏比不对称</strong>：最大盈利$2k vs 最大亏损$8k，需要维持高胜率（通常需要70%+）才能长期盈利</li>
+            <li><strong>盈亏比不对称</strong>：最大盈利$2k vs 最大亏损$8k，需要维持高胜率（通常需要80%+）才能长期盈利</li>
             <li><strong>Theta Decay是双刃剑</strong>：时间流逝对你有利，但最后几天若价格在卖出价附近，Gamma爆炸会导致剧烈波动</li>
             <li><strong>黑天鹅风险</strong>：突发事件导致暴跌时，即使有买入保护，仍会面临最大亏损</li>
             <li><strong>保证金占用</strong>：卖出期权需要缴纳保证金，资金利用率不如纯买入策略</li>

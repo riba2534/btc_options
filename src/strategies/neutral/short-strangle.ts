@@ -46,7 +46,7 @@ const shortStrangle: Strategy = {
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
             <div class="text-2xl font-bold text-red-700 mb-2">无限</div>
-            <p class="text-xs text-slate-600">突破上下界后单边风险无限</p>
+            <p class="text-xs text-slate-600">向上突破风险无限(卖出 Call 端);向下风险有限,最大约 $86k(= 下行权价 $90k − 净权利金 $4k)</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
@@ -117,7 +117,8 @@ const shortStrangle: Strategy = {
       '灵活性：可根据对支撑阻力的判断调整行权价。'
     ],
     cons: [
-      '黑天鹅风险：若价格突破区间，风险依然是无限的，需严格止损。'
+      '黑天鹅风险：若价格突破区间，风险依然是无限的，需严格止损。',
+      '保证金占用与追缴风险：作为净卖方，IV 飙升或价格逼近行权价时保证金要求会显著上升，可能被强制减仓或追加保证金。'
     ]
   }
 };

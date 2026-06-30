@@ -4,7 +4,7 @@ const putButterfly: Strategy = {
   id: 'put-butterfly',
   name: '买入看跌蝶式 (Long Put Butterfly)',
   category: StrategyCategory.NEUTRAL,
-  description: '全 Put 的三价蝶式，低成本博取精确下跌收敛点。',
+  description: '全 Put 的三价蝶式，低成本博取价格精确收敛于中枢（中性博弈）。',
   setup: '买 1× 高 Put + 卖 2× 中 Put + 买 1× 低 Put（等距）',
   riskProfile: '风险极低（净成本），收益有限（翼宽 − 成本）。',
   idealScenario: '到期价格精确落在中间行权价。',
@@ -78,7 +78,7 @@ const putButterfly: Strategy = {
         <div class="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg p-4">
           <p class="font-bold text-cyan-900 mb-2">✓ 适合使用</p>
           <ul class="text-sm text-cyan-800 space-y-1 list-disc pl-5">
-            <li>精确看跌回归中枢</li>
+            <li>预计价格精确回归并停留于中枢</li>
             <li>希望以极低风险博取高赔率</li>
           </ul>
         </div>
@@ -106,11 +106,12 @@ const putButterfly: Strategy = {
       </div>
     `,
     pros: [
-      '极低风险、较高赔率的中性看跌博弈。',
+      '极低风险、较高赔率的中性博弈（押注价格收敛于中枢）。',
       '结构清晰，易于上手与管理。'
     ],
     cons: [
-      '对中心点位要求高，胜率不一定高。'
+      '对中心点位要求高，胜率不一定高。',
+      '盈利区间狭窄（约 $96k–$104k），价格稍偏离中枢即快速回吐；四腿结构手续费与滑点占比偏高。'
     ]
   }
 };

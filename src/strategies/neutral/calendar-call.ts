@@ -62,7 +62,7 @@ const calendarCall: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 收敛：到近月到期时收于 $100k</p>
-            <p class="text-xs text-green-700 mt-1">近月归零，远月因 IV↑ 价格↑，组合盈利 $2k–$3k</p>
+            <p class="text-xs text-green-700 mt-1">近月归零，远月因 IV↑ 价格↑，组合盈利约 $1.5k</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 温和偏离：收于 $110k (+10%) / $90k (-10%)</p>

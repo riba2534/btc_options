@@ -6,7 +6,7 @@ const coveredStrangle: Strategy = {
   category: StrategyCategory.INCOME,
   description: '持币 + 卖 OTM Call + 卖 OTM Put，扩大收租区间。',
   setup: '持有现货 + 卖 OTM Call + 卖 OTM Put',
-  riskProfile: '下方风险同持币，上方收益封顶；收权利金更高。',
+  riskProfile: '下方风险大于持币（额外卖出 Put 叠加多头敞口），上方收益封顶；收权利金更高。',
   idealScenario: '宽区间震荡，偏中性。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.10, premiumRatio: 0.02 },
@@ -48,8 +48,8 @@ const coveredStrangle: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">盈利区间</div>
-          <div class="text-lg font-bold text-blue-700 mb-2">$90k–$110k</div>
-          <p class="text-xs text-slate-600">宽区间震荡最优</p>
+          <div class="text-lg font-bold text-blue-700 mb-2">$96k 以上</div>
+          <p class="text-xs text-slate-600">$96k 为盈亏平衡点，以上盈利；$110k 以上盈利封顶 $14k</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
@@ -57,8 +57,8 @@ const coveredStrangle: Strategy = {
         <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，宽区间震荡</p>
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-            <p class="text-sm font-bold text-green-800">✅ 收敛于 $95k–$105k</p>
-            <p class="text-xs text-green-700 mt-1">两端作废，保留 $4k + 现货上涨收益</p>
+            <p class="text-sm font-bold text-green-800">✅ 收敛于 $96k–$110k</p>
+            <p class="text-xs text-green-700 mt-1">两端作废，$4k 权利金兑现并保留至 $110k 封顶的现货上涨收益（$96k 以下转亏）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$90k 或 $110k</p>
@@ -91,6 +91,7 @@ const coveredStrangle: Strategy = {
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>下方风险</strong>：被行权接盘，暴跌时浮亏更大</li>
           <li><strong>执行复杂度</strong>：双端同时管理与滚动</li>
+          <li><strong>Vega/Theta</strong>：双卖期权为负 Vega、正 Theta；IV 上升使两个空头浮亏，而时间衰减（Theta）有利于权利金兑现。</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>

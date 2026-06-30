@@ -6,7 +6,7 @@ const shortGuts: Strategy = {
   category: StrategyCategory.NEUTRAL,
   description: '卖出ITM Call和ITM Put。极度激进的做空波动率。',
   setup: '卖出 ITM Call + 卖出 ITM Put',
-  riskProfile: '收益巨大，风险无限。',
+  riskProfile: '收益有限（最大约 $6k），风险（上行）无限。',
   idealScenario: 'BTC价格回归到两行权价中间。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.08 },
@@ -41,18 +41,18 @@ const shortGuts: Strategy = {
         <div class="grid md:grid-cols-3 gap-4 mb-6">
           <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4">
             <div class="text-xs text-emerald-600 font-bold mb-1">最大收益</div>
-            <div class="text-2xl font-bold text-emerald-700 mb-2">$16k</div>
-            <p class="text-xs text-slate-600">价格落在两行权价之间</p>
+            <div class="text-2xl font-bold text-emerald-700 mb-2">$6k</div>
+            <p class="text-xs text-slate-600">净权利金 $16k 减去 $10k 行权价宽度后净保留 $6k</p>
           </div>
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
             <div class="text-2xl font-bold text-red-700 mb-2">无限</div>
-            <p class="text-xs text-slate-600">任意一侧趋势突破均可能无限亏损</p>
+            <p class="text-xs text-slate-600">上行（Call 侧）亏损无限；下行（Put 侧）亏损随价格下跌放大但有上限（约 $89k）</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡区</div>
-            <div class="text-lg font-bold text-blue-700 mb-2">靠近两行权价的窄区</div>
-            <p class="text-xs text-slate-600">偏离增大即快速亏损</p>
+            <div class="text-lg font-bold text-blue-700 mb-2">$89k / $111k</div>
+            <p class="text-xs text-slate-600">两行权价之间盈亏恒为 $6k 平顶，跌破 $89k 或涨破 $111k 才开始亏损</p>
           </div>
         </div>
 
@@ -61,16 +61,16 @@ const shortGuts: Strategy = {
           <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，押注中间回归</p>
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-              <p class="text-sm font-bold text-green-800">✅ 收敛：$97k–$103k</p>
-              <p class="text-xs text-green-700 mt-1">两腿作废，保留 $16k</p>
+              <p class="text-sm font-bold text-green-800">✅ 收敛：$95k–$105k</p>
+              <p class="text-xs text-green-700 mt-1">两腿仍为实值，需偿付约 $10k 内在价值，净保留 $6k（达到最大盈利）</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$95k / $105k</p>
-              <p class="text-xs text-yellow-700 mt-1">临期盈亏变化更敏感，注意对冲</p>
+              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$90k / $110k</p>
+              <p class="text-xs text-yellow-700 mt-1">盈亏约 +$1k，接近盈亏平衡点，Gamma 敏感，注意对冲</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 趋势突破：$110k 或 $90k</p>
-              <p class="text-xs text-red-700 mt-1">风险单边放大，需快速止损或对冲</p>
+              <p class="text-sm font-bold text-red-800">❌ 趋势突破：$120k 或 $80k</p>
+              <p class="text-xs text-red-700 mt-1">越过盈亏平衡点（$111k/$89k），亏损约 $9k，并随偏离持续放大</p>
             </div>
           </div>
         </div>

@@ -4,14 +4,12 @@ const StrategyDetail = React.lazy(() => import('@/components/StrategyDetail'));
 import { StrategyCategory, Strategy } from '@/types';
 
 /**
- * Fixed category display order for sidebar.
- * 
- * NOTE: This array is derived from StrategyCategory enum values.
- * If you add a new category to the enum, you MUST add it here too,
- * otherwise the new category won't appear in the sidebar.
- * 
- * To ensure all categories are included, this array should match
- * Object.values(StrategyCategory) in your preferred display order.
+ * Sidebar category display order.
+ *
+ * Order follows the declaration order of the StrategyCategory enum. New enum
+ * members are picked up automatically by Object.values — do NOT push entries
+ * here manually (that would create duplicates). To change the sidebar order,
+ * reorder the members in types.ts.
  */
 const CATEGORY_ORDER: StrategyCategory[] = Object.values(StrategyCategory);
 
@@ -39,9 +37,10 @@ const SidebarButton = memo<SidebarButtonProps>(({ strategy, isSelected, onSelect
   return (
     <button
       onClick={() => onSelect(strategy.id)}
-      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors ${isSelected
-        ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-200'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+      aria-current={isSelected ? 'page' : undefined}
+      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors border-l-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${isSelected
+        ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
+        : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       }`}
     >
       <div className="flex flex-col">
@@ -59,20 +58,27 @@ SidebarButton.displayName = 'SidebarButton';
 const App: React.FC = () => {
   const [selectedStrategyId, setSelectedStrategyId] = useState<string>(STRATEGIES[0].id);
   const [btcPrice] = useState<number>(DEFAULT_BTC_PRICE);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  // Lazily derive the initial layout from the real viewport so the first paint
+  // already matches the device (no sidebar flash on mobile).
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window === 'undefined' || window.innerWidth >= 1024);
 
   const selectedStrategy = useMemo(() => (
     STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0]
   ), [selectedStrategyId]);
 
-  // Handle window resize to determine mobile state
+  // Track the viewport, but only force the sidebar open/closed when the lg
+  // breakpoint is actually crossed — never clobber a manual toggle on resize.
   useEffect(() => {
     let rafId: number | null = null;
+    let prevMobile = window.innerWidth < 1024;
     const handleResize = () => {
       const mobile = window.innerWidth < 1024; // lg breakpoint
-      setIsMobile(mobile);
-      setIsSidebarOpen(!mobile);
+      if (mobile !== prevMobile) {
+        prevMobile = mobile;
+        setIsMobile(mobile);
+        setIsSidebarOpen(!mobile);
+      }
     };
     const onResize = () => {
       if (rafId) cancelAnimationFrame(rafId);
@@ -82,13 +88,22 @@ const App: React.FC = () => {
       });
     };
 
-    handleResize(); // Initial check
     window.addEventListener('resize', onResize);
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', onResize);
     };
   }, []);
+
+  // Close the mobile drawer on Escape (drawer/modal a11y convention).
+  useEffect(() => {
+    if (!isMobile || !isSidebarOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSidebarOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isMobile, isSidebarOpen]);
 
   // Group strategies by category for sidebar (static, computed once)
   const strategiesByCategory = useMemo(() => {
@@ -115,6 +130,14 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden relative">
 
+      {/* Skip link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:top-2 focus:left-2 focus:bg-white focus:px-3 focus:py-2 focus:rounded-lg focus:shadow focus:ring-2 focus:ring-blue-500 text-sm font-medium text-blue-700"
+      >
+        跳到主要内容
+      </a>
+
       {/* Mobile Overlay */}
       {isMobile && isSidebarOpen && (
         <div
@@ -125,6 +148,9 @@ const App: React.FC = () => {
 
       {/* Sidebar */}
       <aside
+        id="strategy-sidebar"
+        aria-label="侧边栏"
+        inert={!isSidebarOpen || undefined}
         className={`
           fixed lg:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out sidebar-animate
           ${isSidebarOpen ? 'translate-x-0 w-80 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:overflow-hidden'}
@@ -145,13 +171,14 @@ const App: React.FC = () => {
             {/* Close button for mobile */}
             <button
               onClick={closeSidebar}
-              className="lg:hidden p-2 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
+              aria-label="关闭侧边栏"
+              className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-700 rounded-md hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 custom-scrollbar space-y-4">
+          <nav aria-label="期权策略列表" className="flex-1 overflow-y-auto p-3 custom-scrollbar space-y-4">
             {CATEGORY_ORDER.filter(cat => strategiesByCategory[cat]?.length > 0).map((category) => (
               <div key={category}>
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 sticky top-0 bg-white/95 backdrop-blur py-1 z-10">
@@ -169,10 +196,10 @@ const App: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </nav>
 
           <div className="p-4 border-t border-slate-200 bg-slate-50">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
               <span>基准价格 (Ref Price)</span>
               <span className="px-1.5 py-0.5 bg-slate-200 rounded text-[10px] text-slate-500 font-bold">FIXED</span>
             </div>
@@ -184,13 +211,16 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-hidden bg-[#fafafa] flex flex-col w-full relative">
+      <main id="main-content" className="flex-1 h-full overflow-hidden bg-[#fafafa] flex flex-col w-full relative">
         {/* Toggle Button Area */}
         <div className="absolute top-4 left-4 z-30">
           <button
             onClick={toggleSidebar}
-            className={`p-2 bg-white/80 backdrop-blur border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition-all ${isSidebarOpen && !isMobile ? 'hidden' : 'flex'}`}
-            title={isSidebarOpen ? "Hide Sidebar" : "Show Strategies"}
+            aria-label={isSidebarOpen ? '隐藏侧边栏' : '显示策略列表'}
+            aria-expanded={isSidebarOpen}
+            aria-controls="strategy-sidebar"
+            title={isSidebarOpen ? '隐藏侧边栏' : '显示策略列表'}
+            className={`p-2.5 min-w-[44px] min-h-[44px] items-center justify-center bg-white/80 backdrop-blur border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isMobile && isSidebarOpen ? 'hidden' : 'flex'}`}
           >
             {isSidebarOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><path d="M9 3v18" /></svg>

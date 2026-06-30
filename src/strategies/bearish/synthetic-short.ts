@@ -31,21 +31,21 @@ const syntheticShort: Strategy = {
           </div>
         </div>
         <div class="bg-slate-50 p-4 rounded mt-3">
-          <p class="text-sm text-slate-700 mb-2"><strong>净成本 ≈ $0</strong>（仅需 Put 成本与保证金管理）</p>
+          <p class="text-sm text-slate-700 mb-2"><strong>净成本 ≈ $0</strong>(卖 Call 权利金抵消买 Put 成本,仅需占用保证金)</p>
           <p class="text-xs text-slate-600 mt-1">到期约定：<strong>两腿使用同一到期日</strong>；若需续持，建议在到期前 15–30 天滚动。</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
       <div class="grid md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
-          <div class="text-xs text-red-600 font-bold mb-1">收益特征</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">近似无限</div>
-          <p class="text-xs text-slate-600">价格下跌越多，收益越大（复制做空现货）</p>
-        </div>
         <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4">
-          <div class="text-xs text-emerald-600 font-bold mb-1">风险特征</div>
-          <div class="text-2xl font-bold text-emerald-700 mb-2">近似无限</div>
-          <p class="text-xs text-slate-600">价格上涨越多，亏损越大（需保证金）</p>
+          <div class="text-xs text-emerald-600 font-bold mb-1">最大收益</div>
+          <div class="text-2xl font-bold text-emerald-700 mb-2">≈ $100k 上限</div>
+          <p class="text-xs text-slate-600">价格归零时收益最大(受价格下限 0 约束)</p>
+        </div>
+        <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
+          <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
+          <div class="text-2xl font-bold text-red-700 mb-2">近似无限</div>
+          <p class="text-xs text-slate-600">价格上涨越多,亏损越大(需保证金)</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">Delta</div>
@@ -84,7 +84,7 @@ const syntheticShort: Strategy = {
           <p class="font-bold text-red-900 mb-2">✗ 不适合使用</p>
           <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
             <li>无法承受上涨风险的账户</li>
-            <li>IV 极高（买 Put 成本偏贵）</li>
+            <li>预期价格企稳或反弹时(方向判断错误则上涨端亏损无限);或现货融券/资金费率成本更低、可直接做空时。</li>
           </ul>
         </div>
       </div>
@@ -92,7 +92,7 @@ const syntheticShort: Strategy = {
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>保证金风险</strong>：上涨需追加保证金，可能被动平仓</li>
-          <li><strong>Vega 风险</strong>：IV 下降不利于买入的 Put</li>
+          <li><strong>方向性风险</strong>:组合近似 Delta ≈ -1 的现货空头,净 Vega ≈ 0(卖 Call 与买 Put 的 Vega 相互抵消),主要风险来自标的上涨而非 IV 变动。</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
@@ -100,6 +100,7 @@ const syntheticShort: Strategy = {
         <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
           <li><strong>仓位控制</strong>：名义价值不超过总资金的 3–5 倍</li>
           <li><strong>止损纪律</strong>：上涨到关键阻力位时主动对冲或平仓</li>
+          <li><strong>替代方案比较</strong>:若现货/永续可直接做空且资金费率更低,优先用现货空头,合成空头主要用于无法直接做空的场景。</li>
         </ul>
       </div>
     `,
@@ -108,7 +109,8 @@ const syntheticShort: Strategy = {
       '横盘时时间价值大致对冲，盈亏趋近于零。'
     ],
     cons: [
-      '上涨风险近似无限，需保证金与严格风控。'
+      '上涨风险近似无限，需保证金与严格风控。',
+      '净 Vega/Theta 接近 0，无法像价差类策略那样从 IV 下降或时间衰减中获利。'
     ]
   }
 };

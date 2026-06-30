@@ -50,8 +50,8 @@ const strap: Strategy = {
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">下跌收益</div>
-            <div class="text-2xl font-bold text-blue-700 mb-2">∞ × 1</div>
-            <p class="text-xs text-slate-600">1份Put提供下跌保护</p>
+            <div class="text-2xl font-bold text-blue-700 mb-2">≈$88k</div>
+            <p class="text-xs text-slate-600">1份Put提供下跌收益(BTC归零时盈利封顶约$88k)</p>
           </div>
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
@@ -74,15 +74,15 @@ const strap: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 向上突破：BTC涨到 $120k</p>
-              <p class="text-xs text-green-700 mt-1">2份Call各赚 $20k，Put作废。总盈利 $40k - $12k = <strong>$28k</strong>（233%回报），远超Straddle的$16k</p>
+              <p class="text-xs text-green-700 mt-1">2份Call各赚 $20k，Put作废。总盈利 $40k - $12k = <strong>$28k</strong>（233%回报），远超Straddle的$12k</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
               <p class="text-sm font-bold text-blue-800">ℹ️ 向下破位：BTC跌到 $80k</p>
               <p class="text-xs text-blue-700 mt-1">Put赚 $20k，Call作废。盈利 $20k - $12k = $8k（67%回报），低于向上突破但仍盈利</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 横盘整理：BTC停在 $102k</p>
-              <p class="text-xs text-red-700 mt-1">所有期权几乎作废，亏损全部 $12k。这是Strap的最大风险</p>
+              <p class="text-sm font-bold text-red-800">❌ 横盘整理：BTC停在 $100k</p>
+              <p class="text-xs text-red-700 mt-1">所有期权恰好归零(价格停在行权价 $100k)，亏损全部权利金 $12k。这是 Strap 的最大风险,仅在价格精确停在行权价时发生</p>
             </div>
           </div>
         </div>

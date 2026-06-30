@@ -58,16 +58,16 @@ const wheel: Strategy = {
         <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，轮子循环</p>
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-            <p class="text-sm font-bold text-green-800">✅ 卖 Put 收租</p>
-            <p class="text-xs text-green-700 mt-1">多期累计权利金，降低持仓成本</p>
+            <p class="text-sm font-bold text-green-800">✅ 横盘 $95k–$105k(最佳)</p>
+            <p class="text-xs text-green-700 mt-1">连卖 3 期 $90k Put 各收 $2k,均未被行权,累计 +$6k 现金流。</p>
           </div>
           <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
-            <p class="text-sm font-bold text-blue-800">ℹ️ 持币后卖 Call</p>
-            <p class="text-xs text-blue-700 mt-1">温和上涨中持续收租</p>
+            <p class="text-sm font-bold text-blue-800">ℹ️ 被行权后卖 Call(中等)</p>
+            <p class="text-xs text-blue-700 mt-1">$90k 接币 1 BTC,卖 $110k Call 收 $2k;到期涨到 $108k 未触发,持币浮盈 +$18k 再加 $2k 权利金。</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-            <p class="text-sm font-bold text-red-800">❌ 暴跌</p>
-            <p class="text-xs text-red-700 mt-1">持币浮亏，但权利金累计提供缓冲</p>
+            <p class="text-sm font-bold text-red-800">❌ 暴跌至 $70k(最差)</p>
+            <p class="text-xs text-red-700 mt-1">$90k 接币后持币浮亏 -$20k,累计权利金 +$8k 缓冲后净约 -$12k。</p>
           </div>
         </div>
       </div>
@@ -91,7 +91,8 @@ const wheel: Strategy = {
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>执行纪律风险</strong>：必须严格遵守滚动规则，避免情绪化操作</li>
-          <li><strong>Vega 风险</strong>：低 IV 时期权利金收入减少，影响现金流</li>
+          <li><strong>Theta 与 Gamma</strong>:作为净期权卖方,组合 Theta 为正,时间流逝即带来权利金收益;但组合为负 Gamma(空头 Gamma),临近到期其绝对值升高,价格剧烈波动时损益变化加剧。</li>
+          <li><strong>Vega 风险</strong>:组合为净空 Vega,卖出后若 IV 上升会产生浮亏,故 IV 高位入场更有利。</li>
           <li><strong>暴跌风险</strong>：被行权持币后若继续暴跌，持币浮亏但权利金提供缓冲</li>
           <li><strong>卖飞风险</strong>：上涨超过 Call 行权价时，收益封顶，错过超额涨幅</li>
           <li><strong>流动性风险</strong>：需要确保期权合约有足够流动性，避免滑点过大</li>
@@ -114,7 +115,8 @@ const wheel: Strategy = {
       '在震荡或温和趋势环境表现良好。'
     ],
     cons: [
-      '暴跌时持币浮亏、上涨时可能卖飞。'
+      '暴跌时被行权接币后持续浮亏,回本依赖币价反弹,本质承担与持币相同的下行风险。',
+      '上涨突破 Call 行权价时收益封顶,容易“卖飞”错过主升浪。'
     ]
   }
 };

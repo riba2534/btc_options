@@ -6,7 +6,7 @@ const callRatioBackspread: Strategy = {
   category: StrategyCategory.BULLISH,
   description: '卖出1份低价Call，买入2份高价Call。',
   setup: '卖出 1x ITM Call + 买入 2x OTM Call',
-  riskProfile: '下行风险有限，上行收益无限且加倍。',
+  riskProfile: '下行风险有限，上行收益无限（净持有约 1 份多头 Call 敞口）；最大亏损发生在中间行权价（$105k）附近，约 $9k。',
   idealScenario: '极度看涨，认为会有史诗级暴涨。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.06 },
@@ -45,8 +45,8 @@ const callRatioBackspread: Strategy = {
         <div class="grid md:grid-cols-3 gap-4 mb-6">
           <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
             <div class="text-xs text-green-600 font-bold mb-1">暴涨收益</div>
-            <div class="text-2xl font-bold text-green-700 mb-2">∞ × 2</div>
-            <p class="text-xs text-slate-600">双倍Call带来加速上涨收益</p>
+            <div class="text-2xl font-bold text-green-700 mb-2">∞</div>
+            <p class="text-xs text-slate-600">净多约 1 份 Call，上不封顶（并非 2 倍斜率）</p>
           </div>
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">死谷风险</div>
@@ -74,7 +74,7 @@ const callRatioBackspread: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ BTC暴涨到 $120k</p>
-              <p class="text-xs text-green-700 mt-1">卖出腿亏 $25k，买入腿赚 $30k × 2 = $60k。总盈利 $35k + $1k = <strong>$36k</strong>！是单买Call收益的2倍多</p>
+              <p class="text-xs text-green-700 mt-1">卖出腿内在亏 $25k，买入腿内在赚 $15k × 2 = $30k。净内在价值 +$5k，加净收入 $1k = 总盈利 <strong>$6k</strong>；价格越高收益越大（上行无限）。</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 死谷：BTC涨到 $105k</p>

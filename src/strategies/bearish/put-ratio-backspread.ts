@@ -41,8 +41,8 @@ const putRatioBackspread: Strategy = {
         <div class="grid md:grid-cols-3 gap-4 mb-6">
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">崩盘收益</div>
-            <div class="text-lg font-bold text-red-700 mb-2">加速 × 2</div>
-            <p class="text-xs text-slate-600">价格越跌越赚，双倍 Put 叠加</p>
+            <div class="text-lg font-bold text-red-700 mb-2">净赚 ×1</div>
+            <p class="text-xs text-slate-600">跌破 $95k 后净持 1 份多头 Put，越跌越赚</p>
           </div>
           <div class="bg-gradient-to-br from-yellow-50 to-amber-50 border border-amber-200 rounded-lg p-4">
             <div class="text-xs text-amber-600 font-bold mb-1">死谷风险</div>
@@ -70,7 +70,7 @@ const putRatioBackspread: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 暴跌到 $80k</p>
-              <p class="text-xs text-green-700 mt-1">卖出腿亏 ≈ $25k，买入腿赚 ≈ $30k × 2 = $60k；合计 ≈ $35k + $1k = <strong>$36k</strong></p>
+              <p class="text-xs text-green-700 mt-1">卖出腿亏 ≈ $25k，买入腿赚 ≈ $15k × 2 = $30k；合计 ≈ −$25k + $30k + $1k = <strong>$6k</strong>（注：要赚到约 $36k 需进一步暴跌至约 $50k）</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 死谷：收于 $95k</p>
@@ -122,11 +122,11 @@ const putRatioBackspread: Strategy = {
         </div>
       `,
     pros: [
-      '黑天鹅利器：在市场发生剧烈崩盘时，双倍的Put头寸将产生巨额收益。',
+      '黑天鹅利器：用卖出贵 Put 的收入融资买入更多便宜 Put，崩盘时净多头 Put 持续放大收益。',
       '上行保护：若市场反而大幅上涨，策略可能仅损失微小成本或保留净权利金。'
     ],
     cons: [
-      '死谷风险：若价格在到期时停留在两个行权价之间，将面临最大亏损。'
+      '死谷风险：若价格在到期时收于买入 Put 行权价（下行权价 $95k）附近，将面临最大亏损（本例约 −$9k）。'
     ]
   }
 };

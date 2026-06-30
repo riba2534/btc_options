@@ -6,8 +6,8 @@ const brokenWingCall: Strategy = {
   category: StrategyCategory.NEUTRAL,
   description: '不对称翼宽的蝶式，可实现更低成本甚至净收权利金。',
   setup: '买低 Call + 卖 2× 中 Call + 买更高 Call（不等距）',
-  riskProfile: '风险有限，收益有限，死谷更宽。',
-  idealScenario: '到期价格收敛在中间价附近但略向上。',
+  riskProfile: '风险有限，收益有限，上行亏损大于下行（不对称）。',
+  idealScenario: '到期价格收敛在中间卖出行权价 $100k 附近（中心即盈利峰值）。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.06 },
     { type: 'Call', action: 'Sell', strikeOffset: 1.00, premiumRatio: 0.035 },
@@ -18,7 +18,7 @@ const brokenWingCall: Strategy = {
     explanation: `
       <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-5 rounded-lg mb-6">
         <p class="text-blue-900 font-semibold mb-2">💡 策略核心思想</p>
-        <p class="text-blue-800 text-sm">断翼蝶式通过不对称的翼宽减少成本或实现净收权利金，代价是中间死谷区域更宽，需主动管理。</p>
+        <p class="text-blue-800 text-sm">断翼蝶式通过加宽上翼降低成本，代价是上行（宽翼）一侧最大亏损更大；中心 $100k 为盈利峰值 +$4500。</p>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
@@ -30,7 +30,7 @@ const brokenWingCall: Strategy = {
           </div>
           <div class="bg-cyan-50 p-4 rounded border border-cyan-200">
             <p class="font-bold text-cyan-700 mb-2">📉 卖 2× $100k Call</p>
-            <p class="text-sm text-slate-700">中心死谷更宽</p>
+            <p class="text-sm text-slate-700">风险不对称：上行最大亏损 −$3500，下行仅 −$500</p>
           </div>
         </div>
         <div class="bg-slate-50 p-4 rounded mt-3">
@@ -42,7 +42,7 @@ const brokenWingCall: Strategy = {
         <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4">
           <div class="text-xs text-emerald-600 font-bold mb-1">最大收益</div>
           <div class="text-2xl font-bold text-emerald-700 mb-2">低翼宽 − 成本</div>
-          <p class="text-xs text-slate-600">上翼更远，收益峰值略降</p>
+          <p class="text-xs text-slate-600">上翼更远使成本更低，最大盈利 = 下翼宽 $5k − 净成本 $0.5k = $4500</p>
         </div>
         <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4">
           <div class="text-xs text-amber-600 font-bold mb-1">最大亏损</div>
@@ -50,26 +50,29 @@ const brokenWingCall: Strategy = {
           <p class="text-xs text-slate-600">风险封顶</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-          <div class="text-xs text-blue-600 font-bold mb-1">死谷区域</div>
-          <div class="text-lg font-bold text-blue-700 mb-2">更宽</div>
-          <p class="text-xs text-slate-600">价格停在中心附近时亏损更集中</p>
+          <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
+          <div class="text-lg font-bold text-blue-700 mb-2">$95.5k / $104.5k</div>
+          <p class="text-xs text-slate-600">区间内盈利，超出区间转为亏损</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
       <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200 rounded-lg p-5 mb-6">
         <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，轻微看涨的中性博弈</p>
+        <div class="bg-white/70 rounded p-4 mb-3">
+          <p class="text-sm text-slate-700 mb-2"><strong>建仓：</strong>买 $95k Call、卖 2× $100k Call、买 $108k Call，净借记 ≈ $500。</p>
+        </div>
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
-            <p class="text-sm font-bold text-green-800">✅ 收于 $102k–$104k</p>
-            <p class="text-xs text-green-700 mt-1">峰值附近盈利（低成本优势）</p>
+            <p class="text-sm font-bold text-green-800">✅ 收于 $100k（中心 = 卖出行权价）</p>
+            <p class="text-xs text-green-700 mt-1">接近最大盈利 +$4500（净借记仅 $500，赔率约 9:1）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-            <p class="text-sm font-bold text-yellow-800">⚠️ 收于 $100k</p>
-            <p class="text-xs text-yellow-700 mt-1">死谷较宽，亏损集中</p>
+            <p class="text-sm font-bold text-yellow-800">⚠️ 收于 $103k–$104k</p>
+            <p class="text-xs text-yellow-700 mt-1">利润收窄至接近上盈亏平衡 $104.5k（约 +$500 ~ +$1500）</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-            <p class="text-sm font-bold text-red-800">❌ 大幅偏离：$95k 或 $110k+</p>
-            <p class="text-xs text-red-700 mt-1">风险有限，亏损受控</p>
+            <p class="text-sm font-bold text-red-800">❌ 涨破 $108k → −$3500（上翼最大亏损）；跌破 $95k → −$500（下行地板）</p>
+            <p class="text-xs text-red-700 mt-1">上行宽翼亏损大于下行，风险不对称但封顶</p>
           </div>
         </div>
       </div>
@@ -93,7 +96,7 @@ const brokenWingCall: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>死谷风险</strong>：中心附近亏损最大</li>
+          <li><strong>上行尾部风险</strong>：涨破 $108k 锁定最大亏损 −$3500</li>
           <li><strong>Gamma 风险</strong>：临期曲率高，盈亏变化快</li>
         </ul>
       </div>
@@ -110,7 +113,7 @@ const brokenWingCall: Strategy = {
       '风险有限，易于管理上限。'
     ],
     cons: [
-      '死谷更宽，对中心点位要求更高。'
+      '上行宽翼亏损更大（−$3500），呈不对称风险。'
     ]
   }
 };

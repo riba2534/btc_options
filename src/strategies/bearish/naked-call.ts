@@ -4,7 +4,7 @@ const nakedCall: Strategy = {
   id: 'naked-call',
   name: '裸卖看涨 (Naked Call)',
   category: StrategyCategory.BEARISH,
-  description: '直接卖出Call。风险极高。',
+  description: '直接卖出 Call。风险极高。',
   setup: '卖出 Call',
   riskProfile: '收益有限，风险无限。',
   idealScenario: '坚决看跌或横盘。',
@@ -91,6 +91,7 @@ const nakedCall: Strategy = {
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
             <li><strong>无限风险</strong>：理论上亏损无上限，需极度谨慎</li>
             <li><strong>Gamma 风险</strong>：临近到期，价格接近行权价时盈亏剧烈</li>
+            <li><strong>Vega 风险</strong>：作为净卖方 Vega 为负，隐含波动率上升会推高 Call 价格，导致未到期前出现浮亏。</li>
             <li><strong>保证金风险</strong>：上涨时保证金占用激增，可能被动平仓</li>
           </ul>
         </div>
@@ -105,7 +106,8 @@ const nakedCall: Strategy = {
         </div>
       `,
     pros: [
-      '高胜率：在大概率的横盘或下跌行情中均可获利。'
+      '高胜率：在大概率的横盘或下跌行情中均可获利。',
+      '时间价值收割：作为净卖方 Theta 为正，价格停留在行权价下方时随时间流逝持续获利。'
     ],
     cons: [
       '毁灭性风险：一次极端的暴涨行情可能导致账户穿仓甚至破产。',

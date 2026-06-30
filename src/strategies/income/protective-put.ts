@@ -48,9 +48,9 @@ const protectivePut: Strategy = {
             <p class="text-xs text-slate-600">上涨保留全部上行收益（减去保险费）</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-            <div class="text-xs text-blue-600 font-bold mb-1">心理优势</div>
-            <div class="text-lg font-bold text-blue-700 mb-2">持仓更稳</div>
-            <p class="text-xs text-slate-600">避免恐慌性止损与追涨杀跌</p>
+            <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
+            <div class="text-2xl font-bold text-blue-700 mb-2">$103k</div>
+            <p class="text-xs text-slate-600">现货成本 $100k + 保险费 $3k，上涨突破此点才净盈利。</p>
           </div>
         </div>
 
@@ -97,6 +97,7 @@ const protectivePut: Strategy = {
             <li><strong>成本拖累</strong>：长期持续付费会降低组合收益率</li>
             <li><strong>IV 风险</strong>：IV 高位买入保险费更贵</li>
             <li><strong>执行细节</strong>：到期前的滚动与择时影响效果</li>
+            <li><strong>Theta 时间损耗</strong>：买入的 Put 每日承受时间价值衰减，临近到期加速流失；若标的未下跌，到期时保险费可能全部归零。</li>
           </ul>
         </div>
 
@@ -115,7 +116,8 @@ const protectivePut: Strategy = {
       '保留上行：不像卖出期货对冲那样锁死利润，该策略不限制上涨收益。'
     ],
     cons: [
-      '保险成本：购买Put需要持续支付权利金，长期来看会拖累整体投资组合的收益率。'
+      '保险成本：购买Put需要持续支付权利金，长期来看会拖累整体投资组合的收益率。',
+      '机会成本：若标的未下跌，到期Put归零，已付权利金（$3k）成为沉没成本，会侵蚀该周期的上涨收益。'
     ]
   }
 };

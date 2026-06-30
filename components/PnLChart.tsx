@@ -87,7 +87,7 @@ const KeyPointLabel: React.FC<{
             marginTop: '3px',
             fontWeight: '600',
           }}>
-            @ ${(point.price / 1000).toFixed(0)}k
+            @ ${(point.price / 1000).toFixed(1)}k
           </span>
         </div>
       </foreignObject>
@@ -109,10 +109,10 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
       if (pnl < min) min = pnl;
     }
 
-    if (max <= 0) return 0;
+    // All non-negative (incl. all-zero) → fully green; strictly all-negative → fully red.
     if (min >= 0) return 1;
-    if (max === min) return 0; // Prevent division by zero
-
+    if (max <= 0) return 0;
+    // max > 0 && min < 0 here, so (max - min) > 0 — no division-by-zero risk.
     return max / (max - min);
   }, [data]);
 
@@ -120,15 +120,21 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
     return <div className="w-full h-64 flex items-center justify-center text-slate-400">No Data Available</div>;
   }
 
+  const ariaSummary = `到期盈亏曲线，当前价 $${Math.round(currentPrice / 1000)}k${keyPoints.length ? '，关键点：' + keyPoints.map(p => p.label).join('、') : ''}`;
+
   return (
-    <div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+    <div
+      role="img"
+      aria-label={ariaSummary}
+      className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] flex flex-col"
+    >
+      <div className="flex justify-between items-start gap-2 mb-4">
+        <h3 className="text-sm md:text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
           <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
           到期盈亏模拟 (P&L at Expiration)
         </h3>
-        <div className="flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-3 text-[10px]">
+        <div className="flex items-center gap-2 md:gap-3 shrink-0">
+          <div className="flex flex-wrap justify-end items-center gap-x-2 gap-y-1 text-[10px]">
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-400 border border-amber-500"></span>
               <span className="text-slate-500">盈亏平衡</span>
@@ -142,7 +148,7 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
               <span className="text-slate-500">亏损/无限↘</span>
             </span>
           </div>
-          <div className="text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+          <div className="hidden md:block text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
             Interactive
           </div>
         </div>
@@ -160,10 +166,12 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
             }}
           >
             <defs>
-              {/* Fill Gradient: Transparent Green/Red */}
+              {/* Fill Gradient: green fades toward the zero line (top), red deepens downward */}
               <linearGradient id="splitColorFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset={off} stopColor="#22c55e" stopOpacity={0.15} />
-                <stop offset={off} stopColor="#ef4444" stopOpacity={0.15} />
+                <stop offset={0} stopColor="#22c55e" stopOpacity={0.28} />
+                <stop offset={off} stopColor="#22c55e" stopOpacity={0.04} />
+                <stop offset={off} stopColor="#ef4444" stopOpacity={0.04} />
+                <stop offset={1} stopColor="#ef4444" stopOpacity={0.24} />
               </linearGradient>
               {/* Stroke Gradient: Solid Green/Red Line */}
               <linearGradient id="splitColorStroke" x1="0" y1="0" x2="0" y2="1">
@@ -174,9 +182,12 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
             
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
             
-            <XAxis 
-              dataKey="price" 
-              tickFormatter={(value) => `$${value/1000}k`}
+            <XAxis
+              dataKey="price"
+              type="number"
+              domain={[data[0].price, data[data.length - 1].price]}
+              tickCount={5}
+              tickFormatter={(value) => `$${Math.round(value/1000)}k`}
               stroke="#94a3b8"
               fontSize={12}
               tickLine={false}
@@ -200,7 +211,7 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
                   const isProfit = pnl >= 0;
                   return (
                     <div className="bg-white/95 backdrop-blur shadow-lg border border-slate-200 p-3 rounded-lg min-w-[150px]">
-                      <p className="text-slate-500 text-xs font-medium mb-1">BTC Price: <span className="text-slate-800">${label}</span></p>
+                      <p className="text-slate-500 text-xs font-medium mb-1">BTC Price: <span className="text-slate-800">${Number(label).toLocaleString()}</span></p>
                       <div className={`text-lg font-bold ${isProfit ? 'text-green-600' : 'text-red-600'}`}>
                         {isProfit ? '+' : ''}${pnl.toLocaleString()}
                       </div>
@@ -222,14 +233,13 @@ const PnLChart: React.FC<PnLChartProps> = ({ data, currentPrice, keyPoints = [] 
               x={currentPrice} 
               stroke="#3b82f6" 
               strokeDasharray="4 4" 
-              label={{ 
-                value: 'Current', 
-                position: 'insideTop', 
-                fill: '#3b82f6', 
+              label={{
+                value: 'Current',
+                position: 'insideTop',
+                fill: '#3b82f6',
                 fontSize: 12,
-                fontWeight: 'bold',
-                bg: 'white'
-              }} 
+                fontWeight: 'bold'
+              }}
             />
 
             <Area

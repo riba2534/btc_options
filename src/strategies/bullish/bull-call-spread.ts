@@ -7,7 +7,7 @@ const bullCallSpread: Strategy = {
   description: '买低Call、卖高Call以降成本；用封顶收益换更高胜率与效率。',
   setup: '买入 Call A + 卖出 Call B (Strike B > A)',
   riskProfile: '风险有限（净成本）；收益有限（价差−成本）；Theta 略负、Vega 正但较弱。',
-  idealScenario: '温和上涨至上腿附近；IV 偏高更有利（卖出腿收入高）。',
+  idealScenario: '温和上涨至上腿附近；IV 偏低时建仓更有利（净借记成本更低，组合净 Vega 为正，后续 IV 回升更受益）。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
     { type: 'Call', action: 'Sell', strikeOffset: 1.10, premiumRatio: 0.02 }
@@ -57,7 +57,7 @@ const bullCallSpread: Strategy = {
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
         <div class="bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 border border-purple-200 rounded-lg p-5 mb-6">
-          <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，预期涨到$108k</p>
+          <p class="font-bold text-slate-900 mb-3">案例：BTC $100k，预期涨到$110k</p>
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 涨到$110k：获得最大收益$7k（233%回报）</p>
@@ -77,7 +77,7 @@ const bullCallSpread: Strategy = {
             <p class="font-bold text-teal-900 mb-2">✓ 适合使用</p>
             <ul class="text-sm text-teal-800 space-y-1 list-disc pl-5">
               <li>预期温和上涨（涨10-20%），有明确的目标价位</li>
-              <li>隐含波动率处于高位，卖出期权能收取较高权利金</li>
+              <li>隐含波动率处于低位，净借记成本更低，建仓性价比更高（借记价差宜在低 IV 入场）</li>
               <li>技术分析显示关键阻力位清晰（可作为卖出价）</li>
               <li>新手想体验期权价差策略，降低持仓成本</li>
             </ul>
@@ -98,7 +98,7 @@ const bullCallSpread: Strategy = {
             <li><strong>收益封顶风险</strong>：BTC突破卖出价后，无法享受超额收益，可能痛失大牛市</li>
             <li><strong>双腿流动性</strong>：需同时平仓两个期权，流动性差时可能有滑点损失</li>
             <li><strong>时间衰减不对称</strong>：虽然买卖期权都有Theta损耗，但卖出腿的收益有限，整体仍面临时间压力</li>
-            <li><strong>提前行权风险</strong>：美式期权在分红或其他特殊情况下可能被提前行权（加密市场较少，但需注意交易所规则）</li>
+            <li><strong>行权与结算</strong>：主流 BTC 期权（如 Deribit）多为欧式、现金/现货结算，一般不存在提前行权问题；若使用支持美式行权的合约，则需关注对应交易所规则与保证金。</li>
           </ul>
         </div>
 
@@ -107,7 +107,7 @@ const bullCallSpread: Strategy = {
           <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
             <li><strong>行权价间隔</strong>：选择5-10%的strike间隔，平衡收益和胜率。间隔太小收益低，太大成本节省不明显</li>
             <li><strong>卖出价设定</strong>：将卖出Call的行权价设在关键阻力位（如前高、整数关口），技术上难以突破时收益最大化</li>
-            <li><strong>到期时间选择</strong>：建议选择30-60天到期的合约，Theta decay效率高且时间足够价格上涨</li>
+            <li><strong>到期时间选择</strong>：建议选择 30–60 天到期的合约，时间价值衰减（Theta）节奏适中，又能给价格留出足够上涨空间。</li>
             <li><strong>提前平仓</strong>：当价格接近卖出价且时间价值所剩不多时，考虑提前平仓，避免被行权的麻烦</li>
             <li><strong>滚动策略</strong>：盈利后可以平仓当前价差，滚动到更高价位的新价差，持续捕捉上涨趋势</li>
             <li><strong>Delta 对冲</strong>：整体Delta为正但小于1，可适当配合现货对冲，构建Delta中性组合</li>

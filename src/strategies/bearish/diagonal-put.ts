@@ -36,14 +36,14 @@ const diagonalPut: Strategy = {
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
       <div class="grid md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
-          <div class="text-xs text-red-600 font-bold mb-1">理想收益</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">近月归零 + 远月升值</div>
-          <p class="text-xs text-slate-600">温和下跌、近月作废，远月 ITM 保值增值</p>
-        </div>
         <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-4">
-          <div class="text-xs text-emerald-600 font-bold mb-1">最大亏损</div>
-          <div class="text-2xl font-bold text-emerald-700 mb-2">净成本</div>
+          <div class="text-xs text-emerald-600 font-bold mb-1">理想收益</div>
+          <div class="text-2xl font-bold text-emerald-700 mb-2">最大收益 ≈ $11k</div>
+          <p class="text-xs text-slate-600">BTC 跌至 ≤$90k 时达最大收益（= 价差宽度 $15k − 净成本 $4k）；温和下跌收益较小（如 -3% 约 +$4k）</p>
+        </div>
+        <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
+          <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
+          <div class="text-2xl font-bold text-red-700 mb-2">净成本</div>
           <p class="text-xs text-slate-600">若不跌或上涨</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
@@ -58,7 +58,7 @@ const diagonalPut: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 跌到 $90k (-10%)</p>
-            <p class="text-xs text-green-700 mt-1">近月归零，远月 ITM 增值；组合盈利 $3k+</p>
+            <p class="text-xs text-green-700 mt-1">近月归零，远月 ITM 增值；达最大收益区间，组合盈利约 $11k（= 价差宽度 $15k − 净成本 $4k）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 横盘 $100k (0%)</p>

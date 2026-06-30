@@ -69,11 +69,11 @@ const longStraddle: Strategy = {
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 场景3：消息平淡，横盘收于$102k</p>
-              <p class="text-xs text-red-700 mt-1">两腿时间价值损耗，亏损 ≈ $10k（100%损失）</p>
+              <p class="text-xs text-red-700 mt-1">Call 仍保留 $2k 内在价值，仅 Put 全损；净亏 ≈ $8k（约 80% 损失，仍处 $90k–$110k 盈亏平衡区间内）</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
               <p class="text-sm font-bold text-yellow-800">⚠️ 场景4：小幅波动至$108k</p>
-              <p class="text-xs text-yellow-700 mt-1">Call赚$8k，Put亏$5k，净亏$7k（仍需更大波动才能盈利）</p>
+              <p class="text-xs text-yellow-700 mt-1">Call 内在价值 $8k（扣权利金后净赚 $3k），Put 全损 $5k，净亏 ≈ $2k（仍需涨破 $110k 盈亏平衡点才能盈利）</p>
             </div>
           </div>
         </div>

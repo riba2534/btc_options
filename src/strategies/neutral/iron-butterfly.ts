@@ -66,8 +66,8 @@ const ironButterfly: Strategy = {
               <p class="text-xs text-green-700 mt-1">获最大收益 $6k</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-              <p class="text-sm font-bold text-yellow-800">⚠️ 偏离：收于 $92k / $108k</p>
-              <p class="text-xs text-yellow-700 mt-1">接近两侧盈亏平衡点，收益降低</p>
+              <p class="text-sm font-bold text-yellow-800">⚠️ 偏离：收于 $96k / $104k</p>
+              <p class="text-xs text-yellow-700 mt-1">仍在盈亏平衡点（$94k / $106k）以内，盈利降至约 $2k</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 突破：收于 $88k / $112k+</p>
@@ -89,7 +89,7 @@ const ironButterfly: Strategy = {
             <p class="font-bold text-red-900 mb-2">✗ 不适合使用</p>
             <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
               <li>方向性突破概率较高</li>
-              <li>无法承受中心位置的点位要求</li>
+              <li>难以判断价格能否精准停留在中心行权价</li>
             </ul>
           </div>
         </div>
@@ -99,6 +99,8 @@ const ironButterfly: Strategy = {
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
             <li><strong>中心精度</strong>：需要更精准的中心点位判断</li>
             <li><strong>Gamma 风险</strong>：中心附近临期曲率高，盈亏变化快</li>
+            <li><strong>Theta</strong>：作为净卖方，时间价值衰减是主要盈利来源，价格贴近中心时 Theta 最有利。</li>
+            <li><strong>Vega 风险</strong>：组合为净空波动率，IV 上升会扩大中心两腿亏损、推迟到期收敛。</li>
             <li><strong>滑点与成本</strong>：四腿结构的滚动与平仓成本较高</li>
           </ul>
         </div>
@@ -118,7 +120,8 @@ const ironButterfly: Strategy = {
       '风险受控：两翼的保护腿锁定了极端行情的亏损上限。'
     ],
     cons: [
-      '获利难度：需要价格在到期时非常接近中心行权价，对点位要求较高。'
+      '获利难度：需要价格在到期时非常接近中心行权价，对点位要求较高。',
+      '收益空间有限：净收 $6k 即为收益上限，且仅在价格紧贴中心行权价时实现，盈利区间（$94k–$106k）窄于铁鹰，胜率更低。'
     ]
   }
 };

@@ -46,6 +46,15 @@ export default [
     },
   },
   {
+    // Node-context config files (run under Node, not the browser).
+    files: ['vite.config.ts', '*.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     ignores: ['dist/**', 'node_modules/**', '*.config.js'],
   },
 ];

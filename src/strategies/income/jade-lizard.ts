@@ -6,12 +6,12 @@ const jadeLizard: Strategy = {
   category: StrategyCategory.INCOME,
   description: '卖 Put + 卖 Call 价差（无上方风险），净收权利金。',
   setup: '卖 OTM Put + 卖 OTM Call + 买 更高 OTM Call',
-  riskProfile: '下方风险有限，上方无风险，收益为净权利金。',
+  riskProfile: '下方风险较大（暴跌按 Put 行权价接盘，最大亏损约 $90k），上方无风险，收益为净权利金。',
   idealScenario: '价格不上破上方、且不大幅下破下方。',
   legs: [
     { type: 'Put', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.03 },
     { type: 'Call', action: 'Sell', strikeOffset: 1.05, premiumRatio: 0.03 },
-    { type: 'Call', action: 'Buy', strikeOffset: 1.15, premiumRatio: 0.01 }
+    { type: 'Call', action: 'Buy', strikeOffset: 1.10, premiumRatio: 0.01 }
   ],
   detailedAnalysis: {
     explanation: `
@@ -27,7 +27,7 @@ const jadeLizard: Strategy = {
             <p class="text-sm text-slate-700">下方风险由 Put 承担</p>
           </div>
           <div class="bg-cyan-50 p-4 rounded border border-cyan-200">
-            <p class="font-bold text-cyan-700 mb-2">📈 卖 $105k Call（收 $3k）+ 买 $115k Call（付 $1k）</p>
+            <p class="font-bold text-cyan-700 mb-2">📈 卖 $105k Call（收 $3k）+ 买 $110k Call（付 $1k）</p>
             <p class="text-sm text-slate-700">上方无风险（价差封顶）</p>
           </div>
         </div>
@@ -108,7 +108,8 @@ const jadeLizard: Strategy = {
       '适合中性至轻微看涨的环境。'
     ],
     cons: [
-      '下方风险较大，暴跌时可能被行权接盘。'
+      '下方风险较大，暴跌时可能被行权接盘。',
+      '上方收益已封顶为净权利金 $5k，无法享受趋势上涨。'
     ]
   }
 };

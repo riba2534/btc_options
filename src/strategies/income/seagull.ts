@@ -66,8 +66,8 @@ const seagull: Strategy = {
             <p class="text-xs text-blue-700 mt-1">两端部分作废，成本已抵消</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-            <p class="text-sm font-bold text-red-800">❌ 暴跌：收于 $90k</p>
-            <p class="text-xs text-red-700 mt-1">被行权接盘，存在浮亏</p>
+            <p class="text-sm font-bold text-red-800">❌ 暴跌：收于 $80k</p>
+            <p class="text-xs text-red-700 mt-1">$95k Put 被行权接盘，亏损约 $15k（继续下跌亏损线性放大，下方风险大）</p>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ const seagull: Strategy = {
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>下方风险</strong>：被行权接盘，暴跌时浮亏</li>
-          <li><strong>Vega 风险</strong>：IV 下降时权利金性价比下降</li>
+          <li><strong>Vega 风险</strong>：本组合净卖出期权（1 买 2 卖、整体偏空 Vega），IV 上升时卖出的 $95k Put 与 $110k Call 价值膨胀带来浮亏；故入场宜选 IV 偏高时卖权收金。</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
@@ -108,7 +108,8 @@ const seagull: Strategy = {
       '结构简单，易于上手。'
     ],
     cons: [
-      '下方风险较大，可能被行权接盘。'
+      '下方风险较大，可能被行权接盘。',
+      '上方收益被卖出的 $110k Call 封顶（最高约 $10k），无法享受大幅上涨。'
     ]
   }
 };

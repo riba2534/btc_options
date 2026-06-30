@@ -15,7 +15,7 @@ const cashSecuredPut: Strategy = {
     explanation: `
         <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 p-5 rounded-lg mb-6">
           <p class="text-emerald-900 font-semibold mb-2">💡 策略核心思想</p>
-          <p class="text-emerald-800 text-sm">现金担保卖普 (Cash Secured Put) 是<strong>价值投资者的抄底神器</strong>。你在心目中的理想价位卖Put，如果跌到就低价接盘，如果不跌就白赚权利金。这比傻等挂单更聪明，相当于别人付钱让你等待买入机会。</p>
+          <p class="text-emerald-800 text-sm">现金担保卖出看跌期权 (Cash-Secured Put) 是<strong>价值投资者的抄底神器</strong>。你在心目中的理想价位卖Put，如果跌到就低价接盘，如果不跌就白赚权利金。这比傻等挂单更聪明，相当于别人付钱让你等待买入机会。</p>
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
@@ -28,7 +28,7 @@ const cashSecuredPut: Strategy = {
             <p class="text-xs text-slate-600">卖出 $90k Put，收 $2,500</p>
           </div>
           <div class="bg-amber-50 p-4 rounded mt-3 border border-amber-200">
-            <p class="text-sm text-amber-900 mb-2"><strong>⚠️ 资金要求（Cash Secured）</strong></p>
+            <p class="text-sm text-amber-900 mb-2"><strong>⚠️ 资金要求（Cash-Secured）</strong></p>
             <p class="text-xs text-amber-800">必须在账户准备足额现金（$90k），以防被行权时有钱接盘。这是"现金担保"的含义。</p>
           </div>
         </div>
@@ -95,7 +95,7 @@ const cashSecuredPut: Strategy = {
             <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
               <li>不想持有现货、纯粹投机（被行权后被迫持币）</li>
               <li>预期BTC会暴跌超过20%（接盘后浮亏巨大）</li>
-              <li>没有足额现金（无法Cash Secured，会被强平）</li>
+              <li>没有足额现金（无法Cash-Secured，会被强平）</li>
             </ul>
           </div>
         </div>

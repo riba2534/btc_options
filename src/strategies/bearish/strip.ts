@@ -41,7 +41,7 @@ const strip: Strategy = {
         <div class="grid md:grid-cols-3 gap-4 mb-6">
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">下跌收益</div>
-            <div class="text-2xl font-bold text-red-700 mb-2">∞ × 2</div>
+            <div class="text-2xl font-bold text-red-700 mb-2">≈$188k</div>
             <p class="text-xs text-slate-600">双倍 Put 带来双倍速度的下跌盈利</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
@@ -65,12 +65,12 @@ const strip: Strategy = {
               <p class="text-xs text-green-700 mt-1">Put 收益 ≈ $20k × 2 = $40k；总盈利 ≈ $28k（233%）</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
-              <p class="text-sm font-bold text-blue-800">ℹ️ 向上假摔拉回：涨到 $120k</p>
+              <p class="text-sm font-bold text-blue-800">ℹ️ 看跌落空、反向上涨：涨到 $120k</p>
               <p class="text-xs text-blue-700 mt-1">Call 赚 ≈ $20k；净利 ≈ $8k（67%），低于向下破位</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
-              <p class="text-sm font-bold text-red-800">❌ 横盘：收于 $102k</p>
-              <p class="text-xs text-red-700 mt-1">三份期权几乎作废，亏损 $12k</p>
+              <p class="text-sm font-bold text-red-800">❌ 横盘：收于 $100k</p>
+              <p class="text-xs text-red-700 mt-1">三份期权全部作废，亏损 $12k（即最大亏损）</p>
             </div>
           </div>
         </div>

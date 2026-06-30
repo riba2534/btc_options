@@ -4,9 +4,9 @@ const shortStraddle: Strategy = {
   id: 'short-straddle',
   name: '卖出跨式 (Short Straddle)',
   category: StrategyCategory.NEUTRAL,
-  description: '卖出ATM Call和Put。做空波动率，赌价格不动。',
+  description: '卖出 ATM Call 和 Put。做空波动率，赌价格不动。',
   setup: '卖出 ATM Call + 卖出 ATM Put',
-  riskProfile: '收益巨大 (双份权利金)，风险无限。',
+  riskProfile: '收益有限 (限于双份权利金)，风险无限。',
   idealScenario: 'BTC价格死死钉在行权价。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.00, premiumRatio: 0.05 },
@@ -47,7 +47,7 @@ const shortStraddle: Strategy = {
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
             <div class="text-2xl font-bold text-red-700 mb-2">无限</div>
-            <p class="text-xs text-slate-600">向上或向下突破均可能无限亏损</p>
+            <p class="text-xs text-slate-600">上行突破亏损无上限；下行有限(价格有 0 下界，理论最大约 $90k)</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>

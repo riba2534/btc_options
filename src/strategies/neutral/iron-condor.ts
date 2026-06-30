@@ -67,8 +67,8 @@ const ironCondor: Strategy = {
               <p class="text-xs text-green-700 mt-1">四腿作废，保留 $2k</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$88k 或 $112k</p>
-              <p class="text-xs text-yellow-700 mt-1">可能产生小额亏损或波动，注意风控</p>
+              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$88k / $112k（盈亏平衡点）</p>
+              <p class="text-xs text-yellow-700 mt-1">恰为上下盈亏平衡点（0 盈亏）；越过后开始亏损，注意风控</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 突破：跌到 $85k / 涨到 $115k+</p>

@@ -50,8 +50,8 @@ const syntheticLong: Strategy = {
           </div>
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">风险特征</div>
-            <div class="text-2xl font-bold text-red-700 mb-2">无限</div>
-            <p class="text-xs text-slate-600">BTC跌多少亏多少，需追加保证金</p>
+            <div class="text-2xl font-bold text-red-700 mb-2">极大(有限)</div>
+            <p class="text-xs text-slate-600">最大亏损≈$100k(BTC归零时)，与持有1 BTC现货完全一致，需追加保证金</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">Delta</div>
@@ -75,7 +75,7 @@ const syntheticLong: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ BTC涨到 $120k (+20%)</p>
-              <p class="text-xs text-green-700 mt-1">Call行权赚$20k，Put作废。总盈利$20k，相当于持有1 BTC的收益</p>
+              <p class="text-xs text-green-700 mt-1">Call净赚$15k($20k内在价值−$5k权利金)，卖出的Put作废留存$5k权利金，合计盈利$20k，与持有1 BTC收益一致</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
               <p class="text-sm font-bold text-yellow-800">⚠️ BTC横盘 $100k</p>

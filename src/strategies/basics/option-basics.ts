@@ -81,7 +81,7 @@ const optionBasics: Strategy = {
             <h5 class="font-bold text-lg text-slate-900 mb-2">3. Expiration（到期日）</h5>
             <p class="text-slate-700 mb-2">期权的有效期限。<strong>时间就是期权的生命</strong>，越临近到期日，期权的时间价值衰减越快。</p>
             <div class="bg-amber-50 border border-amber-200 rounded p-3 mt-2">
-              <p class="text-sm text-amber-900"><strong>⏰ 时间衰减规律</strong>：最后30天的时间价值衰减速度 > 前面几个月的总和。这就是为什么卖方喜欢卖短期期权（赚Theta），买方更倾向买长期期权（避免快速衰减）。</p>
+              <p class="text-sm text-amber-900"><strong>⏰ 时间衰减规律</strong>：临近到期时时间价值衰减明显加速——最后30天的单日衰减速度(Theta)远高于早期阶段。这就是为什么卖方喜欢卖短期期权（赚Theta），买方更倾向买长期期权（避免快速衰减）。</p>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ const optionBasics: Strategy = {
             <div class="bg-white/50 rounded p-3 text-sm space-y-1">
               <p><strong>📊 实例</strong>：Gamma=0.02意味着价格涨$1，Delta增加0.02。</p>
               <p><strong>⚠️ 风险</strong>：ATM期权的Gamma最大，临近到期时Gamma暴增（Gamma爆炸），这对卖方极其危险。</p>
-              <p><strong>💡 策略</strong>：买方喜欢高Gamma（价格有利时赚得更快），卖方害怕高Gamma（对抗性风险）。</p>
+              <p><strong>💡 策略</strong>：买方喜欢高Gamma（价格有利时赚得更快），卖方害怕高Gamma（方向敞口快速反向放大、临近到期的尾部风险）。</p>
             </div>
           </div>
 
@@ -167,7 +167,7 @@ const optionBasics: Strategy = {
               <p><strong>⏰ 规律</strong>：</p>
               <ul class="list-disc pl-5 space-y-1">
                 <li>ATM期权的Theta最大（衰减最快）</li>
-                <li>最后30天的衰减速度 >> 前面的时间</li>
+                <li>最后30天的单日衰减速度(Theta)远高于早期阶段</li>
                 <li>周末和假期也在衰减（不交易但时间在流逝）</li>
               </ul>
               <p><strong>🎯 策略</strong>：卖方通过卖近月期权赚取Theta收入（收租策略）。</p>
@@ -182,7 +182,7 @@ const optionBasics: Strategy = {
             <p class="text-slate-700 mb-2">衡量隐含波动率(IV)变化1%对期权价格的影响。</p>
             <div class="bg-white/50 rounded p-3 text-sm space-y-1">
               <p><strong>📊 实例</strong>：Vega=200意味着IV涨1%，期权价格涨$200。</p>
-              <p><strong>💥 Vega Crush</strong>：重大事件（如减半、ETF决议）前IV飙升，事件后"利好/空出尽"，IV暴跌导致期权价格崩盘，即使标的价格没什么变化。</p>
+              <p><strong>💥 Vega Crush</strong>：重大事件（如减半、ETF决议）前IV飙升，事件后"利好/利空出尽"，IV暴跌导致期权价格崩盘，即使标的价格没什么变化。</p>
               <p><strong>🎯 策略</strong>：</p>
               <ul class="list-disc pl-5 space-y-1">
                 <li>预期波动加剧 → 买入期权（Long Vega）</li>

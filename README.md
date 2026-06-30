@@ -58,7 +58,10 @@ btc_options/
 ├── types.ts                   # 类型定义：Strategy/OptionLeg/Category
 ├── App.tsx                    # 主应用（布局与侧边栏）
 ├── index.tsx                  # 入口
-├── index.html                 # HTML 模板（Tailwind 通过 CDN）
+├── index.html                 # HTML 模板（加载字体 Inter / JetBrains Mono）
+├── index.css                  # 全局样式 + Tailwind 指令入口
+├── tailwind.config.js         # Tailwind 配置（content / safelist / 字体）
+├── postcss.config.js          # PostCSS（tailwindcss + autoprefixer）
 └── vite.config.ts             # Vite 配置
 ```
 
@@ -143,7 +146,7 @@ btc_options/
 
 - React 19 + TypeScript + Vite 6
 - Recharts（图表）
-- Tailwind CSS（通过 CDN 引入）
+- Tailwind CSS（本地 PostCSS 构建，含 content 扫描与 safelist）
 
 ## 部署
 

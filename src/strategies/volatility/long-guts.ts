@@ -4,10 +4,10 @@ const longGuts: Strategy = {
   id: 'long-guts',
   name: '买入内陷宽跨式 (Long Guts)',
   category: StrategyCategory.VOLATILITY,
-  description: '买入 ITM Call + 买入 ITM Put，强做多波动率与 Gamma。',
+  description: '买入 ITM Call + 买入 ITM Put，做多波动率（正 Gamma），但因双腿实值，Gamma 弱于等额平值 Straddle。',
   setup: '买入 ITM Call + 买入 ITM Put',
-  riskProfile: '风险有限（双腿权利金），收益无限（双向）。',
-  idealScenario: '大幅暴涨或暴跌，临期 Gamma 高。',
+  riskProfile: '风险有限（最大亏损 = 净权利金 $16k − 行权价差 $10k = $6k），收益无限（双向）。',
+  idealScenario: '大幅暴涨或暴跌，做多波动率（正 Gamma），但因双腿实值，Gamma 弱于等额平值 Straddle。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.08 },
     { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.08 }
@@ -16,7 +16,7 @@ const longGuts: Strategy = {
     explanation: `
       <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-500 p-5 rounded-lg mb-6">
         <p class="text-purple-900 font-semibold mb-2">💡 策略核心思想</p>
-        <p class="text-purple-800 text-sm">Long Guts 通过买入两边实值期权做多波动率与 Gamma，临近到期对价格变化极其敏感，适合预期剧烈波动的场景。</p>
+        <p class="text-purple-800 text-sm">Long Guts 通过买入两边实值期权做多波动率（正 Gamma），但因双腿实值，Gamma 弱于等额平值 Straddle，适合预期剧烈波动的场景。</p>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
@@ -48,8 +48,8 @@ const longGuts: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">$16k</div>
-          <p class="text-xs text-slate-600">横盘或小幅波动时亏损全部权利金</p>
+          <div class="text-2xl font-bold text-red-700 mb-2">$6k</div>
+          <p class="text-xs text-slate-600">两腿均实值，无论价格如何始终保留行权价差 $10k 内在价值，故最大亏损 = 净权利金 $16k − 行权价差 $10k = $6k，发生在 $95k–$105k 之间</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>
@@ -66,7 +66,7 @@ const longGuts: Strategy = {
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 横盘：收于 $102k</p>
-            <p class="text-xs text-red-700 mt-1">两腿时间价值损耗，亏损 $16k</p>
+            <p class="text-xs text-red-700 mt-1">两腿合计仍保留 $10k 内在价值，亏损 = $16k − $10k = $6k</p>
           </div>
         </div>
       </div>
@@ -107,7 +107,8 @@ const longGuts: Strategy = {
       '双向无限收益，方向无关。'
     ],
     cons: [
-      '成本高于 Straddle，横盘时亏损更快。'
+      '成本高于 Straddle（实值期权含内在价值），但因双腿均实值，横盘最大亏损被锁定为净权利金减行权价差（$6k），不会亏掉全部权利金。',
+      '资金占用高（双腿实值需先支付 $10k 内在价值），实务上常被等效的 Strangle/Straddle 替代，流动性与买卖点差通常更差。'
     ]
   }
 };
