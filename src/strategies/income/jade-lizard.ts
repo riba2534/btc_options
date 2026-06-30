@@ -45,7 +45,7 @@ const jadeLizard: Strategy = {
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">下方风险</div>
           <div class="text-2xl font-bold text-red-700 mb-2">较大</div>
-          <p class="text-xs text-slate-600">暴跌时按 $95k 接盘，存在浮亏</p>
+          <p class="text-xs text-slate-600">暴跌时按现金差额结算（经济效果≈按 $95k 接盘），存在浮亏</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">上方风险</div>
@@ -63,7 +63,7 @@ const jadeLizard: Strategy = {
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 下探 $92k</p>
-            <p class="text-xs text-yellow-700 mt-1">被行权接盘，浮亏但有 $5k 缓冲</p>
+            <p class="text-xs text-yellow-700 mt-1">按现金差额结算（经济效果≈按 $95k 接盘），浮亏但有 $5k 缓冲</p>
           </div>
           <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
             <p class="text-sm font-bold text-blue-800">ℹ️ 上涨 $110k</p>
@@ -91,7 +91,7 @@ const jadeLizard: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>下方风险</strong>：暴跌时按 Put 行权价接盘，面临浮亏</li>
+          <li><strong>下方风险</strong>：暴跌时按现金差额结算（经济效果≈按 Put 行权价接盘），面临浮亏</li>
           <li><strong>Vega 风险</strong>：IV 下降不利于收权利金的性价比</li>
         </ul>
       </div>
@@ -111,7 +111,29 @@ const jadeLizard: Strategy = {
       '下方风险较大，暴跌时可能被行权接盘。',
       '上方收益已封顶为净权利金 $5k，无法享受趋势上涨。'
     ]
-  }
+  },
+  plainSummary: '一上来先收一笔钱，赌 BTC 不暴跌：只要它不跌破下方，涨再高你都不亏，这笔钱就稳稳到手；但真要暴跌，你得按约定的低价接盘、扛浮亏。',
+  analogy: {
+    emoji: '🏪',
+    title: '收两份押金，只怕跌价',
+    text: '好比开店收了两份押金：一份是答应「东西跌到便宜价就照单全收」——这是你唯一真正的风险；另一份是跟人打赌「不会暴涨」，但你顺手给这个赌约上了封顶保险，所以涨多高你都只输固定的那点、还净赚押金。只要价格不暴跌，两份押金都归你。',
+  },
+  pitfalls: [
+    '以为「上方无风险」就等于整体稳赚——下方暴跌时要按 Put 行权价接盘，亏损可以很大，$5k 权利金只是杯水车薪。',
+    '收的总权利金没盖过 Call 价差宽度——一旦权利金 < 价差宽度，上方就不再无风险，大涨照样亏，等于丢了本策略的灵魂。',
+    'Put 行权价设得离现价太近——接盘概率大增；支撑位还没站稳就建仓，很容易直接被套。',
+  ],
+  quickJudge: {
+    use: '中性偏多、愿低位接币',
+    avoid: '预期暴跌、不愿接盘',
+  },
+  greeks: {
+    delta: '+',
+    gamma: '−',
+    theta: '+',
+    vega: '−',
+  },
+  cryptoNote: 'Deribit/OKX 的 BTC 期权是欧式+现金交割：到期 ITM 只结算现金差额、不会自动帮你接币，所谓「按 $95k 接盘」只是经济效果≈接盘，想真正持币得手动去现货补一笔。同时卖方要占用保证金、到期前就可能被增量强平：即便现货没动，只要 IV 单独飙升也会推高空头 mark price 触发追保；币本位下暴跌还会「浮亏+抵押品缩水」双杀。务必仓位小、保证金留足缓冲。',
 };
 
 export default jadeLizard;

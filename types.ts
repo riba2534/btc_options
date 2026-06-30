@@ -16,6 +16,14 @@ export interface OptionLeg {
   expiryLabel?: string;
 }
 
+// Qualitative Greek exposure for a strategy (values like '+', '−', '≈0', '+(强)').
+export interface GreekExposure {
+  delta: string;
+  gamma: string;
+  theta: string;
+  vega: string;
+}
+
 export interface Strategy {
   id: string;
   name: string;
@@ -30,6 +38,13 @@ export interface Strategy {
     pros: string[];
     cons: string[];
   };
+  // --- Optional beginner-friendly / advanced fields (rendered by StrategyDetail when present) ---
+  plainSummary?: string;                                       // 一句话大白话（零术语）
+  analogy?: { emoji: string; title: string; text: string };   // 生活类比
+  pitfalls?: string[];                                         // 新手常见误区 2-3 条
+  quickJudge?: { use: string; avoid: string };                // 极简判断（各 ≤ 20 字）
+  greeks?: GreekExposure;                                      // 希腊字母暴露（四象限）
+  cryptoNote?: string;                                         // 加密期权 / 交易实务提醒
 }
 
 export interface ChartPoint {

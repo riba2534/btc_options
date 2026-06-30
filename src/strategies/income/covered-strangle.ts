@@ -43,7 +43,7 @@ const coveredStrangle: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">最大风险</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">同持币 + 被 Put 行权接盘</div>
+          <div class="text-2xl font-bold text-red-700 mb-2">同持币 + Put 现金结算（≈接盘）</div>
           <p class="text-xs text-slate-600">暴跌时风险更大</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
@@ -66,7 +66,7 @@ const coveredStrangle: Strategy = {
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 突破边界：$85k 或 $115k+</p>
-            <p class="text-xs text-red-700 mt-1">下方接盘或上方卖飞</p>
+            <p class="text-xs text-red-700 mt-1">下方按现金差额结算（≈接盘），上方按 $110k 封顶（≈卖飞）</p>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@ const coveredStrangle: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>下方风险</strong>：被行权接盘，暴跌时浮亏更大</li>
+          <li><strong>下方风险</strong>：Put 到期按现金差额结算（经济效果≈接盘），暴跌时浮亏更大</li>
           <li><strong>执行复杂度</strong>：双端同时管理与滚动</li>
           <li><strong>Vega/Theta</strong>：双卖期权为负 Vega、正 Theta；IV 上升使两个空头浮亏，而时间衰减（Theta）有利于权利金兑现。</li>
         </ul>
@@ -109,7 +109,29 @@ const coveredStrangle: Strategy = {
     cons: [
       '下方风险增加，执行管理更复杂。'
     ]
-  }
+  },
+  plainSummary: '你手里有币，同时答应别人"涨太多就卖给你""跌下来就再接一份"，两头都先收一笔钱；只要币价不大涨也不大跌，这两笔钱就白赚。',
+  analogy: {
+    emoji: '🏠',
+    title: '持房两头收定金',
+    text: '你有套房暂时不卖。一边答应房客"涨到 110 万我就卖给你"，先收一笔定金；一边又答应另一户"跌到 90 万我就连他那套一起接下来"，再收一笔定金。房价在 90 万–110 万之间晃，两笔定金都白赚；真涨过头就按 110 万卖掉、真跌破就得按 90 万再接一套房。'
+  },
+  pitfalls: [
+    '别把它当"两头白收钱、稳赚不赔"——暴跌时手里的币和卖出的 Put 同时亏，亏损是双份叠加，比单纯持币更惨。',
+    'Put 卖太多份或行权价贴太近，跌下来要"接"的金额超出现金储备，保证金不足会被强平在最差位置。',
+    '只惦记上方"卖飞"少赚，没意识到真正的大坑在下方——这策略骨子里是加倍看多，预期暴跌时千万别用。'
+  ],
+  quickJudge: {
+    use: '长期持币、看宽幅震荡、想多收租',
+    avoid: '预期暴跌或要单边大涨'
+  },
+  greeks: {
+    delta: '+(强)',
+    gamma: '−',
+    theta: '+',
+    vega: '−'
+  },
+  cryptoNote: 'Deribit/OKX 的 BTC 期权是欧式 + 现金交割：到期 ITM 只按现金差额结算，不会自动帮你卖币或接币——"被 Put 行权接盘""按 $110k 卖出"都只是经济效果，想真正加减仓得自己上现货市场手动操作。另外卖 Put 这条腿要单独占用保证金，别让它和现货一起把仓位顶到强平线。'
 };
 
 export default coveredStrangle;

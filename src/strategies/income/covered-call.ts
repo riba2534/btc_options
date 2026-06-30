@@ -15,7 +15,7 @@ const coveredCall: Strategy = {
     explanation: `
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg mb-6">
           <p class="text-indigo-900 font-semibold mb-2">💡 策略核心思想</p>
-          <p class="text-indigo-800 text-sm">备兑看涨 (Covered Call) 通过“持币 + 卖出 OTM Call”将现货转化为现金流。若不涨则赚权利金；若上涨被行权则以行权价卖出，收益被封顶但整体盈利。</p>
+          <p class="text-indigo-800 text-sm">备兑看涨 (Covered Call) 通过“持币 + 卖出 OTM Call”将现货转化为现金流。若不涨则赚权利金；若上涨，Call 按现金差额结算（经济效果≈在行权价封顶卖出），收益被封顶但整体仍盈利。</p>
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
@@ -64,7 +64,7 @@ const coveredCall: Strategy = {
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
               <p class="text-sm font-bold text-blue-800">ℹ️ 涨破行权价：收于 $115k</p>
-              <p class="text-xs text-blue-700 mt-1">被行权按 $110k 卖出，收益 ≈ $10k + $3k = $13k</p>
+              <p class="text-xs text-blue-700 mt-1">Call 按现金差额结算（支付 $5k 差额），经济效果≈在 $110k 封顶卖出，收益 ≈ $10k + $3k = $13k</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 暴跌：收于 $80k</p>
@@ -96,7 +96,7 @@ const coveredCall: Strategy = {
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
             <li><strong>卖飞风险</strong>：行权价上方的超额上涨无法享受</li>
             <li><strong>滚动管理</strong>：价格接近行权价时需滚动至更高行权价或平仓</li>
-            <li><strong>税务影响</strong>：被行权卖出可能触发应税事件（视地区）</li>
+            <li><strong>税务影响</strong>：现金结算盈亏或手动平仓卖币可能触发应税事件（视地区）</li>
           </ul>
         </div>
 
@@ -118,7 +118,24 @@ const coveredCall: Strategy = {
       '卖飞风险：在超级大牛市中，收益被行权价锁定，错失主升浪的超额利润。',
       '下行保护有限：权利金（约现货 3%）仅提供微弱缓冲，BTC 暴跌时仍承担几乎全部现货亏损（如跌至 $80k 时净亏约 $17k）。'
     ]
-  }
+  },
+  plainSummary: '你手里有币，把“涨太多就按某个价封顶卖掉”这个权利租给别人，先收一笔租金。币不大涨就白赚租金；真大涨了，超过封顶价那部分的赚头就让给别人。',
+  analogy: {
+    emoji: '🏠',
+    title: '出租房子收定金',
+    text: '你有套房（BTC），暂时不卖。跟房客约定“涨到 110 万你就卖给他”，先收一笔定金（权利金）。没涨到就白赚定金；真涨过了，就按 110 万成交、封顶以上的涨幅赚不到。',
+  },
+  pitfalls: [
+    '别把它当“稳赚不赔”：暴跌时你照样按现货亏钱，3% 的权利金只是杯水车薪。',
+    '行权价设得太近：稍微一涨就被“卖飞”，眼睁睁错过主升浪。',
+    '为多收权利金而卖太多张 Call：一旦卖出量超过手里的币，就变成裸卖、上行风险无上限。',
+  ],
+  quickJudge: {
+    use: '有币、看震荡或慢牛、想收租降成本',
+    avoid: '预期主升浪、舍不得在高位封顶卖币',
+  },
+  greeks: { delta: '+', gamma: '−', theta: '+', vega: '−' },
+  cryptoNote: '主流 BTC 期权（Deribit/OKX）是欧式 + 现金交割：到期 ITM 只结算现金差额，不会自动替你卖出 BTC。所以并非真的“被按行权价卖币”——现货仍照常持有、卖出的 Call 按差额扣钱，经济效果≈在行权价封顶卖出；若想真正兑现高位卖出，需自己手动卖现货衔接。',
 };
 
 export default coveredCall;

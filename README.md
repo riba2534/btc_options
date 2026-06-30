@@ -1,169 +1,203 @@
-# BTC 期权策略展示网站
+<div align="center">
 
-一个面向学习者的期权策略展示网站。通过交互式盈亏图表与结构化的策略详解，帮助你系统理解 BTC 期权的构造、风险、收益与适用场景。本项目为纯前端静态站点，专注教学与可视化演示，不提供交易功能。
+# BTC 期权策略图解 · Option Strategy
 
-- 在线访问：https://option.riba2534.cn
-- 教育用途：仅用于学习和演示，不构成任何投资建议
+**交互式可视化学习 BTC 期权策略 —— 从「什么是期权」到 40+ 进阶组合，小白也能看懂。**
 
-## 特性概览
+[![Deploy](https://github.com/riba2534/btc_options/actions/workflows/deploy.yml/badge.svg)](https://github.com/riba2534/btc_options/actions/workflows/deploy.yml)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#-许可证)
 
-- 交互式盈亏图表
-  - 基于 Recharts 绘制盈亏曲线，覆盖 ±40% 的价格范围
-  - 显示当前参考价、盈亏平衡点与不同情景的盈亏
-- 策略目录与名称规范
-  - 侧边栏按分类展示策略列表，中文在上、英文在下（两行）
-  - 统一使用“中文名 (English Name)”的半角括号格式
-- 友好交互与可读性
-  - 点击侧边栏策略，详情页自动滚动至顶部
-  - 每个策略的详解采用统一的“七章节”HTML模板，结构清晰、内容完整
-- 模块化数据结构
-  - 每个策略独立成文件，按分类聚合，维护与扩展便捷
-  - `constants.ts` 统一导出 `STRATEGIES` 与 `DEFAULT_BTC_PRICE`
+**[🌐 在线访问 → option.riba2534.cn](https://option.riba2534.cn)**
 
-## 快速开始
+</div>
 
-### 环境需求
-- Node.js 20+
+---
+
+一个面向学习者的 BTC 期权策略**交互式教学网站**。每个策略都配有可交互的到期盈亏曲线、情景推演表与结构化详解，并辅以「一句话大白话、生活类比、新手误区、加密实盘提醒」等小白友好内容，帮助你由浅入深地理解期权的**构造、风险、收益与适用场景**。
+
+> 纯前端静态站点，所有盈亏在浏览器端实时计算，**无后端、不涉及任何真实交易**。仅用于教育与可视化演示。
+
+## 目录
+
+- [功能特性](#-功能特性)
+- [内容覆盖](#-内容覆盖)
+- [技术栈](#-技术栈)
+- [快速开始](#-快速开始)
+- [项目结构](#-项目结构)
+- [数据模型](#-数据模型)
+- [新增与维护策略](#-新增与维护策略)
+- [部署](#-部署)
+- [免责声明](#-免责声明)
+- [参与贡献](#-参与贡献)
+- [许可证](#-许可证)
+
+## ✨ 功能特性
+
+- **📈 交互式盈亏图**：基于 Recharts 绘制到期盈亏曲线（±40% 价格区间），自动标注盈亏平衡点、最大盈利/亏损与「收益无限 / 风险无限」方向；悬停查看任意价格的盈亏。
+- **🧮 纯前端实时计算**：根据每个策略的「期权腿（legs）」在浏览器端推算盈亏曲线与情景表，数据与图表始终自洽。
+- **💬 小白友好分层讲解**：每个策略提供
+  - 「一句话大白话」「用生活类比理解」「✅/🚫 什么时候用 / 别用」；
+  - 「🚫 新手常见误区」「⚙️ 加密期权 & 实盘提醒」；
+  - 「希腊字母暴露表」（Delta / Gamma / Theta / Vega 一眼看清方向）。
+- **📚 完整教学体系**：内置「期权基础、新手学习路径（含策略选择决策树）、术语速查、进阶概念（平价公式 / Skew / 欧式现金交割）」四个教学条目。
+- **📐 统一七章节详解**：每个策略的详解遵循一致的 HTML 模板（核心思想 / 构造 / 损益 / 实战案例 / 使用场景 / 风险提示 / 专业建议），含具体数值与希腊字母说明。
+- **📱 响应式 & 无障碍**：移动端抽屉式侧栏、键盘可达（focus 环 / 跳转链接 / `aria-*`）、`prefers-reduced-motion` 适配。
+
+## 📚 内容覆盖
+
+共 **46 项**内容（4 项基础/教学 + 42 个策略），按方向与波动率观点分类：
+
+| 分类 | 数量 | 示例 |
+| --- | :---: | --- |
+| **期权基础 / 教学** | 4 | 期权基础、新手学习路径、术语速查、进阶概念 |
+| **看涨 Bullish** | 10 | 买入看涨、牛市看涨价差、风险逆转、合成多头、看涨比例（反向/正向）价差、现金担保看跌… |
+| **看跌 Bearish** | 9 | 买入看跌、熊市看跌价差、看跌比例（反向/正向）价差、裸卖看涨、合成空头、空头条式… |
+| **盘整 / 中性 Neutral** | 12 | 铁鹰式、铁蝶式、看涨/看跌蝶式、断翼蝶式、看涨/看跌时间价差、卖出跨式/宽跨式、盒式组合… |
+| **高波动 Volatility** | 4 | 买入跨式、买入宽跨式、买入内陷宽跨式、反向铁鹰 |
+| **收益 / 对冲 Income** | 7 | 备兑看涨、保护性看跌、领口、翡翠蜥蜴、海鸥、轮子、备兑宽跨式 |
+
+> 策略命名统一采用 `中文名 (English Name)` 半角括号格式，英文取行业通用名。
+
+## 🛠 技术栈
+
+| 类别 | 选型 |
+| --- | --- |
+| 框架 | React 19 + TypeScript 5.8 |
+| 构建 | Vite 6 |
+| 图表 | Recharts 3 |
+| 样式 | Tailwind CSS 3（本地 PostCSS 构建，含 content 扫描与 safelist） |
+| 字体 | Inter（拉丁）+ JetBrains Mono（等宽数字） |
+| 部署 | GitHub Actions → GitHub Pages |
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js **20+**
 - npm
 
-### 本地开发
+### 安装与开发
+
 ```bash
+# 1. 克隆仓库
+git clone https://github.com/riba2534/btc_options.git
+cd btc_options
+
+# 2. 安装依赖
 npm install
-npm run dev   # http://localhost:3000
+
+# 3. 启动开发服务器（默认 http://localhost:3000）
+npm run dev
 ```
 
-### 构建与预览
-```bash
-npm run build
-npm run preview
-```
+### 可用脚本
 
-## 项目结构
+| 命令 | 说明 |
+| --- | --- |
+| `npm run dev` | 启动开发服务器（HMR 热更新） |
+| `npm run build` | 类型检查 + 生产构建，产物输出到 `dist/` |
+| `npm run preview` | 本地预览生产构建产物 |
+| `npm run typecheck` | 仅运行 TypeScript 类型检查 |
+| `npm run lint` | 运行 ESLint 检查 |
+
+## 📁 项目结构
 
 ```
 btc_options/
+├── App.tsx                     # 主应用（布局、侧边栏导航、响应式逻辑）
+├── index.tsx                   # 应用入口
+├── index.html                  # HTML 模板（加载 Inter / JetBrains Mono 字体）
+├── index.css                   # 全局样式 + Tailwind 指令入口
+├── constants.ts                # 对外导出 STRATEGIES 与 DEFAULT_BTC_PRICE
+├── types.ts                    # 类型定义：Strategy / OptionLeg / GreekExposure …
 ├── components/
-│   ├── PnLChart.tsx           # 盈亏图表
-│   └── StrategyDetail.tsx     # 策略详情与构造展示
-├── src/
-│   └── strategies/            # 策略模块（按分类拆分）
-│       ├── basics/
-│       ├── bullish/
-│       ├── bearish/
-│       ├── neutral/
-│       ├── volatility/
-│       ├── income/
-│       └── index.ts           # 汇总为 ALL_STRATEGIES
-├── constants.ts               # 对外导出 STRATEGIES 与 DEFAULT_BTC_PRICE
-├── types.ts                   # 类型定义：Strategy/OptionLeg/Category
-├── App.tsx                    # 主应用（布局与侧边栏）
-├── index.tsx                  # 入口
-├── index.html                 # HTML 模板（加载字体 Inter / JetBrains Mono）
-├── index.css                  # 全局样式 + Tailwind 指令入口
-├── tailwind.config.js         # Tailwind 配置（content / safelist / 字体）
-├── postcss.config.js          # PostCSS（tailwindcss + autoprefixer）
-└── vite.config.ts             # Vite 配置
+│   ├── PnLChart.tsx            # 到期盈亏曲线图（Recharts）
+│   └── StrategyDetail.tsx      # 策略详情：图表 + 构造 + 情景表 + 详解渲染
+├── src/strategies/             # 策略数据（按分类拆分，每个策略独立成文件）
+│   ├── basics/                 # 期权基础与教学条目
+│   ├── bullish/                # 看涨
+│   ├── bearish/                # 看跌
+│   ├── neutral/                # 中性
+│   ├── volatility/             # 高波动
+│   ├── income/                 # 收益 / 对冲
+│   └── index.ts                # 聚合为 ALL_STRATEGIES
+├── tailwind.config.js          # Tailwind 配置（content / safelist / 字体）
+├── postcss.config.js           # PostCSS（tailwindcss + autoprefixer）
+└── vite.config.ts              # Vite 配置（端口 / 别名 @ / 分包）
 ```
 
-## 支持的策略（示例）
+## 🧩 数据模型
 
-- 看涨（Bullish）
-  - 买入看涨期权 (Long Call)
-  - 牛市看涨价差 (Bull Call Spread)
-  - 牛市看跌价差 (Bull Put Spread)
-  - 合成多头 (Synthetic Long)
-  - 看涨比例反向价差 (Call Ratio Backspread)
-  - 多头条式组合 (Strap)
-  - 现金担保卖出看跌期权 (Cash-Secured Put)
-  - 看涨对角价差 (Long Diagonal Call)
-- 看跌（Bearish）
-  - 买入看跌期权 (Long Put)
-  - 熊市看跌价差 (Bear Put Spread)
-  - 熊市看涨价差 (Bear Call Spread)
-  - 看跌比例反向价差 (Put Ratio Backspread)
-  - 空头条式组合 (Strip)
-  - 裸卖看涨 (Naked Call)
-  - 看跌对角价差 (Long Diagonal Put)
-  - 合成空头 (Synthetic Short)
-- 中性（Neutral）
-  - 卖出跨式 (Short Straddle)
-  - 卖出宽跨式 (Short Strangle)
-  - 铁鹰式 (Iron Condor)
-  - 铁蝶式 (Iron Butterfly)
-  - 买入看涨蝶式 (Long Call Butterfly)
-  - 卖出内陷宽跨式 (Short Guts)
-  - 看涨时间价差 (Call Calendar Spread)
-  - 看跌时间价差 (Put Calendar Spread)
-  - 买入看涨康多 (Long Call Condor)
-  - 断翼看涨蝶式 (Broken-Wing Butterfly – Call)
-  - 买入看跌蝶式 (Long Put Butterfly)
-  - 盒式组合 (Box Spread)
-- 波动率（Volatility）
-  - 买入跨式 (Long Straddle)
-  - 买入宽跨式 (Long Strangle)
-  - 买入内陷宽跨式 (Long Guts)
-- 收益/对冲（Income/Hedge）
-  - 备兑看涨 (Covered Call)
-  - 保护性看跌 (Protective Put)
-  - 领口策略 (Collar)
-  - 翡翠蜥蜴 (Jade Lizard)
-  - 海鸥组合 (Seagull)
-  - 轮子策略 (Wheel)
-  - 备兑宽跨式 (Covered Strangle)
+每个策略都是一个 `Strategy` 对象（见 `types.ts`）。前端根据 `legs` 在浏览器端计算盈亏曲线与情景表，因此**图表与数据天然一致**。
 
-> 注：以上为示例清单，实际站点可能持续扩充。
+```ts
+interface OptionLeg {
+  type: 'Call' | 'Put';
+  action: 'Buy' | 'Sell';
+  strikeOffset: number;   // 行权价相对现价的倍数，如 1.10 = 高出现价 10%
+  premiumRatio: number;   // 权利金占现价的比例，如 0.03 = 3%
+  expiryLabel?: string;   // 可选：'近月' / '远月'（日历 / 对角价差）
+}
 
-## 策略详解内容规范（七章节模板）
+interface Strategy {
+  id: string;             // kebab-case 唯一 ID，如 'bull-call-spread'
+  name: string;           // '中文名 (English Name)' 半角括号
+  category: StrategyCategory;
+  description: string;    // 一句话概述
+  setup: string;          // 构造方法
+  legs: OptionLeg[];      // 期权腿（可为空数组，如流程型 / 纯教学条目）
+  riskProfile: string;    // 风险收益特征
+  idealScenario: string;  // 理想使用场景
+  detailedAnalysis: {
+    explanation: string;  // 七章节 HTML 详解
+    pros: string[];       // 优势 2–4 条
+    cons: string[];       // 劣势 2–4 条
+  };
 
-每个策略的 `detailedAnalysis.explanation` 使用统一 HTML 结构，包含：
+  // —— 可选的小白友好 / 进阶字段（组件层按需渲染，缺省则不显示）——
+  plainSummary?: string;                                       // 一句话大白话（零术语）
+  analogy?: { emoji: string; title: string; text: string };   // 生活类比
+  pitfalls?: string[];                                        // 新手常见误区
+  quickJudge?: { use: string; avoid: string };                // 极简判断
+  greeks?: { delta: string; gamma: string; theta: string; vega: string }; // 希腊字母暴露
+  cryptoNote?: string;                                        // 加密期权 / 实盘提醒
+}
+```
 
-1. 策略核心思想（按类别配色）
-2. 策略构造（两列卡片 + 净成本/净收入小结）
-3. 损益分析（三卡片：最大收益/最大亏损/盈亏平衡点或关键因素）
-4. 实战案例（最佳/中等/最差三场景，必须给出具体数值计算）
-5. 使用场景（✓/✗ 各 2–4 条，指向明确）
-6. 风险提示（至少包含 Theta/Gamma/Vega/Delta 的影响）
-7. 专业建议（行权价间距、到期时间、滚动/止盈建议等，具体可操作）
+## ➕ 新增与维护策略
 
-同时在 `pros`/`cons` 中分别列出 2–4 条优势与劣势，使用完整句表达。
+1. 在对应分类目录新建文件：`src/strategies/<category>/<id>.ts`，导出一个 `Strategy` 对象。
+2. 在该分类的 `index.ts` 中 `import` 并追加到导出数组（`constants.ts` 与顶层 `index.ts` 会自动聚合，无需改动）。
+3. 保持 `id` 唯一且为 kebab-case；`name` 使用 `中文名 (English Name)` 半角括号格式。
+4. `legs` 的 `strikeOffset` 与 `premiumRatio` 取合理值，并**确保 `explanation` 中的数值案例与 `legs` 推算出的盈亏曲线自洽**。
+5. `detailedAnalysis.explanation` 遵循统一**七章节** HTML 模板：
+   1. 策略核心思想 · 2. 策略构造 · 3. 损益分析 · 4. 实战案例（含具体计算）·
+   5. 使用场景（✓/✗）· 6. 风险提示（含希腊字母）· 7. 专业建议
+6. 可选填充 `plainSummary / analogy / pitfalls / quickJudge / greeks / cryptoNote` 提升小白友好度。
+7. 本地预览，抽查桌面与移动端的图表、文案与样式。
 
-## 名称与展示约定
+> 更详细的写作规范与配色模板见仓库内 `CLAUDE.md`。
 
-- 统一名称格式：`中文名 (English Name)`，使用半角括号 `()`。
-- 侧边栏展示：中文在上、英文在下（两行），便于学习与对照。
-- 切换策略时，详情页自动滚动至顶部，保证阅读连贯性。
+## 🌐 部署
 
-## 新增策略流程
+- 通过 GitHub Actions 自动部署到 **GitHub Pages**（工作流见 `.github/workflows/deploy.yml`）。
+- 推送到 `main` 分支即自动触发 `npm ci → npm run build → 发布 dist/`。
+- 自定义域名由仓库根目录 `CNAME` 指定（当前为 `option.riba2534.cn`）。
 
-1. 在对应分类目录新增文件：`src/strategies/<category>/<id>.ts`
-2. 定义并导出 `Strategy` 对象（保持字段完整与类型正确）
-3. 在该分类的 `index.ts` 中 `import` 新策略并追加到导出数组
-4. 保持 `id` 唯一采用 kebab-case；`name` 采用“中文名 (English Name)”格式
-5. 编写 `explanation` 的七章节 HTML；提供具体数值案例与希腊字母说明
-6. 本地预览并抽查多个策略，确认图表、文案与样式正常
+## ⚠️ 免责声明
 
-## 技术栈
+- 本项目**仅用于教育与信息展示**，不构成任何投资、财务或交易建议。
+- 站内盈亏曲线为**简化的到期模型**（USD 线性近似，未计入手续费、滑点、保证金、IV 变化等），与真实交易结果存在差异，仅供理解策略形态之用。
+- 加密资产与期权交易具有**高风险**，可能导致本金全部损失。请在充分了解风险并独立判断后谨慎决策。
 
-- React 19 + TypeScript + Vite 6
-- Recharts（图表）
-- Tailwind CSS（本地 PostCSS 构建，含 content 扫描与 safelist）
+## 🤝 参与贡献
 
-## 部署
+欢迎通过 [Issues](https://github.com/riba2534/btc_options/issues) 反馈问题，或提交 [Pull Request](https://github.com/riba2534/btc_options/pulls) 贡献新策略与改进。提交前请确保 `npm run typecheck`、`npm run lint`、`npm run build` 均通过。
 
-- 使用 GitHub Actions 自动部署到 GitHub Pages
-- 推送到 `main` 分支自动触发构建与发布
-- 可在仓库 Settings > Pages 配置自定义域名（已使用 `option.riba2534.cn`）
+## 📄 许可证
 
-## 免责声明
-
-- 本项目仅用于教学和信息展示目的
-- 盈亏计算结果仅供参考，不构成任何投资建议
-- 加密资产与期权交易具有高风险，请谨慎决策
-
-## 许可证
-
-MIT License
-
-## 参与贡献
-
-欢迎通过 GitHub Issues 与 Pull Requests 提交建议与改进。
+本项目基于 [MIT License](https://opensource.org/licenses/MIT) 开源。

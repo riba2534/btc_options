@@ -2,7 +2,7 @@ import { Strategy, StrategyCategory } from '@/types';
 
 const condorCall: Strategy = {
   id: 'condor-call',
-  name: '买入看涨康多 (Long Call Condor)',
+  name: '买入看涨鹰式 (Long Call Condor)',
   category: StrategyCategory.NEUTRAL,
   description: '全 Call 的四腿借记价差，博价格落入中间区间的震荡。',
   setup: '买 低 Call + 卖 中低 Call + 卖 中高 Call + 买 高 Call（两翼等宽各 3k、中间体 4k）',
@@ -18,7 +18,7 @@ const condorCall: Strategy = {
     explanation: `
       <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-5 rounded-lg mb-6">
         <p class="text-blue-900 font-semibold mb-2">💡 策略核心思想</p>
-        <p class="text-blue-800 text-sm">Call Condor（康多）与蝶式的关键区别：<strong>中间两个卖出腿使用不同行权价</strong>，形成"平台式"收益曲线（$98k–$102k 内收益恒定），而非蝶式的"尖塔式"单点峰值。适合预期价格在一定区间内震荡、但无法精确判断具体点位的场景。</p>
+        <p class="text-blue-800 text-sm">Call Condor（鹰式）与蝶式的关键区别：<strong>中间两个卖出腿使用不同行权价</strong>，形成"平台式"收益曲线（$98k–$102k 内收益恒定），而非蝶式的"尖塔式"单点峰值。适合预期价格在一定区间内震荡、但无法精确判断具体点位的场景。</p>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
       <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6">
@@ -125,7 +125,32 @@ const condorCall: Strategy = {
       '需价格收敛于 $96k–$104k 区间，趋势行情或大波动下亏损净成本 $1k。',
       '四腿结构开平仓点差与手续费较高，侵蚀本就有限的 $2k 最大收益。'
     ]
-  }
+  },
+  plainSummary:
+    '花一点小钱（$1k）赌 BTC 接下来就在 $98k–$102k 这段中间区间里晃悠，不大涨也不大跌。价格真待在这片区域，你就稳稳赚 $2k；万一冲出区间也别慌，亏损早就封死，最多就赔进去那 $1k 本钱。',
+  analogy: {
+    emoji: '🎯',
+    title: '押注"扎进中间一整片区域"',
+    text:
+      '像在飞镖盘上花一点小钱押"镖会扎在中间一整片区域"，而不是死磕正中心那一个点。只要镖落进这片不算窄的中间带，奖金都一样满额；扎到最外圈也只亏掉入场的那点小钱。比起只押正中心的蝶式，这个"中间带"更宽、更容易押中。',
+  },
+  pitfalls: [
+    '以为"只要不暴涨暴跌就稳赚"——其实价格必须收在 $96k–$104k 才不亏，一旦越过这条线就直接吃满 $1k 亏损，可盈利的区间比想象中窄。',
+    '被"赔 $1k 博 $2k、赔率 2:1"诱惑而忽略胜率——价格恰好停在窄平台里的概率并不高，加上四腿点差和手续费，真实期望远没有看上去诱人。',
+    '四条腿手动逐腿挂单——快市里很容易只成交两三条腿、留下裸露的单腿敞口，风险瞬间放大；务必用组合单/RFQ 按净价一次性成交。',
+  ],
+  quickJudge: {
+    use: '预计 BTC 窄幅震荡、卡在区间里',
+    avoid: '要走单边趋势或剧烈波动时',
+  },
+  greeks: {
+    delta: '≈0',
+    gamma: '−',
+    theta: '+',
+    vega: '−',
+  },
+  cryptoNote:
+    'Deribit 期权按张计费、每张约为标的的 0.03%（封顶为权利金的 12.5%）外加交割费；四条腿来回开平共八笔，手续费与点差会直接啃掉本就只有 $2k 的最大收益，务必用组合单/RFQ 按净价一次成交、别手动逐腿挂单（快市漏成一两条腿会留下裸露敞口、破坏风险封顶）。好在 Deribit 为欧式现金结算、到期按指数价自动轧差，几乎没有 Pin Risk 或被提前指派的烦恼。',
 };
 
 export default condorCall;

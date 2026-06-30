@@ -297,6 +297,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   const hasSpotPosition = ['covered-call', 'protective-put', 'collar', 'covered-strangle'].includes(strategy.id);
   const isWheel = strategy.id === 'wheel';
   const isBasics = strategy.category === StrategyCategory.BASICS;
+  // Pure-educational entries (learning path / glossary / advanced concepts): explanation only.
+  const isArticle = isBasics && strategy.id !== 'option-basics';
   const hasDifferentExpiry = useMemo(() => {
     const id = strategy.id.toLowerCase();
     return id.includes('calendar') || id.includes('diagonal');
@@ -315,8 +317,19 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         <p className="text-sm md:text-xl text-slate-600 mt-2 md:mt-3 max-w-3xl">{strategy.description}</p>
       </header>
 
+      {/* 一句话大白话（小白友好） */}
+      {strategy.plainSummary && (
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 md:p-5 flex gap-3 items-start -mt-1">
+          <span className="text-xl md:text-2xl shrink-0">💬</span>
+          <div>
+            <p className="text-[10px] md:text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">一句话大白话</p>
+            <p className="text-slate-800 text-sm md:text-lg leading-relaxed">{strategy.plainSummary}</p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
-      {isBasics ? (
+      {isArticle ? null : isBasics ? (
         <div className="w-full">
           <OptionBasicsView btcPrice={btcPrice} />
         </div>
@@ -353,6 +366,16 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         </div>
       ) : (
         <div className="w-full">
+          <details className="bg-blue-50/60 border border-blue-200 rounded-xl px-4 py-3 mb-3 text-sm group">
+            <summary className="font-bold text-blue-900 cursor-pointer select-none flex items-center gap-2">
+              📈 第一次看不懂这张盈亏图？点开看 30 秒说明
+            </summary>
+            <ul className="list-disc pl-5 mt-2 space-y-1 text-blue-900/90">
+              <li><strong>横轴</strong>：到期时 BTC 的价格，左边是跌、右边是涨。</li>
+              <li><strong>纵轴</strong>：这笔交易最终赚（线在 0 上方）还是亏（线在 0 下方）。</li>
+              <li><strong>线穿过 0 的地方</strong>＝盈亏平衡点（到这才不赚不亏）；<strong>线变平</strong>＝盈亏被锁死（封顶）；<strong>一直斜不停</strong>＝收益或亏损无限。</li>
+            </ul>
+          </details>
           <Suspense fallback={<div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm animate-pulse" />}>
             <PnLChartLazy key={strategy.id} data={pnlData} currentPrice={btcPrice} keyPoints={keyPoints} />
           </Suspense>
@@ -444,6 +467,26 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                 ))}
               </div>
 
+              {strategy.greeks && (
+                <div className="mt-6 md:mt-8">
+                  <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">希腊字母暴露 (Greeks)</div>
+                  <div className="grid grid-cols-4 gap-2 md:gap-3">
+                    {([
+                      ['Delta', strategy.greeks.delta, '方向（涨跌灵敏度）'],
+                      ['Gamma', strategy.greeks.gamma, 'Delta 的变化速度'],
+                      ['Theta', strategy.greeks.theta, '时间损耗'],
+                      ['Vega', strategy.greeks.vega, '对波动率的敏感度'],
+                    ] as const).map(([k, v, desc]) => (
+                      <div key={k} className="bg-slate-50 rounded-xl border border-slate-200 p-2.5 md:p-3 text-center">
+                        <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">{k}</div>
+                        <div className={`text-base md:text-2xl font-bold leading-tight my-0.5 ${v.startsWith('+') ? 'text-emerald-600' : v.startsWith('−') || v.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>{v}</div>
+                        <div className="text-[9px] md:text-[10px] text-slate-400 leading-tight">{desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 md:p-5 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">Risk Profile</div>
@@ -506,8 +549,26 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
           </div>
-          {isBasics ? '期权核心概念 (Core Concepts)' : '策略详解 (Strategy Guide)'}
+          {isArticle ? '内容详解 (Guide)' : isBasics ? '期权核心概念 (Core Concepts)' : '策略详解 (Strategy Guide)'}
         </h2>
+        {strategy.analogy && (
+          <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4 mb-5">
+            <p className="font-bold text-cyan-900 mb-1 text-sm md:text-base">{strategy.analogy.emoji} 用生活类比理解：{strategy.analogy.title}</p>
+            <p className="text-cyan-800 text-sm md:text-base leading-relaxed">{strategy.analogy.text}</p>
+          </div>
+        )}
+        {strategy.quickJudge && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+              <p className="text-xs font-bold text-emerald-600 mb-1">✅ 什么时候用</p>
+              <p className="text-sm text-emerald-900">{strategy.quickJudge.use}</p>
+            </div>
+            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3">
+              <p className="text-xs font-bold text-rose-600 mb-1">🚫 什么时候别用</p>
+              <p className="text-sm text-rose-900">{strategy.quickJudge.avoid}</p>
+            </div>
+          </div>
+        )}
         <div className="prose prose-slate max-w-none mb-8 md:mb-10">
         <div 
           className="text-slate-700 leading-loose text-base md:text-lg strategy-content"
@@ -515,7 +576,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         />
         </div>
 
-        {/* Expanded Guide (auto-generated details) */}
+        {/* Expanded Guide (auto-generated details) — 仅对含腿的普通策略显示 */}
+        {!isBasics && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
           {(() => {
             // Compute summary of legs
@@ -562,7 +624,27 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
             );
           })()}
         </div>
+        )}
 
+        {/* 新手常见误区 */}
+        {strategy.pitfalls && strategy.pitfalls.length > 0 && (
+          <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
+            <p className="font-bold text-rose-900 mb-2 text-sm md:text-base">🚫 新手常见误区</p>
+            <ul className="text-sm md:text-base text-rose-800 space-y-1.5 list-disc pl-5">
+              {strategy.pitfalls.map((p, i) => <li key={i}>{p}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {/* 加密期权 / 交易实务提醒 */}
+        {strategy.cryptoNote && (
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
+            <p className="font-bold text-amber-900 mb-1 text-sm md:text-base">⚙️ 加密期权 & 实盘提醒</p>
+            <p className="text-sm md:text-base text-amber-900/90 leading-relaxed">{strategy.cryptoNote}</p>
+          </div>
+        )}
+
+        {!isArticle && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
           {/* Pros */}
           <div className="bg-emerald-50/50 rounded-xl p-5 md:p-6 border border-emerald-100">
@@ -600,6 +682,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
             </ul>
           </div>
         </div>
+        )}
       </div>
 
       {/* Quick Tips */}

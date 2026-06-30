@@ -122,8 +122,26 @@ const optionBasics: Strategy = {
           </div>
         </div>
 
+        <div class="bg-white border border-slate-200 rounded-lg p-5 mt-5">
+          <h5 class="font-bold text-lg text-slate-900 mb-2">📈 三分钟学会看「盈亏图」</h5>
+          <p class="text-slate-700 mb-3 text-sm">本站每个策略都有一张盈亏曲线图，看懂它就看懂了策略的全部脾气：</p>
+          <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
+            <li><strong>横轴（X）</strong>：到期时 BTC 的价格，左边是跌、右边是涨。</li>
+            <li><strong>纵轴（Y）</strong>：你这笔交易最终赚（线在 0 上方）还是亏（线在 0 下方）。</li>
+            <li><strong>那条 0 水平线</strong>：盈亏分界。线穿过 0 的位置就是<strong>盈亏平衡点</strong>——价格到这才不赚不亏。</li>
+            <li><strong>线变平的地方</strong>：说明盈亏被「锁死」了，平在上方=最大盈利封顶，平在下方=最大亏损封顶。</li>
+            <li><strong>线一直往右上 / 右下斜不停</strong>：代表收益或亏损「无限」，没有封顶。</li>
+          </ul>
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-3 rounded mt-3">
+            <p class="text-xs text-blue-900">💡 一句话：<strong>线在 0 上方就是赚，越高赚越多；看线在哪拐弯、哪变平，就知道这个策略最多赚多少、最多亏多少。</strong></p>
+          </div>
+        </div>
+
         <h4 class="font-bold text-slate-900 mt-8 mb-3 text-xl">希腊字母 (The Greeks) - 风险指标</h4>
         <p class="mb-4 text-slate-700">希腊字母是衡量期权风险和价值变化的核心指标。掌握它们是期权交易进阶的关键。</p>
+        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-4 rounded">
+          <p class="text-sm text-emerald-900"><strong>🔰 新手只需先记 Delta（涨跌灵敏度）和 Theta（时间损耗）两个</strong>，其余（Gamma / Vega / Rho）看不懂可以先跳过，等熟悉了再展开下方的进阶折叠。</p>
+        </div>
         
         <div class="space-y-4">
           <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-5 rounded-lg border border-indigo-200">
@@ -140,19 +158,6 @@ const optionBasics: Strategy = {
                 <li>Delta可用于对冲：持有1 BTC + 卖出2个Delta=0.5的Call = Delta中性</li>
                 <li>Delta会变化（这就是Gamma的作用）</li>
               </ul>
-            </div>
-          </div>
-
-          <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-lg border border-purple-200">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="font-bold text-purple-700 text-lg">Gamma (Γ)</div>
-              <span class="px-2 py-0.5 bg-purple-200 text-purple-800 text-xs rounded">Delta的变化率</span>
-            </div>
-            <p class="text-slate-700 mb-2">衡量Delta对标的价格变动的敏感度，是Delta的"加速度"。</p>
-            <div class="bg-white/50 rounded p-3 text-sm space-y-1">
-              <p><strong>📊 实例</strong>：Gamma=0.02意味着价格涨$1，Delta增加0.02。</p>
-              <p><strong>⚠️ 风险</strong>：ATM期权的Gamma最大，临近到期时Gamma暴增（Gamma爆炸），这对卖方极其危险。</p>
-              <p><strong>💡 策略</strong>：买方喜欢高Gamma（价格有利时赚得更快），卖方害怕高Gamma（方向敞口快速反向放大、临近到期的尾部风险）。</p>
             </div>
           </div>
 
@@ -174,33 +179,51 @@ const optionBasics: Strategy = {
             </div>
           </div>
 
-          <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-lg border border-green-200">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="font-bold text-green-700 text-lg">Vega (ν)</div>
-              <span class="px-2 py-0.5 bg-green-200 text-green-800 text-xs rounded">波动率敏感度</span>
-            </div>
-            <p class="text-slate-700 mb-2">衡量隐含波动率(IV)变化1%对期权价格的影响。</p>
-            <div class="bg-white/50 rounded p-3 text-sm space-y-1">
-              <p><strong>📊 实例</strong>：Vega=200意味着IV涨1%，期权价格涨$200。</p>
-              <p><strong>💥 Vega Crush</strong>：重大事件（如减半、ETF决议）前IV飙升，事件后"利好/利空出尽"，IV暴跌导致期权价格崩盘，即使标的价格没什么变化。</p>
-              <p><strong>🎯 策略</strong>：</p>
-              <ul class="list-disc pl-5 space-y-1">
-                <li>预期波动加剧 → 买入期权（Long Vega）</li>
-                <li>预期波动回落 → 卖出期权（Short Vega）</li>
-              </ul>
-            </div>
-          </div>
+          <details class="bg-white border border-slate-200 rounded-lg p-4">
+            <summary class="font-bold text-slate-700 cursor-pointer">🔬 进阶：Gamma / Vega / Rho（新手可先跳过）</summary>
+            <div class="space-y-4 mt-4">
+              <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-lg border border-purple-200">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="font-bold text-purple-700 text-lg">Gamma (Γ)</div>
+                  <span class="px-2 py-0.5 bg-purple-200 text-purple-800 text-xs rounded">Delta的变化率</span>
+                </div>
+                <p class="text-slate-700 mb-2">衡量Delta对标的价格变动的敏感度，是Delta的"加速度"。</p>
+                <div class="bg-white/50 rounded p-3 text-sm space-y-1">
+                  <p><strong>📊 实例</strong>：Gamma=0.02意味着价格涨$1，Delta增加0.02。</p>
+                  <p><strong>⚠️ 风险</strong>：ATM期权的Gamma最大，临近到期时Gamma暴增（Gamma爆炸），这对卖方极其危险。</p>
+                  <p><strong>💡 策略</strong>：买方喜欢高Gamma（价格有利时赚得更快），卖方害怕高Gamma（方向敞口快速反向放大、临近到期的尾部风险）。</p>
+                </div>
+              </div>
 
-          <div class="bg-gradient-to-r from-slate-50 to-gray-50 p-5 rounded-lg border border-slate-200">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="font-bold text-slate-700 text-lg">Rho (ρ)</div>
-              <span class="px-2 py-0.5 bg-slate-200 text-slate-800 text-xs rounded">利率敏感度</span>
+              <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-lg border border-green-200">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="font-bold text-green-700 text-lg">Vega (ν)</div>
+                  <span class="px-2 py-0.5 bg-green-200 text-green-800 text-xs rounded">波动率敏感度</span>
+                </div>
+                <p class="text-slate-700 mb-2">衡量隐含波动率(IV)变化1%对期权价格的影响。</p>
+                <div class="bg-white/50 rounded p-3 text-sm space-y-1">
+                  <p><strong>📊 实例</strong>：Vega=200意味着IV涨1%，期权价格涨$200。</p>
+                  <p><strong>💥 Vega Crush</strong>：重大事件（如减半、ETF决议）前IV飙升，事件后"利好/利空出尽"，IV暴跌导致期权价格崩盘，即使标的价格没什么变化。</p>
+                  <p><strong>🎯 策略</strong>：</p>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>预期波动加剧 → 买入期权（Long Vega）</li>
+                    <li>预期波动回落 → 卖出期权（Short Vega）</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-r from-slate-50 to-gray-50 p-5 rounded-lg border border-slate-200">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="font-bold text-slate-700 text-lg">Rho (ρ)</div>
+                  <span class="px-2 py-0.5 bg-slate-200 text-slate-800 text-xs rounded">利率敏感度</span>
+                </div>
+                <p class="text-slate-700 mb-2">衡量无风险利率变化对期权价格的影响。在加密市场中影响极小，通常可以忽略。</p>
+                <div class="bg-white/50 rounded p-3 text-sm">
+                  <p><strong>💡 说明</strong>：在传统金融市场（如股票期权），利率变化会影响持仓成本。但在加密市场，由于没有传统意义的无风险利率（或使用Funding Rate代替），Rho的作用微乎其微。</p>
+                </div>
+              </div>
             </div>
-            <p class="text-slate-700 mb-2">衡量无风险利率变化对期权价格的影响。在加密市场中影响极小，通常可以忽略。</p>
-            <div class="bg-white/50 rounded p-3 text-sm">
-              <p><strong>💡 说明</strong>：在传统金融市场（如股票期权），利率变化会影响持仓成本。但在加密市场，由于没有传统意义的无风险利率（或使用Funding Rate代替），Rho的作用微乎其微。</p>
-            </div>
-          </div>
+          </details>
         </div>
 
         <div class="bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 p-5 rounded mt-6">
@@ -211,6 +234,63 @@ const optionBasics: Strategy = {
             <li>实盘前用期权计算器模拟不同场景下希腊字母的变化</li>
             <li>记住：买方做多Gamma和Vega，做空Theta；卖方相反</li>
           </ul>
+        </div>
+
+        <h4 class="font-bold text-slate-900 mt-8 mb-3 text-xl">📊 波动率认知 (IV / HV / IV Rank)</h4>
+        <p class="mb-4 text-slate-700">波动率是期权定价的灵魂。全站反复出现的「IV 高位适合收租、IV 低位适合买方」，背后就是下面这套判断工具。</p>
+        <div class="space-y-4">
+          <div class="bg-gradient-to-r from-violet-50 to-purple-50 p-5 rounded-lg border border-violet-200">
+            <div class="font-bold text-violet-700 text-lg mb-2">IV（隐含波动率）vs HV（历史波动率）</div>
+            <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
+              <li><strong>IV（Implied Volatility）</strong>：从期权价格「反推」出来的、市场对<strong>未来</strong>波动的预期。IV 越高，期权越贵。</li>
+              <li><strong>HV（Historical Volatility）</strong>：标的<strong>过去</strong>真实走出来的波动幅度。</li>
+              <li><strong>怎么用</strong>：IV 明显高于 HV，说明期权偏贵、市场在为未来定价恐慌，利于卖方；IV 低于 HV，说明期权偏便宜，利于买方。</li>
+            </ul>
+          </div>
+          <div class="bg-gradient-to-r from-indigo-50 to-violet-50 p-5 rounded-lg border border-indigo-200">
+            <div class="font-bold text-indigo-700 text-lg mb-2">IV Rank / IV Percentile（决定你当买方还是卖方）</div>
+            <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
+              <li><strong>IV Rank</strong> = 当前 IV 在过去 N 天（通常一年）最低值~最高值区间里的相对位置（0~100 刻度）。算法：（当前−最低）÷（最高−最低）×100。例：区间 40%–120%、当前 60% → (60−40)÷(120−40)×100 ≈ 25。</li>
+              <li><strong>IV Percentile</strong> = 过去 N 天里，IV 低于当前值的天数占比。</li>
+              <li>两者都把抽象的「IV 高不高」变成 0–100 的可操作刻度。</li>
+            </ul>
+            <div class="bg-white/60 border-l-4 border-indigo-400 p-3 rounded mt-3">
+              <p class="text-sm text-indigo-900"><strong>🎯 决策口诀</strong>：<strong>IV Rank &gt; 50 偏卖方</strong>（收租 / 价差 / 铁鹰，赚 IV 回落 + Theta）；<strong>IV Rank &lt; 30 偏买方</strong>（单腿 / 跨式 / 日历，赌 IV 上升 + 大波动）。</p>
+            </div>
+          </div>
+          <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <p class="text-sm text-blue-900"><strong>📌 实例</strong>：BTC 当前 IV=60%，过去一年区间 40%–120% → IV Rank≈25，处于偏低位 → 倾向<strong>做买方</strong>（Long Call / Long Straddle），而不是 Short Strangle 这类卖方策略。</p>
+            <p class="text-sm text-blue-900 mt-2"><strong>🧭 加密参考</strong>：Deribit 的 <strong>DVOL 指数</strong>就是 BTC 的「恐慌指数」，可直接当作 BTC 隐含波动率水位的风向标。</p>
+          </div>
+        </div>
+
+        <h4 class="font-bold text-slate-900 mt-8 mb-3 text-xl">⚙️ 加密期权 vs 传统股票期权（必读）</h4>
+        <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-500 p-5 rounded-lg mb-4">
+          <p class="text-sm text-orange-900"><strong>⚠️ 重要</strong>：本站用「买房定金→到期买下房子」作类比便于理解，但那是<strong>美式 + 实物交割</strong>的框架。Deribit / OKX / Bybit 等主流平台的 BTC 期权机制不同，下面五点必须先搞清。</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+          <div class="bg-white border border-slate-200 rounded-lg p-4">
+            <p class="font-bold text-slate-900 mb-1">1. 欧式期权（无提前行权）</p>
+            <p class="text-sm text-slate-700">只能在<strong>到期日</strong>行权，不存在「提前被行权 / 提前指派」。所以传统股票期权里关于「提前行权」的担忧，在主流加密期权里基本不适用。</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4">
+            <p class="font-bold text-slate-900 mb-1">2. 现金交割（不交割实物）</p>
+            <p class="text-sm text-slate-700">到期按交易所 BTC 指数（通常是最后 30 分钟 TWAP 均价）<strong>结算现金差额</strong>，<strong>不会真的买入/卖出 1 枚 BTC</strong>。传统「被指派后拿到/交出股票」在这里要换成「按现金差额结算」。</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4">
+            <p class="font-bold text-slate-900 mb-1">3. 币本位 (inverse) vs USDC 线性 (linear)</p>
+            <p class="text-sm text-slate-700">Deribit 经典 BTC 期权是<strong>币本位</strong>：权利金与盈亏都以 BTC 计价，换算成 USD 后曲线是<strong>非线性</strong>的。USDC 线性期权才是直观的 USD 盈亏。</p>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-lg p-4">
+            <p class="font-bold text-slate-900 mb-1">4. BTC IV 常态 40–80%</p>
+            <p class="text-sm text-slate-700">远高于美股的 15–25%。所以一张 ATM 月权权利金约为现货的 5%（本站 premiumRatio≈0.05）是正常水平，不要觉得「太贵」。</p>
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-4">
+          <p class="text-sm text-amber-900"><strong>5. 7×24 无收盘、无熔断</strong>：加密市场全年无休、没有涨跌停和熔断机制，周末与节假日流动性枯竭时容易出现「插针 / 清算级联式跳空」。「市场永不收盘所以能随时止损」是错觉——真到瀑布行情时点差炸开、止损会严重滑点。</p>
+        </div>
+        <div class="bg-slate-100 border border-slate-300 rounded-lg p-4">
+          <p class="text-xs text-slate-600"><strong>📐 盈亏图免责</strong>：本站所有盈亏图均为 <strong>USD 线性近似</strong>，对应 USDC 线性期权；若你交易的是 Deribit 币本位（inverse）期权，实际 USD 盈亏曲线会因币价变动而非线性偏移（尤其暴涨时空头的币本位亏损会被高币价放大）。</p>
         </div>
       `,
     pros: [

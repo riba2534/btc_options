@@ -29,7 +29,7 @@ const cashSecuredPut: Strategy = {
           </div>
           <div class="bg-amber-50 p-4 rounded mt-3 border border-amber-200">
             <p class="text-sm text-amber-900 mb-2"><strong>⚠️ 资金要求（Cash-Secured）</strong></p>
-            <p class="text-xs text-amber-800">必须在账户准备足额现金（$90k），以防被行权时有钱接盘。这是"现金担保"的含义。</p>
+            <p class="text-xs text-amber-800">必须在账户预留足额资金（约$90k）作担保，以防到期被指派/按差额结算时有钱兜底接盘。这是"现金担保"的含义。</p>
           </div>
         </div>
 
@@ -66,15 +66,15 @@ const cashSecuredPut: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 场景1：BTC停在 $100k 或更高</p>
-              <p class="text-xs text-green-700 mt-1">Put作废，保留全部 $2,500。年化收益 = $2,500/$90,000 × 12 = <strong>33%</strong>！可以继续卖下一期</p>
+              <p class="text-xs text-green-700 mt-1">Put作废，保留全部 $2,500。理论年化 = $2,500/$90,000 × 12 ≈ 33%（仅顺风且未被深套时成立，不可当稳定预期——本质是做空波动率、赚肥左尾的钱）。可继续卖下一期</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
               <p class="text-sm font-bold text-blue-800">ℹ️ 场景2：BTC跌到 $90k</p>
-              <p class="text-xs text-blue-700 mt-1">被行权，按$90k接盘。实际成本 $87.5k（比直接挂单便宜$2.5k），完美抄底！</p>
+              <p class="text-xs text-blue-700 mt-1">到期ITM，按现金差额结算（经济效果≈在$90k接盘）。等效买入成本 $87.5k（比直接挂单便宜$2.5k）；想真正持币需用结算资金手动到现货买入</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
               <p class="text-sm font-bold text-yellow-800">⚠️ 场景3：BTC暴跌到 $80k</p>
-              <p class="text-xs text-yellow-700 mt-1">被行权按$90k接盘，账面浮亏 $10k。但权利金抵消$2.5k，实际亏损$7.5k。比直接$100k买入亏得少</p>
+              <p class="text-xs text-yellow-700 mt-1">按现金差额结算（经济效果≈在$90k接盘），相对现价浮亏 $10k。但权利金抵消$2.5k，实际亏损$7.5k。比直接$100k买入亏得少</p>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ const cashSecuredPut: Strategy = {
           <div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <p class="font-bold text-red-900 mb-2">✗ 不适合使用</p>
             <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
-              <li>不想持有现货、纯粹投机（被行权后被迫持币）</li>
+              <li>不想承接下行风险、纯粹投机（深跌时按差额赔付，经济上等同高价接盘）</li>
               <li>预期BTC会暴跌超过20%（接盘后浮亏巨大）</li>
               <li>没有足额现金（无法Cash-Secured，会被强平）</li>
             </ul>
@@ -103,7 +103,7 @@ const cashSecuredPut: Strategy = {
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
         <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
           <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-            <li><strong>接盘后继续跌</strong>：被行权后BTC继续暴跌，会面临账面浮亏（虽然长期持有者不care）</li>
+            <li><strong>接盘后继续跌</strong>：按差额结算（≈接盘）后若继续暴跌，会面临账面浮亏（虽然长期持有者不care）</li>
             <li><strong>机会成本</strong>：现金锁死在担保中，无法用于其他投资机会</li>
             <li><strong>错过牛市</strong>：如果BTC直接起飞不回调，你只赚权利金错过大涨</li>
             <li><strong>滚动风险</strong>：如果想持续卖Put收租，需要每月滚仓，遇到IV低迷时权利金会很少</li>
@@ -116,7 +116,7 @@ const cashSecuredPut: Strategy = {
           <li><strong>行权价选择</strong>：设在技术支撑位或整数关口下方5-10%，提高不被行权的概率</li>
           <li><strong>到期时间</strong>：30-45天最优，Theta Decay效率高。太短风险大，太长权利金少</li>
           <li><strong>分批抄底</strong>：不要All In一次，分3-5批不同价位卖Put，降低平均成本</li>
-          <li><strong>滚动收租</strong>：到期未被行权后，立即卖下一期，月月收租。年化可达20-40%</li>
+          <li><strong>滚动收租</strong>：到期未被指派后，立即卖下一期，月月收租。理论年化约20-40%——仅顺风且未被深套时成立、不可当稳定预期（本质是做空波动率、肥左尾，一次暴跌可吞掉多期收益）</li>
           <li><strong>组合策略</strong>：持币后可加Covered Call（备兑看涨），双向收租</li>
           <li><strong>Delta监控</strong>：Put的Delta越接近-0.3时，被行权概率约30%，可作参考</li>
           <li><strong>到期建议</strong>：常用 14–30 天或 30–45 天；接近行权价时提前滚动或平仓，保持现金担保安全边际。</li>
@@ -131,7 +131,29 @@ const cashSecuredPut: Strategy = {
       '踏空风险：若BTC价格直接上涨，投资者仅获得权利金，错失资产增值机会。',
       '下行风险：若BTC价格暴跌穿透行权价，投资者必须按原定价格接盘，面临浮亏。'
     ]
-  }
+  },
+  plainSummary: '你本来就想等 BTC 跌到某个价再买。与其干等，不如先把买币的钱备好，对外承诺"跌到这个价我就接"，对方先付你一笔钱当谢礼。真跌到了你就低价接货（反正本来就想买）；没跌到，这笔钱白赚。',
+  analogy: {
+    emoji: '🏷️',
+    title: '收订金的限价抄底单',
+    text: '你想低价抄底，本来会挂个"跌到 $90k 自动买入"的限价单干等着。卖 Put 相当于把这张限价单"出租"出去：别人先付你一笔订金（权利金），作为你承诺"到价必接"的报酬。跌到了你照价接货（本就想买）；没跌到，订金白赚。'
+  },
+  pitfalls: [
+    '把"现金担保"当口号——没真备足资金就卖 Put，等于裸卖看跌：暴跌时要按差额赔付，保证金不够会被强平在最差位置。',
+    '为多收权利金把行权价挂得离现价太近（甚至高于现价），结果稍一回调就被接盘，接的价格并不便宜，"抄底"变"高位接盘"。',
+    '误以为是"稳赚的收租"——它本质是做空波动率、肥左尾：横盘连赢多期的小钱，可能被一次暴跌深套一次性吐回去。'
+  ],
+  quickJudge: {
+    use: '真想低价接币且备足现金',
+    avoid: '不愿持币或预期暴跌'
+  },
+  greeks: {
+    delta: '+',
+    gamma: '−',
+    theta: '+',
+    vega: '−'
+  },
+  cryptoNote: 'Deribit/OKX 主流 BTC 期权是欧式+现金交割：到期 ITM 只按现金差额结算，不会自动把币"接"到账上（经济效果≈在行权价接盘），想真正持币要用结算资金手动到现货买入。同理"现金担保"在加密多表现为占用保证金额度——务必留足资金兜底，否则等同裸卖 Put，暴跌时会被强平。'
 };
 
 export default cashSecuredPut;
