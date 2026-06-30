@@ -2,20 +2,15 @@
 
 这是一份面向后续 AI 助手的维护指南，基于当前项目最新状态进行了补充完善。它说明：项目结构、策略新增流程、名称规范、UI 行为约定、内容风格模板，以及验证与排错清单。
 
-## 最新更新概览（2025-11-25）
+## 最新更新概览（2026-06-30）
 
-- 策略模块化重构完成：`src/strategies/**` 分类目录下新增多策略，统一由 `constants.ts` 聚合导出。
-- 新增策略类型（示例）：
-  - 时间价差：`Call/Put Calendar`
-  - 对角价差：`Long Diagonal Call/Put`
-  - 合成空头：`Synthetic Short`
-  - 高波动：`Long Guts`
-  - 借记康多：`Long Call Condor`
-  - 断翼蝶式（看涨）：`Broken-Wing Butterfly – Call`
-  - 收益/对冲：`Jade Lizard`、`Seagull`、`Wheel`、`Covered Strangle`
-  - 中性精确：`Long Put Butterfly`、`Box Spread`
-- 名称规范统一：采用“中文名 (English Name)”半角括号格式；英文使用行业通用名称。
-- 侧边栏目录显示更新：中文在上、英文在下两行展示；点击策略时详情页自动滚到顶部。
+- **部署改为 Cloudflare Pages**（已弃用 GitHub Pages）：push 到 `main` → GitHub Actions（`.github/workflows/deploy.yml`）→ `npm run build` → wrangler 部署到 CF Pages（项目 `btc-options`）。主域名 **`option.red`**；旧域名 `option.riba2534.cn` 经 Cloudflare Worker **301 重定向**至 `option.red`。
+- **小白友好字段**：`Strategy` 新增 6 个可选字段（`plainSummary`/`analogy`/`pitfalls`/`quickJudge`/`greeks`/`cryptoNote`），由 `StrategyDetail` 在组件层统一渲染（有则显示、无则跳过，可渐进填充，**不必写进 `explanation`**）。
+- **纯教学条目（isArticle）**：BASICS 分类新增 `learning-path`（学习路径+决策树）、`glossary`（术语速查）、`advanced-concepts`（平价公式/Skew/欧式现金交割）。这类条目 `legs: []`，组件按 `isArticle` 仅渲染 `explanation`（无图表/构造/情景表）。
+- **新增策略**：`risk-reversal`、`ratio-call-spread`、`ratio-put-spread`、`reverse-iron-condor`。
+- **Tailwind 改为本地 PostCSS 构建**（见 `tailwind.config.js`/`postcss.config.js`/`index.css`，含 content 扫描与 safelist）。
+- 当前共 46 项：4 个基础/教学条目 + 42 个策略（看涨 10 / 看跌 9 / 中性 12 / 高波动 4 / 收益对冲 7）。
+- 名称规范统一：采用“中文名 (English Name)”半角括号格式；英文使用行业通用名称。侧边栏中文在上、英文在下两行；切换策略自动滚到顶部。
 
 ## 项目速览
 
@@ -25,6 +20,7 @@
 - 入口：`index.tsx`，主组件：`App.tsx`
 - 数据：策略数据模块化存放于 `src/strategies/**`
 - 对外导出：`constants.ts` 统一暴露 `DEFAULT_BTC_PRICE` 与 `STRATEGIES`
+- 部署：Cloudflare Pages（项目 `btc-options`，域名 `option.red`）；push `main` 自动部署，无需手动操作
 
 ## 快速开发
 
@@ -59,6 +55,7 @@ export interface OptionLeg {
   action: 'Buy' | 'Sell';
   strikeOffset: number;  // 行权价相对现价的倍数，例如 1.10 表示高出现价 10%
   premiumRatio: number;  // 权利金相对现价的比例，例如 0.03 表示 3%
+  expiryLabel?: string;  // 可选：'近月' / '远月'（日历 / 对角价差）
 }
 
 export interface Strategy {
@@ -69,14 +66,24 @@ export interface Strategy {
   setup: string;          // 构造方法一句话
   riskProfile: string;    // 风险收益特征（例如：风险有限、收益无限）
   idealScenario: string;  // 理想使用场景
-  legs: OptionLeg[];      // 期权腿（可空数组，如 Wheel 流程型策略）
+  legs: OptionLeg[];      // 期权腿（可空数组：Wheel 流程型、或纯教学条目 isArticle）
   detailedAnalysis: {
     explanation: string;  // HTML（遵循下方风格模板）
     pros: string[];       // 优势（2–4条，完整句）
     cons: string[];       // 劣势（2–4条，完整句）
   };
+
+  // —— 以下均可选；由 StrategyDetail 在组件层渲染，有则显示、无则跳过，可渐进填充 ——
+  plainSummary?: string;                                       // 一句话大白话（零术语）
+  analogy?: { emoji: string; title: string; text: string };   // 生活类比
+  pitfalls?: string[];                                         // 新手常见误区 2–3 条
+  quickJudge?: { use: string; avoid: string };                // 极简判断（各 ≤20 字）
+  greeks?: { delta: string; gamma: string; theta: string; vega: string }; // 希腊字母暴露（值用 +/−/≈0）
+  cryptoNote?: string;                                         // 加密期权 / 交易实务提醒
 }
 ```
+
+> 这 6 个可选字段是面向小白的增量讲解，**优先用它们**而非把内容堆进 `explanation`；组件会自动渲染（大白话卡 / 类比卡 / 极简判断 / 误区 / 希腊字母表 / 加密提醒）。greeks 的符号必须按策略真实净暴露判定（买方 Θ−/V+、卖方 Θ+/V−、看涨 Δ+、看跌 Δ−、中性 Δ≈0）。
 
 ## 名称规范（必须统一）
 
@@ -97,7 +104,8 @@ export interface Strategy {
 4) 保持 `id` 唯一且使用 kebab-case；`name` 使用“中文名 (English Name)”半角括号格式。
 5) `legs` 的 `strikeOffset` 与 `premiumRatio` 用合理示例值（参考同类策略取值范围）。
 6) `detailedAnalysis.explanation` 必须按统一 HTML 模板（见下文），并包含具体数值案例与希腊字母风险说明。
-7) 本地预览多个策略页面，检查展示一致、图表和文案正确。
+7) 尽量填齐 6 个可选小白字段（见数据模型）：`greeks` 符号按真实净暴露判定；卖方/比例/合成/被行权类等加密敏感策略补 `cryptoNote`（欧式现金交割、保证金强平、点差成本）。
+8) 本地预览多个策略页面（含移动端），检查展示一致、图表和文案正确，跑 `npm run typecheck && npm run lint && npm run build`。
 
 ## 统一的 HTML 风格模板（复制即可用）
 
@@ -218,9 +226,12 @@ export interface Strategy {
 
 - 侧边栏策略名称：中文显示在上方，英文显示在下方小字（括号内英文），两行展示。
 - 名称解析：要求 `name` 使用半角括号 `()` 包含英文；程序会提取括号内英文用于下行显示。
-- 切换策略滚动：点击侧边栏策略后，详情页自动滚动至顶部（平滑滚动）。
+- 切换策略滚动：点击侧边栏策略后，详情页自动滚动至顶部（`prefers-reduced-motion` 时改为瞬时）。
 - 特殊基础页：`Option Basics` 使用迷你图表展示四种基础期权形态。
-- 现货叠加：`Covered Call`、`Protective Put`、`Collar` 会额外叠加现货盈亏计算。
+- 纯教学条目（`isArticle` = BASICS 分类且 `id !== 'option-basics'`，如 `learning-path`/`glossary`/`advanced-concepts`）：`legs: []`，只渲染 `explanation`，不显示图表/构造卡/情景表/自动腿卡/pros-cons。
+- 现货叠加：`Covered Call`、`Protective Put`、`Collar`、`Covered Strangle` 会额外叠加现货盈亏计算（须与 `StrategyDetail` 内的 id 列表保持一致）。
+- 可选字段渲染位置：`plainSummary` 在 header 下方；`analogy`/`quickJudge` 在「策略详解」区顶部；`greeks` 暴露表在构造卡内；`pitfalls`/`cryptoNote` 在 explanation 之后、pros/cons 之前。
+- 普通策略图表上方有「📈 看懂盈亏图」折叠提示（原生 `<details>`，默认收起）。
 
 ## 常见维护动作
 
