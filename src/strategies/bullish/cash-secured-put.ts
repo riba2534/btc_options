@@ -69,7 +69,7 @@ const cashSecuredPut: Strategy = {
               <p class="text-xs text-green-700 mt-1">Put作废，保留全部 $2,500。理论年化 = $2,500/$90,000 × 12 ≈ 33%（仅顺风且未被深套时成立，不可当稳定预期——本质是做空波动率、赚肥左尾的钱）。可继续卖下一期</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
-              <p class="text-sm font-bold text-blue-800">ℹ️ 场景2：BTC跌到 $90k</p>
+              <p class="text-sm font-bold text-blue-800">ℹ️ 场景2：BTC收于 $90k 下方（如 $89k）</p>
               <p class="text-xs text-blue-700 mt-1">到期ITM，按现金差额结算（经济效果≈在$90k接盘）。等效买入成本 $87.5k（比直接挂单便宜$2.5k）；想真正持币需用结算资金手动到现货买入</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">

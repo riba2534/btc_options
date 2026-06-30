@@ -77,7 +77,7 @@ const advancedConcepts: Strategy = {
             <li><strong>对策略的意义</strong>：日历价差（Calendar）、对角价差（Diagonal）正是在做多/做空这条期限结构的形状——买远月卖近月，赚近月更快的时间衰减 + 期限结构变化。</li>
           </ul>
           <div class="bg-indigo-50 border-l-4 border-indigo-400 p-3 rounded mt-3">
-            <p class="text-xs text-indigo-900">💡 事件前期限结构可能倒挂；事件落地后近月 IV 往往「Vega Crush」式塌缩。理解这一点，就能明白为什么日历策略在事件前后表现差异巨大。</p>
+            <p class="text-xs text-indigo-900">💡 事件前期限结构可能倒挂；事件落地后近月 IV 往往「IV Crush」式塌缩。理解这一点，就能明白为什么日历策略在事件前后表现差异巨大。</p>
           </div>
         </div>
       `,

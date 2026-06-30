@@ -28,7 +28,7 @@ const glossary: Strategy = {
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📐 希腊字母</h4>
         <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6 space-y-3 text-sm text-slate-700">
           <p><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded">Delta</span> 币价动 1 块，期权大概动几毛——衡量「跟涨跟跌」的灵敏度（Call 0~1，Put -1~0）。</p>
-          <p><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded">Gamma</span> Delta 的变化率，是 Delta 的「加速度」。ATM 且临近到期时最大。</p>
+          <p><span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded">Gamma</span> Delta 的变化率：把 Delta 看作期权价格随币价变动的「速度」，Gamma 就是「加速度」。ATM 且临近到期时最大。</p>
           <p><span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">Theta 时间损耗</span> 期权每天会「变质」掉一点价值，越临近到期掉得越快。买方亏、卖方赚。</p>
           <p><span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded">Vega</span> 隐含波动率（IV）每变化 1%，期权价格变化多少。买方做多 Vega、卖方做空 Vega。</p>
         </div>
@@ -37,7 +37,7 @@ const glossary: Strategy = {
         <div class="bg-white border border-slate-200 rounded-lg p-5 mb-6 space-y-3 text-sm text-slate-700">
           <p><span class="px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-bold rounded">IV / HV</span> IV（隐含波动率）= 市场预期未来波动多大，IV 越高期权越贵；HV（历史波动率）= 过去真实走出来的波动。</p>
           <p><span class="px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-bold rounded">IV Rank</span> 当前 IV 在过去一年最低~最高区间里的相对位置（0~100）。口诀：&gt;50 偏卖方，&lt;30 偏买方。</p>
-          <p><span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs font-bold rounded">Vega Crush</span> 重大事件（减半、ETF 决议）后「利好/利空出尽」，IV 暴跌使期权价格崩盘，即使币价没怎么动。</p>
+          <p><span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs font-bold rounded">IV Crush</span> 重大事件（减半、ETF 决议）后「利好/利空出尽」，IV 暴跌使期权价格崩盘，即使币价没怎么动。</p>
           <p><span class="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs font-bold rounded">Skew 偏斜</span> 不同行权价的 IV 不一样：下行恐慌时 Put 更贵、牛市时 Call 更贵，是市场情绪的温度计。</p>
         </div>
 

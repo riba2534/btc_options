@@ -139,7 +139,7 @@ const bearPutSpread: Strategy = {
   },
   greeks: {
     delta: '−',
-    gamma: '≈0',
+    gamma: '+',
     theta: '−',
     vega: '+'
   }

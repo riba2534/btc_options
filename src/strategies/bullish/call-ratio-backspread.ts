@@ -6,7 +6,7 @@ const callRatioBackspread: Strategy = {
   category: StrategyCategory.BULLISH,
   description: '卖出1份低价Call，买入2份高价Call。',
   setup: '卖出 1x ITM Call + 买入 2x OTM Call',
-  riskProfile: '下行风险有限，上行收益无限（净持有约 1 份多头 Call 敞口）；最大亏损发生在中间行权价（$105k）附近，约 $9k。',
+  riskProfile: '下行风险有限，上行收益无限（净持有约 1 份多头 Call 敞口）；最大亏损发生在买入腿行权价（$105k）附近，约 $9k。',
   idealScenario: '极度看涨，认为会有史诗级暴涨。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 0.95, premiumRatio: 0.06 },
@@ -132,7 +132,7 @@ const callRatioBackspread: Strategy = {
       `,
     pros: [
       '低成本构建：若构建得当，可实现零成本甚至净权利金收入（Net Credit）。',
-      '暴涨收益加倍：持有双倍的多头头寸，上行杠杆效应显著。',
+      '暴涨潜力大：净持有约 1 份多头 Call 敞口，BTC 大涨时上不封顶（斜率约 1 倍，并非 2 倍）。',
       '下行保护：若市场反向暴跌，仅损失构建成本或保留净权利金收益。'
     ],
     cons: [

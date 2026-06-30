@@ -86,7 +86,7 @@ const bullCallSpread: Strategy = {
             <p class="font-bold text-red-900 mb-2">✗ 不适合使用</p>
             <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
               <li>预期暴涨行情（收益被卖出腿封顶，错失超额利润）</li>
-              <li>波动率处于极低位（卖出期权收益太少，性价比不高）</li>
+              <li>隐含波动率处于高位（净借记成本被推高，组合净 Vega 为正，IV 回落会侵蚀仓位价值）</li>
               <li>无明确目标价位（难以设定合理的卖出行权价）</li>
             </ul>
           </div>
@@ -141,7 +141,7 @@ const bullCallSpread: Strategy = {
   },
   greeks: {
     delta: '+',
-    gamma: '≈0',
+    gamma: '+',
     theta: '−',
     vega: '+'
   }

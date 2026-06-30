@@ -108,7 +108,7 @@ const strip: Strategy = {
           <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
             <li><strong>事件前建仓</strong>：尽量在 1–2 周前进场，避免临期 Gamma 风险</li>
             <li><strong>分批止盈</strong>：暴跌时分批落袋，避免反弹回吐</li>
-            <li><strong>比例与间距</strong>：控制比例与行权价间距，兼顾净收入与死谷宽度</li>
+            <li><strong>比例与间距</strong>：控制比例与行权价间距，兼顾净成本与死谷宽度</li>
           </ul>
         </div>
       `,

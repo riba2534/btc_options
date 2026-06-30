@@ -115,7 +115,7 @@ const syntheticLong: Strategy = {
             <li><strong>爆仓风险极高</strong>：BTC暴跌时需追加巨额保证金，否则会被强制平仓</li>
             <li><strong>资金效率陷阱</strong>：虽然名义杠杆很高，但保证金要求会随波动率上升而增加</li>
             <li><strong>滚动风险</strong>：到期前需要滚仓，可能面临不利的价格和波动率变化</li>
-            <li><strong>Vega风险</strong>：虽然理论上Vega中性，但实际交易中Call和Put的IV可能分离（Skew），导致净Vega暴露</li>
+            <li><strong>基差/资金费率风险</strong>：同一行权价的 Call 与 Put 由看跌-看涨平价共用同一 IV，多 Call 与空 Put 的 Vega 结构上精确抵消、净 Vega≈0；合成多头真正的残余暴露来自远期价格与资金费率基差（持有成本，类似 rho），而非 Skew——Skew 指 IV 随不同行权价的偏斜，与单一行权价的合成头寸无关</li>
           </ul>
         </div>
 
