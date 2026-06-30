@@ -28,7 +28,12 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        # Pin a newer npm: the runner's bundled npm intermittently crashes with
+        # "Exit handler never called!" during `npm ci`. Retry once with a clean
+        # cache as a safety net.
+        run: |
+          npm install -g npm@11
+          npm ci || (npm cache clean --force && npm ci)
 
       - name: Build project
         run: npm run build
