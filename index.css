@@ -26,10 +26,11 @@ body {
   background: #94a3b8;
 }
 
-/* GPU acceleration for sidebar animations */
+/* GPU hint for the sidebar slide. Note: do NOT set `transform` here — it would
+   override Tailwind's `-translate-x-full`/`translate-x-0` utilities (same
+   specificity, later in the cascade) and break the mobile drawer. */
 .sidebar-animate {
   will-change: transform;
-  transform: translateZ(0);
 }
 
 /* Respect reduced-motion preference */

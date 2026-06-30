@@ -465,7 +465,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
               </h2>
             </div>
             <div className="overflow-x-auto w-full" role="region" aria-label="盈亏情景表（可横向滚动）" tabIndex={0}>
-              <table className="w-full text-sm text-left whitespace-nowrap md:whitespace-normal">
+              <table className="w-full text-sm text-left">
                 <caption className="sr-only">不同 BTC 到期价格下的策略盈亏推演</caption>
                 <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
                   <tr>
