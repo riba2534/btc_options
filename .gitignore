@@ -13,6 +13,9 @@ dist-ssr
 *.local
 build/
 
+# Wrangler / Cloudflare Pages 本地部署临时目录
+.wrangler/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
