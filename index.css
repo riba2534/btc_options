@@ -43,3 +43,108 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ----------------------------------------------------------------------
+ * Strategy explanation (.strategy-content) visual normalization.
+ *
+ * The 46 strategy files each hand-write their own seven-section HTML with
+ * an independently-chosen pastel gradient per section (emerald/blue/red/
+ * purple/teal/amber/...) — 7-8 unrelated hues stacked on one page. Rewriting
+ * all 46 files is a large, risky migration, so instead this recolors the
+ * *visual* result for every strategy at once: any direct-child <div> that
+ * actually carries a background utility (`bg-*` / `from-*`) gets repainted
+ * with a soft gradient in the strategy's own category color (via the
+ * inline `--accent`/`--accent-tint`/`--accent-tint-2` custom properties
+ * from CATEGORY_STYLES) instead of its hand-picked one-off color — so a
+ * bullish-strategy page reads as "emerald throughout" instead of a rainbow,
+ * while keeping the warm, filled card look the explanation section relies
+ * on for visual energy (an earlier pass over-corrected this to flat white
+ * cards, which read as sterile — see git history). Plain layout wrappers
+ * (e.g. the "使用场景" section's `<div class="space-y-3 mb-6">`, which
+ * carries no background class) are intentionally left untouched by using a
+ * positive `[class*="bg-"]`/`[class*="from-"]` match instead of
+ * `:not(.grid)` — a blanket `:not()` selector would otherwise paint a
+ * phantom card behind that section on every single strategy page.
+ * ------------------------------------------------------------------- */
+.strategy-content {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The ⚠️ 风险提示 box (fixed bg-amber-50, never category-tinted per the
+   CLAUDE.md template) and the 💡 专业建议 box (section 7 — always indigo,
+   unlike the visually-identical section-1 "核心思想" box which legitimately
+   varies by category) must keep their fixed colors. The advice box has no
+   robust class-name signature of its own (it can share the exact same
+   indigo/purple classes as an INCOME-category core-idea box), but it is
+   reliably the only direct-child section whose class list ends bare at
+   "rounded-lg" with no trailing p- or mb- utility class — verified against all 46
+   strategy files. */
+.strategy-content > div[class*="bg-"]:not([class*="bg-amber-50"]):not([class$="rounded-lg"]),
+.strategy-content > div[class*="from-"]:not([class$="rounded-lg"]) {
+  background-image: linear-gradient(135deg, var(--accent-tint, #f8fafc), var(--accent-tint-2, #f1f5f9)) !important;
+  background-color: var(--accent-tint, #f8fafc) !important;
+  border-color: var(--accent-tint-2, #e2e8f0) !important;
+  border-left-width: 4px !important;
+  border-left-color: var(--accent, #2563eb) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Functional sub-cards inside a grid section (损益分析 / 实战案例 best-mid-
+   worst rows) keep their semantic emerald/rose/amber backgrounds — only
+   their radius/shadow gets normalized so they sit visually consistent
+   with the rest of the design system. */
+.strategy-content > div[class*="grid"] > div {
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+/* tailwind.config.js aliases red→rose / green→emerald / violet→purple so
+   isolated bg-red-*, text-green-*, etc. usages across the 46 strategy files
+   converge onto the design system's actual palette. But a handful of those
+   files pair BOTH names in one two-stop gradient (from-red-50 to-rose-50,
+   from-green-50 to-emerald-50, from-violet-50 to-purple-50 — this is the
+   literal pattern in CLAUDE.md's own template), and the alias makes both
+   stops resolve to the identical hex, collapsing the gradient into a flat
+   fill. Restore the true (non-aliased) starting stop for exactly those
+   pairs; --tw-gradient-to (native rose/emerald/purple, never aliased) is
+   already correct, so only --tw-gradient-from needs restoring. */
+.strategy-content [class*="from-red-50"][class*="to-rose-50"] {
+  --tw-gradient-from: #fef2f2 var(--tw-gradient-from-position) !important;
+}
+.strategy-content [class*="from-green-50"][class*="to-emerald-50"] {
+  --tw-gradient-from: #f0fdf4 var(--tw-gradient-from-position) !important;
+}
+.strategy-content [class*="from-violet-50"][class*="to-purple-50"] {
+  --tw-gradient-from: #f5f3ff var(--tw-gradient-from-position) !important;
+}
+
+/* Recharts renders its axis/tick/legend text as raw SVG <text>, which
+   can't be reached by a React className the same way HTML can. Routing it
+   through the same mono+tabular-nums treatment used everywhere else in
+   the app keeps chart numerals visually consistent with the rest of the
+   page instead of falling back to the Inter default. */
+.recharts-wrapper text {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Key-point marker entrance: a small, slightly bouncy pop-in instead of
+   appearing instantly once the line-draw animation finishes. Respects the
+   prefers-reduced-motion override above. */
+@keyframes keypoint-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.keypoint-marker {
+  animation: keypoint-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 80ms);
+  transform-origin: center;
+  opacity: 0;
+}

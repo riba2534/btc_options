@@ -38,8 +38,8 @@ const SidebarButton = memo<SidebarButtonProps>(({ strategy, isSelected, onSelect
     <button
       onClick={() => onSelect(strategy.id)}
       aria-current={isSelected ? 'page' : undefined}
-      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors border-l-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${isSelected
-        ? 'bg-blue-50 text-blue-700 border-blue-500 font-semibold'
+      className={`w-full text-left px-3 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-out border-l-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 ${isSelected
+        ? 'bg-brand-50 text-brand-700 border-brand-600 font-semibold'
         : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       }`}
     >
@@ -116,6 +116,22 @@ const App: React.FC = () => {
     }, {} as Record<StrategyCategory, typeof STRATEGIES>);
   }, []);
 
+  // Flattened in the exact order the sidebar renders it (category order,
+  // then declaration order within each category) so "prev/next" at the
+  // bottom of a strategy page walks the list the same way a reader
+  // scrolling the sidebar top-to-bottom would.
+  const flatOrderedStrategies = useMemo(() => (
+    CATEGORY_ORDER.flatMap(cat => strategiesByCategory[cat] || [])
+  ), [strategiesByCategory]);
+
+  const { prevStrategy, nextStrategy } = useMemo(() => {
+    const idx = flatOrderedStrategies.findIndex(s => s.id === selectedStrategyId);
+    return {
+      prevStrategy: idx > 0 ? flatOrderedStrategies[idx - 1] : null,
+      nextStrategy: idx >= 0 && idx < flatOrderedStrategies.length - 1 ? flatOrderedStrategies[idx + 1] : null,
+    };
+  }, [flatOrderedStrategies, selectedStrategyId]);
+
   // Memoized callbacks to prevent child re-renders
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
   const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
@@ -133,7 +149,7 @@ const App: React.FC = () => {
       {/* Skip link for keyboard users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:top-2 focus:left-2 focus:bg-white focus:px-3 focus:py-2 focus:rounded-lg focus:shadow focus:ring-2 focus:ring-blue-500 text-sm font-medium text-blue-700"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:top-2 focus:left-2 focus:bg-white focus:px-3 focus:py-2 focus:rounded-lg focus:shadow focus:ring-2 focus:ring-brand-500 text-sm font-medium text-brand-700"
       >
         跳到主要内容
       </a>
@@ -152,7 +168,7 @@ const App: React.FC = () => {
         aria-label="侧边栏"
         inert={!isSidebarOpen || undefined}
         className={`
-          fixed lg:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out sidebar-animate
+          fixed lg:relative z-50 h-full bg-white border-r border-slate-200 flex flex-col transition-[transform,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] sidebar-animate
           ${isSidebarOpen ? 'translate-x-0 w-80 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0 lg:w-0 lg:overflow-hidden'}
         `}
       >
@@ -160,11 +176,11 @@ const App: React.FC = () => {
           <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 px-2">
-                <img src="/favicon.svg" alt="BTC Options" className="h-10 w-10 rounded-md shadow-sm flex-shrink-0" />
-                <div className="min-w-0 text-center">
+                <img src="/favicon.svg" alt="BTC Options" className="h-10 w-10 rounded-lg shadow-sm flex-shrink-0" />
+                <div className="min-w-0">
                   <div className="text-slate-900 font-extrabold text-lg md:text-xl leading-tight">Option Strategy</div>
-                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">如果说衍生品是金融产品中的皇冠</div>
-                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">那么期权就是这顶皇冠上的明珠</div>
+                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-[#7c3aed] via-pink-500 to-orange-500 bg-clip-text text-transparent">如果说衍生品是金融产品中的皇冠</div>
+                  <div className="text-xs md:text-sm leading-tight bg-gradient-to-r from-[#7c3aed] via-pink-500 to-orange-500 bg-clip-text text-transparent">那么期权就是这顶皇冠上的明珠</div>
                 </div>
               </div>
             </div>
@@ -172,7 +188,7 @@ const App: React.FC = () => {
             <button
               onClick={closeSidebar}
               aria-label="关闭侧边栏"
-              className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-700 rounded-md hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
             </button>
@@ -198,22 +214,18 @@ const App: React.FC = () => {
             ))}
           </nav>
 
-          <div className="p-4 border-t border-slate-200 bg-slate-50">
-            <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-              <span>基准价格 (Ref Price)</span>
-              <span className="px-1.5 py-0.5 bg-slate-200 rounded text-[10px] text-slate-500 font-bold">FIXED</span>
-            </div>
-            <div className="font-mono font-bold text-lg text-slate-700">
-              ${btcPrice.toLocaleString()}
-            </div>
+          {/* Quiet footer link — deliberately not paired with any other
+              content (no price, no title block) so it can't get squeezed or
+              mis-aligned by a taller neighbor the way it did when it lived
+              in the header row next to the multi-line gradient slogan. */}
+          <div className="px-4 py-3 border-t border-slate-100">
             <a
               href="https://github.com/riba2534/btc_options"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="在 GitHub 查看本项目源码"
-              className="mt-3 flex items-center justify-center gap-2 text-xs font-medium text-slate-500 hover:text-slate-900 bg-white border border-slate-200 rounded-lg py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors duration-200 ease-out"
             >
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
                 <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.07 11.07 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.05.78 2.12 0 1.53-.01 2.77-.01 3.15 0 .31.21.68.8.56A10.94 10.94 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z" />
               </svg>
               <span>在 GitHub 查看源码</span>
@@ -223,16 +235,26 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1 h-full overflow-hidden bg-[#fafafa] flex flex-col w-full relative">
+      <main id="main-content" className="flex-1 h-full overflow-hidden bg-slate-50 flex flex-col w-full relative">
         {/* Toggle Button Area */}
-        <div className="absolute top-4 left-4 z-30">
+        {/*
+          This used to be `absolute top-4 left-4` floating on top of the
+          scrollable strategy content. Since <main> itself doesn't scroll
+          (StrategyDetail's inner div does), an absolutely-positioned button
+          here behaves like a fixed overlay that never moves — meaning it
+          silently covered whatever content scrolled underneath it (verified:
+          it was clipping price figures like "$120,000" mid-scroll). Making
+          it a real, non-overlaid row above the scroll area means it only
+          ever covers empty space, never content.
+        */}
+        <div className={`shrink-0 px-4 pt-4 md:px-6 md:pt-6 ${isMobile && isSidebarOpen ? 'hidden' : 'block'}`}>
           <button
             onClick={toggleSidebar}
             aria-label={isSidebarOpen ? '隐藏侧边栏' : '显示策略列表'}
             aria-expanded={isSidebarOpen}
             aria-controls="strategy-sidebar"
             title={isSidebarOpen ? '隐藏侧边栏' : '显示策略列表'}
-            className={`p-2.5 min-w-[44px] min-h-[44px] items-center justify-center bg-white/80 backdrop-blur border border-slate-200 shadow-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isMobile && isSidebarOpen ? 'hidden' : 'flex'}`}
+            className="p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center bg-white border border-slate-200 shadow-card rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white active:scale-95 transition-[background-color,box-shadow,color,transform] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             {isSidebarOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><path d="M9 3v18" /></svg>
@@ -249,7 +271,13 @@ const App: React.FC = () => {
             <div className="aspect-[4/3] max-h-[600px] bg-slate-200 rounded-2xl"></div>
           </div>
         }>
-          <StrategyDetail strategy={selectedStrategy} btcPrice={btcPrice} />
+          <StrategyDetail
+            strategy={selectedStrategy}
+            btcPrice={btcPrice}
+            prevStrategy={prevStrategy}
+            nextStrategy={nextStrategy}
+            onNavigate={handleStrategySelect}
+          />
         </Suspense>
       </main>
     </div>

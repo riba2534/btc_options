@@ -1,6 +1,10 @@
 <div align="center">
 
+<img src="public/favicon.svg" alt="Option Strategy Logo" width="96" height="96" />
+
 # BTC 期权策略图解 · Option Strategy
+
+*如果说衍生品是金融产品中的皇冠，那么期权就是这顶皇冠上的明珠*
 
 **交互式可视化学习 BTC 期权策略 —— 从「什么是期权」到 40+ 进阶组合，小白也能看懂。**
 

@@ -1,12 +1,25 @@
 import React, { useMemo, useRef, useEffect, Suspense, memo, useCallback } from 'react';
 import { Strategy, ChartPoint, StrategyCategory, KeyPoint } from '@/types';
 const PnLChartLazy = React.lazy(() => import('@/components/PnLChart'));
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { Info, CheckCircle2, CircleAlert, MessageCircle, ChartLine, CircleCheck, CircleX, TriangleAlert, Settings2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface StrategyDetailProps {
   strategy: Strategy;
   btcPrice: number;
+  prevStrategy?: Strategy | null;
+  nextStrategy?: Strategy | null;
+  onNavigate?: (id: string) => void;
 }
+
+// Mirrors the same "中文名 (English Name)" split App.tsx uses for the
+// sidebar, so the prev/next footer shows the Chinese name without needing to
+// export/import the parsed-name map across module boundaries.
+const NAME_REGEX = /^(.*?)\s*[（(]\s*(.+?)\s*[）)]\s*$/;
+const parseStrategyName = (name: string): string => {
+  const m = name.match(NAME_REGEX);
+  return m ? m[1].trim() : name.trim();
+};
 
 // Pre-generate basic option chart data (static, doesn't change with btcPrice ratio)
 const generateBasicData = (type: 'Call' | 'Put', action: 'Buy' | 'Sell', btcPrice: number) => {
@@ -26,29 +39,49 @@ const generateBasicData = (type: 'Call' | 'Put', action: 'Buy' | 'Sell', btcPric
   return points;
 };
 
-// Memoized MiniChart component
+// Memoized MiniChart component. Upgraded from a bare line to a tinted area
+// with a buy/sell badge so the four basics cards read as two structured
+// pairs (2 buyer / 2 seller) instead of four interchangeable line charts.
 interface MiniChartProps {
   title: string;
   data: Array<{ price: number; pnl: number }>;
-  color: string;
+  action: 'Buy' | 'Sell';
+  btcPrice: number;
 }
 
-const MiniChart = memo<MiniChartProps>(({ title, data, color }) => (
-  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
-    <h4 className="font-bold text-slate-700 mb-2">{title}</h4>
-    <div className="h-40 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis dataKey="price" hide />
-          <YAxis hide />
-          <ReferenceLine y={0} stroke="#94a3b8" />
-          <Line type="monotone" dataKey="pnl" stroke={color} strokeWidth={2} dot={false} isAnimationActive={false} />
-        </LineChart>
-      </ResponsiveContainer>
+const MiniChart = memo<MiniChartProps>(({ title, data, action, btcPrice }) => {
+  const isBuy = action === 'Buy';
+  const stroke = isBuy ? '#059669' : '#E11D48';
+  const fillId = isBuy ? 'miniFillBuy' : 'miniFillSell';
+  return (
+    <div className={`bg-white p-4 rounded-xl border border-slate-200 shadow-card border-t-[3px] ${isBuy ? 'border-t-emerald-500' : 'border-t-rose-500'} flex flex-col items-center`}>
+      <div className="flex items-center justify-between w-full mb-2">
+        <h4 className="font-bold text-slate-700">{title}</h4>
+        <span className={`text-2xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${isBuy ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50'}`}>
+          {isBuy ? '买方' : '卖方'}
+        </span>
+      </div>
+      <div className="h-44 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={stroke} stopOpacity={0.22} />
+                <stop offset="95%" stopColor={stroke} stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#eef2f6" vertical={false} />
+            <XAxis dataKey="price" type="number" domain={['dataMin', 'dataMax']} hide />
+            <YAxis hide />
+            <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1} />
+            <ReferenceLine x={btcPrice} stroke="#2563eb" strokeDasharray="4 4" strokeWidth={1} />
+            <Area type="monotone" dataKey="pnl" stroke={stroke} strokeWidth={2.5} fill={`url(#${fillId})`} dot={false} isAnimationActive={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
 MiniChart.displayName = 'MiniChart';
 
@@ -64,27 +97,35 @@ const OptionBasicsView = memo<{ btcPrice: number }>(({ btcPrice }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <MiniChart title="买入看涨 (Long Call)" data={chartData.longCall} color="#10b981" />
-      <MiniChart title="卖出看涨 (Short Call)" data={chartData.shortCall} color="#ef4444" />
-      <MiniChart title="买入看跌 (Long Put)" data={chartData.longPut} color="#10b981" />
-      <MiniChart title="卖出看跌 (Short Put)" data={chartData.shortPut} color="#ef4444" />
+      <MiniChart title="买入看涨 (Long Call)" data={chartData.longCall} action="Buy" btcPrice={btcPrice} />
+      <MiniChart title="卖出看涨 (Short Call)" data={chartData.shortCall} action="Sell" btcPrice={btcPrice} />
+      <MiniChart title="买入看跌 (Long Put)" data={chartData.longPut} action="Buy" btcPrice={btcPrice} />
+      <MiniChart title="卖出看跌 (Short Put)" data={chartData.shortPut} action="Sell" btcPrice={btcPrice} />
     </div>
   );
 });
 
 OptionBasicsView.displayName = 'OptionBasicsView';
 
-// Per-category accent palette so the header signals the strategy family at a glance.
-const CATEGORY_STYLES: Record<StrategyCategory, { badge: string; accent: string }> = {
-  [StrategyCategory.BASICS]: { badge: 'bg-slate-100 text-slate-600 border-slate-200', accent: 'from-slate-400 to-slate-500' },
-  [StrategyCategory.BULLISH]: { badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', accent: 'from-emerald-400 to-green-500' },
-  [StrategyCategory.BEARISH]: { badge: 'bg-rose-50 text-rose-700 border-rose-200', accent: 'from-rose-400 to-red-500' },
-  [StrategyCategory.NEUTRAL]: { badge: 'bg-blue-50 text-blue-700 border-blue-200', accent: 'from-blue-400 to-cyan-500' },
-  [StrategyCategory.VOLATILITY]: { badge: 'bg-violet-50 text-violet-700 border-violet-200', accent: 'from-violet-400 to-purple-500' },
-  [StrategyCategory.INCOME]: { badge: 'bg-indigo-50 text-indigo-700 border-indigo-200', accent: 'from-indigo-400 to-purple-500' },
+// Per-category accent palette so the header signals the strategy family at a
+// glance. Each accent is a same-family two-stop gradient (no more cross-hue
+// from-emerald-to-green / from-blue-to-cyan jumps) so it reads as one
+// deliberate color per category instead of a random pairing.
+// accentHex/accentTint/accentTint2 feed the `--accent`/`--accent-tint`/
+// `--accent-tint-2` CSS vars that index.css uses to recolor every card
+// inside .strategy-content: a soft category-tinted gradient background with
+// a stronger left border, instead of the rainbow of 16 unrelated hues the
+// 46 strategy files used to hand-pick per section.
+const CATEGORY_STYLES: Record<StrategyCategory, { badge: string; accent: string; accentHex: string; accentTint: string; accentTint2: string }> = {
+  [StrategyCategory.BASICS]: { badge: 'bg-slate-100 text-slate-700 border-slate-200', accent: 'from-slate-500 to-slate-700', accentHex: '#475569', accentTint: '#f8fafc', accentTint2: '#f1f5f9' },
+  [StrategyCategory.BULLISH]: { badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', accent: 'from-emerald-500 to-emerald-700', accentHex: '#10b981', accentTint: '#ecfdf5', accentTint2: '#d1fae5' },
+  [StrategyCategory.BEARISH]: { badge: 'bg-rose-50 text-rose-700 border-rose-200', accent: 'from-rose-500 to-rose-700', accentHex: '#f43f5e', accentTint: '#fff1f2', accentTint2: '#ffe4e6' },
+  [StrategyCategory.NEUTRAL]: { badge: 'bg-blue-50 text-blue-700 border-blue-200', accent: 'from-blue-500 to-blue-700', accentHex: '#3b82f6', accentTint: '#eff6ff', accentTint2: '#dbeafe' },
+  [StrategyCategory.VOLATILITY]: { badge: 'bg-violet-50 text-violet-700 border-violet-200', accent: 'from-violet-500 to-violet-700', accentHex: '#a855f7', accentTint: '#faf5ff', accentTint2: '#f3e8ff' },
+  [StrategyCategory.INCOME]: { badge: 'bg-indigo-50 text-indigo-700 border-indigo-200', accent: 'from-indigo-500 to-indigo-700', accentHex: '#6366f1', accentTint: '#eef2ff', accentTint2: '#e0e7ff' },
 };
 
-const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) => {
+const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice, prevStrategy, nextStrategy, onNavigate }) => {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -291,7 +332,9 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
   }, [btcPrice, calculateTotalPnl]);
 
   // --- Rendering Helpers ---
-  const formatMoney = (val: number) => `$${val.toLocaleString()}`;
+  // Sign must be prefixed before the `$`, matching financial convention
+  // (`-$3,000`, not `$-3,000` — toLocaleString() alone produces the latter).
+  const formatMoney = (val: number) => `${val < 0 ? '-' : ''}$${Math.abs(val).toLocaleString()}`;
 
   const catStyle = CATEGORY_STYLES[strategy.category] ?? CATEGORY_STYLES[StrategyCategory.BASICS];
   const hasSpotPosition = ['covered-call', 'protective-put', 'collar', 'covered-strangle'].includes(strategy.id);
@@ -306,7 +349,16 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
 
   return (
     <div ref={rootRef} className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 h-full overflow-y-auto w-full max-w-[1600px] mx-auto custom-scrollbar">
-      <header className="border-b border-slate-200 pb-4 md:pb-6 mt-10 md:mt-0">
+      {/*
+        No top-clearance hack needed here anymore: the sidebar-toggle button
+        in App.tsx used to be `absolute` on top of this scrollable area (so
+        it silently covered content while scrolling, not just at the top —
+        confirmed by mobile testing), and this header carried a matching
+        `mt-12`/`mt-10 md:mt-0` offset just to dodge it on first paint. The
+        button now lives in its own non-overlapping row above this
+        component, so this header needs no special-case margin at all.
+      */}
+      <header className="border-b border-slate-200 pb-4 md:pb-6">
         <div className="flex items-center gap-2 mb-3">
           <span className={`px-2.5 py-1 text-[10px] md:text-xs font-bold rounded uppercase tracking-wider border ${catStyle.badge}`}>
             {strategy.category}
@@ -315,12 +367,15 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">{strategy.name}</h1>
         <div className={`h-1 w-12 rounded-full mt-3 bg-gradient-to-r ${catStyle.accent}`}></div>
         <p className="text-sm md:text-xl text-slate-600 mt-2 md:mt-3 max-w-3xl">{strategy.description}</p>
+        {!isBasics && !isWheel && (
+          <p className="text-xs md:text-sm text-slate-500 mt-2 max-w-3xl">{strategy.riskProfile} · {strategy.idealScenario}</p>
+        )}
       </header>
 
       {/* 一句话大白话（小白友好） */}
       {strategy.plainSummary && (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 md:p-5 flex gap-3 items-start -mt-1">
-          <span className="text-xl md:text-2xl shrink-0">💬</span>
+          <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-slate-400 shrink-0 mt-0.5" strokeWidth={1.75} />
           <div>
             <p className="text-[10px] md:text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">一句话大白话</p>
             <p className="text-slate-800 text-sm md:text-lg leading-relaxed">{strategy.plainSummary}</p>
@@ -335,7 +390,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         </div>
       ) : isWheel ? (
         <div className="w-full">
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-shell">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-base font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
                 <span className="w-2 h-6 bg-amber-500 rounded-full"></span>
@@ -345,7 +400,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
             </div>
             <p className="text-sm text-slate-600 mb-4">Wheel 为流程型策略，不存在单一到期盈亏曲线。以下为两个阶段的示意图：阶段一卖出 OTM Put 收权利金；阶段二持币后卖出 OTM Call（备兑）。</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <MiniChart title="阶段一：卖出 OTM Put" data={generateBasicData('Put', 'Sell', btcPrice)} color="#ef4444" />
+              <MiniChart title="阶段一：卖出 OTM Put" data={generateBasicData('Put', 'Sell', btcPrice)} action="Sell" btcPrice={btcPrice} />
               {(() => {
                 // Generate Covered Call approximation: Spot + Short Call
                 const strike = Math.round((btcPrice * 1.10) / 100) * 100; // +10%
@@ -359,24 +414,30 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                   const spotPnl = Math.round(price) - btcPrice;
                   points.push({ price: Math.round(price), pnl: shortCallPnl + spotPnl });
                 }
-                return <MiniChart title="阶段二：备兑 Call（含现货）" data={points} color="#3b82f6" />;
+                return <MiniChart title="阶段二：备兑 Call（含现货）" data={points} action="Sell" btcPrice={btcPrice} />;
               })()}
             </div>
           </div>
         </div>
       ) : (
         <div className="w-full">
-          <details className="bg-blue-50/60 border border-blue-200 rounded-xl px-4 py-3 mb-3 text-sm group">
-            <summary className="font-bold text-blue-900 cursor-pointer select-none flex items-center gap-2">
-              📈 第一次看不懂这张盈亏图？点开看 30 秒说明
+          {/* Padding lives on <summary>, not <details> — only <summary>'s own
+              box responds to native expand/collapse clicks, so putting the
+              padding on the parent made the card look fully clickable while
+              only its ~20px text row actually was (verified via hit-testing
+              on mobile: clicks in the card's visual padding did nothing). */}
+          <details className="bg-brand-50/60 border border-brand-200 rounded-xl mb-3 text-sm group overflow-hidden">
+            <summary className="font-bold text-brand-900 cursor-pointer select-none flex items-center gap-2 px-4 py-3">
+              <ChartLine className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+              第一次看不懂这张盈亏图？点开看 30 秒说明
             </summary>
-            <ul className="list-disc pl-5 mt-2 space-y-1 text-blue-900/90">
+            <ul className="list-disc pl-5 mt-2 space-y-1 text-brand-900/90 px-4 pb-3">
               <li><strong>横轴</strong>：到期时 BTC 的价格，左边是跌、右边是涨。</li>
               <li><strong>纵轴</strong>：这笔交易最终赚（线在 0 上方）还是亏（线在 0 下方）。</li>
               <li><strong>线穿过 0 的地方</strong>＝盈亏平衡点（到这才不赚不亏）；<strong>线变平</strong>＝盈亏被锁死（封顶）；<strong>一直斜不停</strong>＝收益或亏损无限。</li>
             </ul>
           </details>
-          <Suspense fallback={<div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm animate-pulse" />}>
+          <Suspense fallback={<div className="w-full aspect-[4/3] md:aspect-[1/1] max-h-[500px] md:max-h-[800px] bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-shell animate-pulse" />}>
             <PnLChartLazy key={strategy.id} data={pnlData} currentPrice={btcPrice} keyPoints={keyPoints} />
           </Suspense>
         </div>
@@ -386,9 +447,9 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       {!isBasics && !isWheel && (
         <div className="flex flex-col gap-6 md:gap-8">
           {/* Construction Example */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-shell overflow-hidden">
             <div className="bg-slate-50/50 px-4 py-3 md:px-6 md:py-4 border-b border-slate-200 flex flex-col md:flex-row md:justify-between md:items-center gap-2 backdrop-blur">
-              <h2 className="font-bold text-slate-800 text-base md:text-lg">策略构造详情 (Construction)</h2>
+              <h2 className="font-bold text-slate-800 text-base md:text-lg">持仓明细 (Position Breakdown)</h2>
               <span className="text-xs md:text-sm font-medium px-2 py-1 md:px-3 bg-white rounded border border-slate-200 text-slate-500 w-fit">
                 Base: {formatMoney(btcPrice)}
               </span>
@@ -426,7 +487,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                 )}
 
                 {calculatedLegs.map((leg, idx) => (
-                  <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-4 md:p-5 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-3 md:gap-0">
+                  <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-4 md:p-5 bg-white border border-slate-200 rounded-xl shadow-card hover:shadow-shell hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 ease-out gap-3 md:gap-0">
                     <div className="flex items-center gap-4 md:gap-5">
                       <div className={`flex flex-col items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl shadow-md shrink-0 ${leg.action === 'Buy' ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-rose-500 text-white shadow-rose-200'}`}>
                         <span className="text-[9px] md:text-[10px] font-bold opacity-70 uppercase tracking-widest">{leg.type}</span>
@@ -476,32 +537,25 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                       ['Gamma', strategy.greeks.gamma, 'Delta 的变化速度'],
                       ['Theta', strategy.greeks.theta, '时间损耗'],
                       ['Vega', strategy.greeks.vega, '对波动率的敏感度'],
-                    ] as const).map(([k, v, desc]) => (
-                      <div key={k} className="bg-slate-50 rounded-xl border border-slate-200 p-2.5 md:p-3 text-center">
-                        <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">{k}</div>
-                        <div className={`text-base md:text-2xl font-bold leading-tight my-0.5 ${v.startsWith('+') ? 'text-emerald-600' : v.startsWith('−') || v.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>{v}</div>
-                        <div className="text-[9px] md:text-[10px] text-slate-400 leading-tight">{desc}</div>
-                      </div>
-                    ))}
+                    ] as const).map(([k, v, desc]) => {
+                      const isPositive = v.startsWith('+');
+                      const isNegative = v.startsWith('−') || v.startsWith('-');
+                      return (
+                        <div key={k} className={`bg-white rounded-xl border border-slate-200 shadow-card border-b-2 ${isPositive ? 'border-b-emerald-400' : isNegative ? 'border-b-rose-400' : 'border-b-slate-300'} p-2.5 md:p-3 text-center`}>
+                          <div className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">{k}</div>
+                          <div className={`font-mono text-base md:text-2xl font-bold leading-tight my-0.5 ${isPositive ? 'text-emerald-600' : isNegative ? 'text-rose-600' : 'text-slate-500'}`}>{v}</div>
+                          <div className="text-[10px] md:text-xs text-slate-500 leading-tight">{desc}</div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
-
-              <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 md:p-5 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">Risk Profile</div>
-                  <div className="text-sm md:text-base text-slate-800 font-semibold">{strategy.riskProfile}</div>
-                </div>
-                <div className="p-4 md:p-5 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-wider">Ideal Scenario</div>
-                  <div className="text-sm md:text-base text-slate-800 font-semibold">{strategy.idealScenario}</div>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* P&L Scenario Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] overflow-hidden flex flex-col">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-shell overflow-hidden flex flex-col">
             <div className="bg-slate-50/50 px-4 py-3 md:px-6 md:py-4 border-b border-slate-200 backdrop-blur">
               <h2 className="font-bold text-slate-800 text-base md:text-lg">
                 盈亏情景推演 (P&L Scenarios)
@@ -518,8 +572,11 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {scenarioPoints.map((item, idx) => (
-                    <tr key={idx} className={`transition-colors ${item.pct === 0 ? 'bg-blue-50/50 ring-1 ring-inset ring-blue-100' : 'hover:bg-slate-50/80'}`}>
+                  {scenarioPoints.map((item, idx) => {
+                    const isExtreme = Math.abs(item.pct) >= 0.20;
+                    const extremeAccent = isExtreme ? (item.pnl >= 0 ? 'border-l-2 border-l-emerald-300' : 'border-l-2 border-l-rose-300') : '';
+                    return (
+                    <tr key={idx} className={`transition-colors ${item.pct === 0 ? 'bg-brand-50/50 ring-1 ring-inset ring-brand-100' : 'hover:bg-slate-50/80'} ${extremeAccent}`}>
                       <td className="px-4 py-3 md:px-6 md:py-4 font-mono font-medium text-slate-700 text-sm md:text-base tabular-nums">{formatMoney(item.price)}</td>
                       <td className="px-4 py-3 md:px-6 md:py-4">
                         <span className={`px-2 md:px-2.5 py-0.5 md:py-1 rounded-md text-[10px] md:text-xs font-bold border ${item.pct > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
@@ -533,7 +590,8 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
                         {item.pnl > 0 ? '+' : ''}{formatMoney(item.pnl)}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -542,12 +600,10 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
       )}
 
       {/* Detailed Analysis Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.12)] p-4 md:p-8">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-shell p-4 md:p-8">
         <h2 className="font-bold text-slate-800 mb-4 md:mb-6 text-lg md:text-xl flex items-center gap-3 border-b border-slate-100 pb-4">
           <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
+            <Info className="h-4 w-4 md:h-5 md:w-5" strokeWidth={1.75} />
           </div>
           {isArticle ? '内容详解 (Guide)' : isBasics ? '期权核心概念 (Core Concepts)' : '策略详解 (Strategy Guide)'}
         </h2>
@@ -559,25 +615,30 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         )}
         {strategy.quickJudge && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-              <p className="text-xs font-bold text-emerald-600 mb-1">✅ 什么时候用</p>
-              <p className="text-sm text-emerald-900">{strategy.quickJudge.use}</p>
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 shadow-card">
+              <p className="text-xs font-bold text-emerald-600 mb-1 flex items-center gap-1.5"><CircleCheck className="h-3.5 w-3.5" strokeWidth={1.75} /> 什么时候用</p>
+              <p className="text-sm md:text-base text-emerald-900 font-semibold">{strategy.quickJudge.use}</p>
             </div>
-            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3">
-              <p className="text-xs font-bold text-rose-600 mb-1">🚫 什么时候别用</p>
-              <p className="text-sm text-rose-900">{strategy.quickJudge.avoid}</p>
+            <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 shadow-card">
+              <p className="text-xs font-bold text-rose-600 mb-1 flex items-center gap-1.5"><CircleX className="h-3.5 w-3.5" strokeWidth={1.75} /> 什么时候别用</p>
+              <p className="text-sm md:text-base text-rose-900 font-semibold">{strategy.quickJudge.avoid}</p>
             </div>
           </div>
         )}
         <div className="prose prose-slate max-w-none mb-8 md:mb-10">
-        <div 
+        <div
           className="text-slate-700 leading-loose text-base md:text-lg strategy-content"
+          style={{ '--accent': catStyle.accentHex, '--accent-tint': catStyle.accentTint, '--accent-tint-2': catStyle.accentTint2 } as React.CSSProperties}
           dangerouslySetInnerHTML={{ __html: strategy.detailedAnalysis?.explanation || '' }}
         />
         </div>
 
-        {/* Expanded Guide (auto-generated details) — 仅对含腿的普通策略显示 */}
-        {!isBasics && (
+        {/* Expanded Guide (auto-generated details) — 仅对含腿的普通策略显示。
+            strategy.legs.length > 0 excludes flow-type strategies like Wheel
+            (legs: []), which used to render a nonsensical "Call 0 / Put 0；
+            ITM 0，ATM 0，OTM 0" line since !isBasics alone doesn't catch
+            "not basics, but also has no legs to summarize". */}
+        {!isBasics && strategy.legs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
           {(() => {
             // Compute summary of legs
@@ -629,7 +690,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         {/* 新手常见误区 */}
         {strategy.pitfalls && strategy.pitfalls.length > 0 && (
           <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
-            <p className="font-bold text-rose-900 mb-2 text-sm md:text-base">🚫 新手常见误区</p>
+            <p className="font-bold text-rose-900 mb-2 text-sm md:text-base flex items-center gap-1.5"><TriangleAlert className="h-4 w-4 shrink-0" strokeWidth={1.75} /> 新手常见误区</p>
             <ul className="text-sm md:text-base text-rose-800 space-y-1.5 list-disc pl-5">
               {strategy.pitfalls.map((p, i) => <li key={i}>{p}</li>)}
             </ul>
@@ -639,7 +700,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         {/* 加密期权 / 交易实务提醒 */}
         {strategy.cryptoNote && (
           <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
-            <p className="font-bold text-amber-900 mb-1 text-sm md:text-base">⚙️ 加密期权 & 实盘提醒</p>
+            <p className="font-bold text-amber-900 mb-1 text-sm md:text-base flex items-center gap-1.5"><Settings2 className="h-4 w-4 shrink-0" strokeWidth={1.75} /> 加密期权 & 实盘提醒</p>
             <p className="text-sm md:text-base text-amber-900/90 leading-relaxed">{strategy.cryptoNote}</p>
           </div>
         )}
@@ -649,9 +710,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
           {/* Pros */}
           <div className="bg-emerald-50/50 rounded-xl p-5 md:p-6 border border-emerald-100">
             <h4 className="font-bold text-emerald-800 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wide">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              <CheckCircle2 className="h-5 w-5" strokeWidth={1.75} />
               {isBasics ? '期权优势 (Advantages)' : '优势 (Pros)'}
             </h4>
             <ul className="space-y-3">
@@ -667,9 +726,7 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
           {/* Cons */}
           <div className="bg-rose-50/50 rounded-xl p-5 md:p-6 border border-rose-100">
             <h4 className="font-bold text-rose-800 mb-4 flex items-center gap-2 text-xs md:text-sm uppercase tracking-wide">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
+              <CircleAlert className="h-5 w-5" strokeWidth={1.75} />
               {isBasics ? '风险与挑战 (Risks)' : '劣势 (Cons)'}
             </h4>
             <ul className="space-y-3">
@@ -685,23 +742,50 @@ const StrategyDetail: React.FC<StrategyDetailProps> = ({ strategy, btcPrice }) =
         )}
       </div>
 
-      {/* Quick Tips */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 md:p-6 shadow-sm">
-        <h4 className="text-amber-900 font-bold text-base mb-2 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-          核心总结 (Key Takeaway)
-        </h4>
-        <p className="text-amber-800 leading-relaxed text-sm md:text-base">
-          {strategy.category === StrategyCategory.BASICS && '期权交易不是简单的买涨买跌，而是对波动率、时间和方向的三维博弈。掌握希腊字母是进阶的关键。'}
-          {strategy.category === StrategyCategory.BULLISH && '牛市策略利用杠杆放大收益，但要注意隐含波动率 (IV) 和时间损耗 (Theta)。'}
-          {strategy.category === StrategyCategory.BEARISH && '做空策略不仅用于投机，常用于保护现货资产。注意“裸卖”期权的巨大风险。'}
-          {strategy.category === StrategyCategory.NEUTRAL && '中性策略主要赚取时间价值 (Theta) 和波动率下降 (Vega Crush)，适合震荡行情。'}
-          {strategy.category === StrategyCategory.VOLATILITY && '此类策略做多波动率 (Long Vega)，需要价格发生剧烈变动才能覆盖权利金成本。'}
-          {strategy.category === StrategyCategory.INCOME && '将期权与现货结合，构建低风险的生息或保险组合，是机构最常用的手法。'}
-        </p>
-      </div>
+      {/* Category footnote — a one-line takeaway, intentionally de-emphasized
+          since it repeats the same 6 fixed sentences across every strategy
+          in a category and isn't decision-relevant the way the risk
+          warnings or P&L cards above it are. */}
+      <p className="text-xs text-slate-400 border-t border-slate-100 pt-3 mt-1">
+        {strategy.category === StrategyCategory.BASICS && '期权交易不是简单的买涨买跌，而是对波动率、时间和方向的三维博弈。掌握希腊字母是进阶的关键。'}
+        {strategy.category === StrategyCategory.BULLISH && '牛市策略利用杠杆放大收益，但要注意隐含波动率 (IV) 和时间损耗 (Theta)。'}
+        {strategy.category === StrategyCategory.BEARISH && '做空策略不仅用于投机，常用于保护现货资产。注意"裸卖"期权的巨大风险。'}
+        {strategy.category === StrategyCategory.NEUTRAL && '中性策略主要赚取时间价值 (Theta) 和波动率下降 (Vega Crush)，适合震荡行情。'}
+        {strategy.category === StrategyCategory.VOLATILITY && '此类策略做多波动率 (Long Vega)，需要价格发生剧烈变动才能覆盖权利金成本。'}
+        {strategy.category === StrategyCategory.INCOME && '将期权与现货结合，构建低风险的生息或保险组合，是机构最常用的手法。'}
+      </p>
+
+      {/* Prev/Next — lets a reader move through the full strategy list
+          top-to-bottom (same order as the sidebar) without reopening the
+          sidebar drawer after finishing an article. */}
+      {(prevStrategy || nextStrategy) && (
+        <nav aria-label="上一篇/下一篇" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {prevStrategy ? (
+            <button
+              onClick={() => onNavigate?.(prevStrategy.id)}
+              className="group flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-card hover:shadow-shell hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 ease-out text-left"
+            >
+              <ChevronLeft className="h-5 w-5 text-slate-400 shrink-0 group-hover:text-brand-600 transition-colors" strokeWidth={1.75} />
+              <div className="min-w-0">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">上一篇</div>
+                <div className="text-sm font-semibold text-slate-800 truncate">{parseStrategyName(prevStrategy.name)}</div>
+              </div>
+            </button>
+          ) : null}
+          {nextStrategy ? (
+            <button
+              onClick={() => onNavigate?.(nextStrategy.id)}
+              className="group flex items-center justify-end gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-card hover:shadow-shell hover:-translate-y-0.5 transition-[transform,box-shadow] duration-200 ease-out text-right sm:col-start-2"
+            >
+              <div className="min-w-0">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">下一篇</div>
+                <div className="text-sm font-semibold text-slate-800 truncate">{parseStrategyName(nextStrategy.name)}</div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-slate-400 shrink-0 group-hover:text-brand-600 transition-colors" strokeWidth={1.75} />
+            </button>
+          ) : null}
+        </nav>
+      )}
       <div className="h-10"></div>
     </div>
   );
