@@ -109,7 +109,7 @@ const ironButterfly: Strategy = {
       <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
         <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
           <li><strong>中心选择</strong>：参考“最大痛点”与密集成交区</li>
-          <li><strong>翼宽规划</strong>：翼宽越大越安全，但净收越低，权衡取舍</li>
+          <li><strong>翼宽规划</strong>：翼宽越大，保护腿越深度虚值、成本越低，净收通常更高，但最大亏损（翼宽 − 净收）也随之扩大；翼宽越窄净收更低，但最大亏损上限也更小，需按风险承受能力权衡取舍</li>
           <li><strong>提前落袋</strong>：当两个中心腿剩余时间价值不多时，提前平仓锁利</li>
           <li><strong>到期建议</strong>：信用结构建议 30–45 天；临期曲率增大，价格接近中心时提前管理。</li>
         </ul>

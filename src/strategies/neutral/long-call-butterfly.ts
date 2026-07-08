@@ -52,9 +52,9 @@ const longCallButterfly: Strategy = {
             <p class="text-xs text-slate-600">净成本（风险极低）</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-            <div class="text-xs text-blue-600 font-bold mb-1">盈利区间</div>
-            <div class="text-lg font-bold text-blue-700 mb-2">围绕中间价的窄区间</div>
-            <p class="text-xs text-slate-600">偏离越大，收益越低</p>
+            <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
+            <div class="text-lg font-bold text-blue-700 mb-2">$96k / $104k</div>
+            <p class="text-xs text-slate-600">净成本 $1k 处；区间内（$96k–$104k）盈利，偏离中间价越远收益越低</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ const longCallButterfly: Strategy = {
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
           <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
-            <li><strong>翼宽选择</strong>：5–10%；翼越宽越难达到峰值但亏损仍有限</li>
+            <li><strong>翼宽选择</strong>：5–10%；翼越宽获利区间越宽、容错度越高，但净成本占翼宽比例通常更高、杠杆倍数（回报率）越低；翼越窄杠杆倍数越高，但对到期价格精准度要求也更高</li>
             <li><strong>到期规划</strong>：14–30 天常用；临期峰值更尖锐</li>
             <li><strong>分批平仓</strong>：接近峰值时分批锁利，避免尾部回撤</li>
           </ul>
@@ -120,7 +120,7 @@ const longCallButterfly: Strategy = {
       '高盈亏比：若判断精准，收益率可达投入成本的数倍甚至十倍。'
     ],
     cons: [
-      '低胜率：价格必须精准落在目标区间内，稍微偏离即可能导致全额亏损（尽管本金较少）。',
+      '低胜率：需要到期价格精准落在中间行权价（本例 $100k）附近才能拿到最大收益，价格稍有偏离利润就会明显缩水（如本例收于 $97k/$103k 时利润已从峰值 $4k 降至 $1k），对到期点位判断的精度要求很高。',
       '区间外亏损：若价格大幅波动超出区间，策略将损失全部投入本金。'
     ]
   },

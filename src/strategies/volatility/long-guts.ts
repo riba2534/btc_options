@@ -6,8 +6,8 @@ const longGuts: Strategy = {
   category: StrategyCategory.VOLATILITY,
   description: '买入 ITM Call + 买入 ITM Put，做多波动率（正 Gamma），但因双腿实值，Gamma 弱于等额平值 Straddle。',
   setup: '买入 ITM Call + 买入 ITM Put',
-  riskProfile: '风险有限（最大亏损 = 净权利金 $16k − 行权价差 $10k = $6k），收益无限（双向）。',
-  idealScenario: '大幅暴涨或暴跌，做多波动率（正 Gamma），但因双腿实值，Gamma 弱于等额平值 Straddle。',
+  riskProfile: '风险有限（最大亏损 = 净权利金 $16k − 行权价差 $10k = $6k），上涨收益无限，下跌收益封顶但可观（≈$89k，BTC 跌至 $0 时）。',
+  idealScenario: '临近重大事件、预期出现剧烈双向波动（方向不明）；能接受比 Straddle 更高的资金占用与更贵的权利金，以换取横盘时最大亏损被锁定在行权价差以内。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 0.95, premiumRatio: 0.08 },
     { type: 'Put', action: 'Buy', strikeOffset: 1.05, premiumRatio: 0.08 }
@@ -43,8 +43,8 @@ const longGuts: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">下跌收益</div>
-          <div class="text-2xl font-bold text-blue-700 mb-2">∞</div>
-          <p class="text-xs text-slate-600">Put 实值带来更快的下行收益</p>
+          <div class="text-2xl font-bold text-blue-700 mb-2">≈$89k</div>
+          <p class="text-xs text-slate-600">Put 实值带来更快的下行收益，BTC 跌至 $0 时封顶（$105k 行权价 − $16k 总权利金 = $89k）</p>
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
@@ -104,7 +104,7 @@ const longGuts: Strategy = {
     `,
     pros: [
       '做多波动率与 Gamma，单边极端行情收益显著。',
-      '双向无限收益，方向无关。'
+      '上涨收益无限，下跌收益封顶但可观（≈$89k），方向无关只需剧烈波动。'
     ],
     cons: [
       '成本高于 Straddle（实值期权含内在价值），但因双腿均实值，横盘最大亏损被锁定为净权利金减行权价差（$6k），不会亏掉全部权利金。',

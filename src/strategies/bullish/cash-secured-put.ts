@@ -66,7 +66,7 @@ const cashSecuredPut: Strategy = {
           <div class="space-y-2">
             <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
               <p class="text-sm font-bold text-green-800">✅ 场景1：BTC停在 $100k 或更高</p>
-              <p class="text-xs text-green-700 mt-1">Put作废，保留全部 $2,500。理论年化 = $2,500/$90,000 × 12 ≈ 33%（仅顺风且未被深套时成立，不可当稳定预期——本质是做空波动率、赚肥左尾的钱）。可继续卖下一期</p>
+              <p class="text-xs text-green-700 mt-1">Put作废，保留全部 $2,500。理论年化 = $2,500/$90,000 × 12 ≈ 33%（仅顺风且未被深套时成立，不可当稳定预期——本质是做空波动率，赚的是尾部风险溢价，一旦真发生暴跌等尾部行情，权利金收入可能被一次性吞掉）。可继续卖下一期</p>
             </div>
             <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
               <p class="text-sm font-bold text-blue-800">ℹ️ 场景2：BTC收于 $90k 下方（如 $89k）</p>
@@ -116,7 +116,7 @@ const cashSecuredPut: Strategy = {
           <li><strong>行权价选择</strong>：设在技术支撑位或整数关口下方5-10%，提高不被行权的概率</li>
           <li><strong>到期时间</strong>：30-45天最优，Theta Decay效率高。太短风险大，太长权利金少</li>
           <li><strong>分批抄底</strong>：不要All In一次，分3-5批不同价位卖Put，降低平均成本</li>
-          <li><strong>滚动收租</strong>：到期未被指派后，立即卖下一期，月月收租。理论年化约20-40%——仅顺风且未被深套时成立、不可当稳定预期（本质是做空波动率、肥左尾，一次暴跌可吞掉多期收益）</li>
+          <li><strong>滚动收租</strong>：到期未被指派后，立即卖下一期，月月收租。理论年化约20-40%——仅顺风且未被深套时成立、不可当稳定预期（本质是做空波动率、承担尾部风险，一次暴跌可吞掉多期收益）</li>
           <li><strong>组合策略</strong>：持币后可加Covered Call（备兑看涨），双向收租</li>
           <li><strong>Delta监控</strong>：Put的Delta越接近-0.3时，被行权概率约30%，可作参考</li>
           <li><strong>到期建议</strong>：常用 14–30 天或 30–45 天；接近行权价时提前滚动或平仓，保持现金担保安全边际。</li>
@@ -141,7 +141,7 @@ const cashSecuredPut: Strategy = {
   pitfalls: [
     '把"现金担保"当口号——没真备足资金就卖 Put，等于裸卖看跌：暴跌时要按差额赔付，保证金不够会被强平在最差位置。',
     '为多收权利金把行权价挂得离现价太近（甚至高于现价），结果稍一回调就被接盘，接的价格并不便宜，"抄底"变"高位接盘"。',
-    '误以为是"稳赚的收租"——它本质是做空波动率、肥左尾：横盘连赢多期的小钱，可能被一次暴跌深套一次性吐回去。'
+    '误以为是"稳赚的收租"——它本质是做空波动率、承担尾部风险：横盘连赢多期的小钱，可能被一次暴跌深套一次性吐回去。'
   ],
   quickJudge: {
     use: '真想低价接币且备足现金',

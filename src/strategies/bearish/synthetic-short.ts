@@ -134,7 +134,7 @@ const syntheticShort: Strategy = {
     theta: '≈0',
     vega: '≈0'
   },
-  cryptoNote: '卖出的 Call 腿在 Deribit 会占用保证金，到期前就可能被增量强平；即便现货没动，IV 单独飙升也会推高空头 mark price 触发追保。币本位计价时暴跌还会"浮亏 + 抵押品缩水"双杀。仓位务必放小、留足保证金缓冲。'
+  cryptoNote: '卖出的 Call 腿在 Deribit 会占用保证金，到期前就可能被增量强平；即便现货没动，IV 单独飙升也会推高空头 mark price 触发追保。币本位计价时暴涨还会"浮亏 + 抵押品缩水"双杀。仓位务必放小、留足保证金缓冲。'
 };
 
 export default syntheticShort;

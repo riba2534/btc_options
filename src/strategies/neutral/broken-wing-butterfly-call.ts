@@ -34,7 +34,7 @@ const brokenWingCall: Strategy = {
           </div>
         </div>
         <div class="bg-slate-50 p-4 rounded mt-3">
-          <p class="text-sm text-slate-700 mb-2"><strong>净成本</strong> ≈ 低廉（甚至净收入）</p>
+          <p class="text-sm text-slate-700 mb-2"><strong>净成本</strong> ≈ $500（净借记）</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💰 损益分析</h4>
@@ -46,8 +46,8 @@ const brokenWingCall: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4">
           <div class="text-xs text-amber-600 font-bold mb-1">最大亏损</div>
-          <div class="text-2xl font-bold text-amber-700 mb-2">有限</div>
-          <p class="text-xs text-slate-600">风险封顶</p>
+          <div class="text-lg font-bold text-amber-700 mb-2">−$3500（上）/ −$500（下）</div>
+          <p class="text-xs text-slate-600">风险不对称但封顶：涨破 $108k 亏 $3500，跌破 $95k 仅亏 $500</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
@@ -113,7 +113,8 @@ const brokenWingCall: Strategy = {
       '风险有限，易于管理上限。'
     ],
     cons: [
-      '上行宽翼亏损更大（−$3500），呈不对称风险。'
+      '上行宽翼亏损更大（−$3500），呈不对称风险。',
+      '四条腿建仓与平仓的手续费、买卖价差成本相对更高，快市中若逐腿成交容易留下裸腿敞口。'
     ]
   },
   plainSummary: '赌 BTC 到期时基本待在 $10 万原地不大动。建仓几乎不花钱（约 $500），真要是收在 $10 万附近就能赚到约 $4500、以小博大很划算；万一大跌只小亏一点，但万一大涨反而亏得更多——这是它特意把上方安全网拉宽换来的代价。',

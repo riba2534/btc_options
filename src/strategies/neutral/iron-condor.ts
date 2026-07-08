@@ -110,9 +110,8 @@ const ironCondor: Strategy = {
       <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
         <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
           <li><strong>翼宽设置</strong>：常用 5k–10k；翼越宽越安全但净收越低</li>
-          <li><strong>到期选择</strong>：14–45 天兼顾 Theta 与管理成本</li>
+          <li><strong>到期选择</strong>：信用结构建议 30–45 天（可放宽至 14–45 天兼顾管理成本）；临期 Gamma 增大、收益曲线变陡时应提前落袋降低尾部风险</li>
           <li><strong>分批管理</strong>：价格靠近边界时滚动或对冲</li>
-          <li><strong>到期建议</strong>：信用结构建议 30–45 天；临期 Gamma 增大，收益曲线陡峭，提前落袋降低尾部风险。</li>
         </ul>
       </div>
       `,

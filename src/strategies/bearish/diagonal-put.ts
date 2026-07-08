@@ -62,7 +62,7 @@ const diagonalPut: Strategy = {
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 横盘 $100k (0%)</p>
-            <p class="text-xs text-yellow-700 mt-1">近月部分归零，远月持平；盈利有限</p>
+            <p class="text-xs text-yellow-700 mt-1">近月归零（保留已收的 $2k 权利金），远月略亏约 $1k；组合小幅盈利约 $1k</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 上涨到 $110k (+10%)</p>
@@ -82,7 +82,7 @@ const diagonalPut: Strategy = {
         <div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <p class="font-bold text-red-900 mb-2">✗ 不适合使用</p>
           <ul class="text-sm text-red-800 space-y-1 list-disc pl-5">
-            <li>剧烈下跌（近月行权与滚动复杂）</li>
+            <li>剧烈下跌（近月空头浮亏与保证金压力大，需及时平仓/滚动）</li>
             <li>IV 高位且预计回落</li>
           </ul>
         </div>
@@ -107,11 +107,11 @@ const diagonalPut: Strategy = {
       '成本较低：近月收权利金抵消部分远月成本。'
     ],
     cons: [
-      '剧烈下跌时近月行权与滚动管理较复杂。',
+      '剧烈下跌时近月空头浮亏与保证金占用会明显增加，需及时平仓或滚动管理（Deribit 为欧式现金结算，无提前行权/指派之忧，但保证金压力需主动应对）。',
       'IV 回落可能压制远月价值。'
     ]
   },
-  plainSummary: '赌 BTC 会慢慢阴跌、而不是一口气暴跌。你买一张到期远的看跌当底仓押下跌方向，同时卖一张快到期的看跌收点钱补贴成本——只要它跌得温吞、节奏对了，你就能赚。',
+  plainSummary: '赌 BTC 会跌破你卖出的那档近月行权价（本例 $90k）。你买一张到期远的看跌当底仓押下跌方向，同时卖一张快到期的看跌收点钱补贴成本——不管是缓跌还是急跌，只要近月到期时已经跌破 $90k，你能拿到的钱都差不多顶格（≈$11k）；跌得越急，只是近月这条空头腿浮亏和占用的保证金越大，操作上更折腾，并不会让你少赚。',
   analogy: {
     emoji: '⏳',
     title: '长线看空 + 卖短期时间',

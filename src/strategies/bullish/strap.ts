@@ -82,7 +82,7 @@ const strap: Strategy = {
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 横盘整理：BTC停在 $100k</p>
-              <p class="text-xs text-red-700 mt-1">所有期权恰好归零(价格停在行权价 $100k)，亏损全部权利金 $12k。这是 Strap 的最大风险,仅在价格精确停在行权价时发生</p>
+              <p class="text-xs text-red-700 mt-1">所有期权恰好归零(价格停在行权价 $100k)，亏损全部权利金 $12k。这是 Strap 的最大风险，仅在价格精确停在行权价时发生</p>
             </div>
           </div>
         </div>

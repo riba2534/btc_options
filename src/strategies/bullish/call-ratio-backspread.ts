@@ -17,7 +17,7 @@ const callRatioBackspread: Strategy = {
     explanation: `
         <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-emerald-500 p-5 rounded-lg mb-6">
           <p class="text-emerald-900 font-semibold mb-2">💡 策略核心思想</p>
-          <p class="text-emerald-800 text-sm">看涨比例反向价差是一种<strong>激进的暴涨策略</strong>。通过卖1买2（或1:3）的不对称比例，用卖出期权的收入购买更多虚值Call，在BTC暴涨时获得加倍收益。但有"死谷"风险，适合极度看涨且愿意承担复杂性的高手。</p>
+          <p class="text-emerald-800 text-sm">看涨比例反向价差是一种<strong>激进的暴涨策略</strong>。通过卖1买2（或1:3）的不对称比例，用卖出期权的收入购买更多虚值Call，在BTC暴涨时获得净多头 Call 敞口带来的放大收益（斜率约 1 倍，并非简单的 2 倍）。但有"死谷"风险，适合极度看涨且愿意承担复杂性的高手。</p>
         </div>
 
         <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📋 策略构造</h4>
@@ -122,7 +122,7 @@ const callRatioBackspread: Strategy = {
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-500 p-5 rounded-lg">
           <ul class="text-sm text-indigo-900 space-y-2 list-disc pl-5">
             <li><strong>比例选择</strong>：1:2 是最常见比例，平衡收益和风险。1:3 更激进但死谷更大</li>
-            <li><strong>行权价间隔</strong>：两个行权价间隔10-15%，太窄死谷区太大，太宽构建成本高</li>
+            <li><strong>行权价间隔</strong>：两个行权价间隔10-15%。间隔越宽，死谷区越深（最大亏损 = 间隔 − 净权利金，随间隔增大而增大），但越容易构建成净收入；间隔越窄，死谷相对较浅，但越难做成净收入、容易变成净支出（构建成本更高）</li>
             <li><strong>零成本目标</strong>：尽量构建成净收入或零成本，这样即使暴跌也不亏钱</li>
             <li><strong>死谷监控</strong>：价格接近买入Call行权价时，考虑提前平仓或调整仓位</li>
             <li><strong>暴涨平仓</strong>：一旦暴涨盈利达50-100%，考虑分批止盈，别贪心等涨到天上</li>
@@ -161,7 +161,7 @@ const callRatioBackspread: Strategy = {
     theta: '−',
     vega: '+'
   },
-  cryptoNote: 'Deribit 上期权为欧式现金交割、无提前指派；但卖出的那条腿仍占用保证金，到期前就可能被增量强平。尤其要警惕 Vega 风险：IV 单独飙升、即便现货没动也会推高空头 mark price 触发追保；币本位账户在暴跌时还会“浮亏 + 抵押品缩水”双杀。仓位要小、保证金留足缓冲。'
+  cryptoNote: 'Deribit 上期权为欧式现金交割、无提前指派；但卖出的那条腿仍占用保证金，到期前就可能被增量强平。尤其要警惕 Vega 风险：IV 单独飙升、即便现货没动也会推高空头 mark price、触发追加保证金——这是到期前的浮动估值风险，不等于到期最终盈亏（若净收入建仓，本策略到期时暴跌方向通常是保底盈利的，见上文案例）。另需留意：若用币本位（Inverse）合约作保证金，暴跌时即便仓位到期是盈利的，作为抵押品的 BTC 现货美元价值也会同步缩水，实际风险缓冲被削弱，不要把“仓位盈亏”和“抵押品价值”混为一谈。仓位要小、保证金留足缓冲。'
 };
 
 export default callRatioBackspread;

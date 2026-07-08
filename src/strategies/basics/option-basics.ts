@@ -39,12 +39,12 @@ const optionBasics: Strategy = {
               <div class="bg-green-50 p-4 rounded border border-green-200">
                 <div class="font-bold text-green-700 mb-2">📈 Call（看涨期权）</div>
                 <p class="text-sm text-slate-700 mb-2">赋予买方在未来<strong>以约定价格买入资产</strong>的权利。</p>
-                <p class="text-xs text-slate-600"><strong>场景</strong>：你认为BTC会从$100,000涨到$120,000，买入行权价$100,000的Call。若真涨到$120,000，你行权买入后立即卖出，净赚约$20,000（减去权利金）。</p>
+                <p class="text-xs text-slate-600"><strong>场景</strong>：你认为BTC会从$100,000涨到$120,000，买入行权价$100,000的Call，权利金约$5,000（ATM月权约为现价5%）。若真涨到$120,000，行权后内在价值为$20,000（=$120,000−$100,000），扣除已支付的$5,000权利金，净赚约$15,000。</p>
               </div>
               <div class="bg-red-50 p-4 rounded border border-red-200">
                 <div class="font-bold text-red-700 mb-2">📉 Put（看跌期权）</div>
                 <p class="text-sm text-slate-700 mb-2">赋予买方在未来<strong>以约定价格卖出资产</strong>的权利。</p>
-                <p class="text-xs text-slate-600"><strong>场景</strong>：你认为BTC会从$100,000跌到$80,000，买入行权价$100,000的Put。若真跌到$80,000，你可以按$100,000卖出，净赚约$20,000（减去权利金）。</p>
+                <p class="text-xs text-slate-600"><strong>场景</strong>：你认为BTC会从$100,000跌到$80,000，买入行权价$100,000的Put，权利金约$5,000（ATM月权约为现价5%）。若真跌到$80,000，行权后内在价值为$20,000（=$100,000−$80,000），扣除已支付的$5,000权利金，净赚约$15,000。</p>
               </div>
             </div>
           </div>
@@ -219,7 +219,7 @@ const optionBasics: Strategy = {
                 </div>
                 <p class="text-slate-700 mb-2">衡量无风险利率变化对期权价格的影响。在加密市场中影响极小，通常可以忽略。</p>
                 <div class="bg-white/50 rounded p-3 text-sm">
-                  <p><strong>💡 说明</strong>：在传统金融市场（如股票期权），利率变化会影响持仓成本。但在加密市场，由于没有传统意义的无风险利率（或使用Funding Rate代替），Rho的作用微乎其微。</p>
+                  <p><strong>💡 说明</strong>：在传统金融市场（如股票期权），利率变化会影响持仓成本。加密市场虽没有类似美债利率的传统无风险利率基准，但期货相对现货的升贴水（隐含的持有成本）会被市场当作定价时的隐含利率代理，因此Rho的实际影响依然很小。注意这与永续合约的Funding Rate（资金费率）是两回事：后者是每8小时结算一次的多空资金转移机制，用于锚定现货价格，并不是被直接输入期权定价模型的利率参数，不应混为一谈。</p>
                 </div>
               </div>
             </div>

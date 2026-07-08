@@ -4,7 +4,7 @@ const collar: Strategy = {
   id: 'collar',
   name: '领口策略 (Collar)',
   category: StrategyCategory.INCOME,
-  description: '持币 + 买Put保险 + 卖Call回血。低成本对冲。',
+  description: '持币 + 买 Put 保险 + 卖 Call 回血。低成本对冲。',
   setup: '持有现货 + 买入 Put + 卖出 Call',
   riskProfile: '风险有限，收益有限。',
   idealScenario: '担心下跌，但觉得也不会大涨。',
@@ -129,7 +129,7 @@ const collar: Strategy = {
   },
   pitfalls: [
     '以为「零成本」就是「零代价」——你掏的是上行空间，币真要大涨时只能眼睁睁看着收益被 Call 封死在天花板。',
-    'Put 和 Call 行权价设得太窄（贴着现价），区间一夹就上下受限，跟直接拿着币几乎没区别，还白白多付了几道手续费。',
+    'Put 和 Call 行权价设得太窄（贴着现价），区间一夹，价格稍一波动到期就大概率封顶或触底，变成接近当前币价的一笔固定现金——这跟「直接卖币换稳定币」没什么两样，而不是像持币那样继续跟着价格涨跌，还白白多付了几道手续费。',
     '临近到期不滚动，价格冲到 Call 边界时被指派、把币卖飞，错过后面的主升浪。',
   ],
   quickJudge: {

@@ -44,8 +44,8 @@ const jadeLizard: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">下方风险</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">较大</div>
-          <p class="text-xs text-slate-600">暴跌时按现金差额结算（经济效果≈按 $95k 接盘），存在浮亏</p>
+          <div class="text-2xl font-bold text-red-700 mb-2">约 $90k</div>
+          <p class="text-xs text-slate-600">跌破 $90k 起净亏损；极端跌至 $0 时最大亏损约 $90k（= Put 行权价 $95k − 净权利金 $5k），到期按现金差额结算</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">上方风险</div>
@@ -63,7 +63,7 @@ const jadeLizard: Strategy = {
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 下探 $92k</p>
-            <p class="text-xs text-yellow-700 mt-1">按现金差额结算（经济效果≈按 $95k 接盘），浮亏但有 $5k 缓冲</p>
+            <p class="text-xs text-yellow-700 mt-1">按现金差额结算（经济效果≈按 $95k 接盘），Put 端内在价值损失 $3k，扣除后净盈亏 = $5k − $3k = +$2k，仍高于盈亏平衡点 $90k，尚未出现真实亏损，但收益已被大幅侵蚀</p>
           </div>
           <div class="bg-blue-100 border-l-4 border-blue-500 p-3 rounded">
             <p class="text-sm font-bold text-blue-800">ℹ️ 上涨 $110k</p>
@@ -92,7 +92,7 @@ const jadeLizard: Strategy = {
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
           <li><strong>下方风险</strong>：暴跌时按现金差额结算（经济效果≈按 Put 行权价接盘），面临浮亏</li>
-          <li><strong>Vega 风险</strong>：IV 下降不利于收权利金的性价比</li>
+          <li><strong>Vega 风险</strong>：本组合净卖出期权（Vega 为负），IV 上升会推高卖出的 $95k Put 与 $105k Call 的价值，带来浮亏与保证金压力；建仓宜挑 IV 偏高时卖权收金，而非在 IV 低位入场</li>
         </ul>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">💡 专业建议</h4>
@@ -112,7 +112,7 @@ const jadeLizard: Strategy = {
       '上方收益已封顶为净权利金 $5k，无法享受趋势上涨。'
     ]
   },
-  plainSummary: '一上来先收一笔钱，赌 BTC 不暴跌：只要它不跌破下方，涨再高你都不亏，这笔钱就稳稳到手；但真要暴跌，你得按约定的低价接盘、扛浮亏。',
+  plainSummary: '一上来先收一笔钱，赌 BTC 不暴跌：只要它不跌破下方 $95k，你都不会倒亏；但如果暴涨突破 $105k，到手利润会随价格上涨从 $5k 逐步缩水，涨到 $110k 及以上时利润归零（不会转负，也谈不上「稳稳到手」）；真要暴跌，你得按约定的低价接盘、扛浮亏。',
   analogy: {
     emoji: '🏪',
     title: '收两份押金，只怕跌价',

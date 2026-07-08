@@ -62,11 +62,11 @@ const calendarCall: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 收敛：到近月到期时收于 $100k</p>
-            <p class="text-xs text-green-700 mt-1">近月归零，远月因 IV↑ 价格↑，组合盈利约 $1.5k</p>
+            <p class="text-xs text-green-700 mt-1">近月归零，远月历经约 30 天时间衰减，但因 IV 回升部分抵消跌幅，现值降至约 $2.5k（较建仓时的 $5k 有所缩水），组合盈利约 $1.5k（远月现值 $2.5k − 净成本 $1k）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 温和偏离：收于 $110k (+10%) / $90k (-10%)</p>
-            <p class="text-xs text-yellow-700 mt-1">近月不归零，组合盈利缩小或持平</p>
+            <p class="text-xs text-yellow-700 mt-1">$110k：近月实值不归零，需用远月的盈利对冲近月到期损失，组合盈利收窄；$90k：近月虚值归零（这一腿本身有利），但远月因偏离行权价，剩余时间价值也低于理想情形，组合盈利同样低于最佳情形（甚至可能小幅亏损）</p>
           </div>
           <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
             <p class="text-sm font-bold text-red-800">❌ 远离 + IV 下降</p>
@@ -95,7 +95,7 @@ const calendarCall: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>Theta 不对称</strong>：近月衰减快，远月保值；价格偏离时近月可能不归零</li>
+          <li><strong>Theta 不对称</strong>：近月衰减快，远月保值；价格上涨突破行权价时近月不归零，下跌则近月仍归零但远月同步贬值</li>
           <li><strong>Vega 风险</strong>：事件后 IV 下跌可能压制远月价格（Vega Crush）</li>
           <li><strong>流动性</strong>：滚动近月腿需关注点差与费用</li>
         </ul>
@@ -114,7 +114,7 @@ const calendarCall: Strategy = {
       '成本可控：净成本较低，风险通常仅限净投入。'
     ],
     cons: [
-      '对点位敏感：价格远离行权价时近月不归零，利润受限。',
+      '对点位敏感：价格大幅上涨突破行权价时，近月转为实值、不再归零，组合利润被压缩；若价格大幅下跌，近月虽仍会归零，但远月时间价值同步走低，利润同样受限。',
       '事件预期风险：事件落地后 IV 回落可能压制远月期权价格。'
     ]
   },

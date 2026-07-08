@@ -38,8 +38,8 @@ const diagonalCall: Strategy = {
       <div class="grid md:grid-cols-3 gap-4 mb-6">
         <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
           <div class="text-xs text-green-600 font-bold mb-1">最大盈利</div>
-          <div class="text-2xl font-bold text-green-700 mb-2">$11k</div>
-          <p class="text-xs text-slate-600">P ≥ $110k 封顶；盈亏平衡 $99k</p>
+          <div class="text-2xl font-bold text-green-700 mb-2">≈ $11k</div>
+          <p class="text-xs text-slate-600">近月到期时 P 达 ~$110k 附近的近似估算（价差宽度 $15k − 净成本 $4k，按远月内在价值粗算，未计入远月剩余时间价值，非同到期价差式的精确硬顶）；盈亏平衡约 $99k</p>
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
@@ -58,7 +58,7 @@ const diagonalCall: Strategy = {
         <div class="space-y-2">
           <div class="bg-green-100 border-l-4 border-green-500 p-3 rounded">
             <p class="text-sm font-bold text-green-800">✅ 涨到 $110k (+10%)</p>
-            <p class="text-xs text-green-700 mt-1">近月归零（保留 $2k 权利金），远月 ITM 增值 +$9k；组合盈利约 $11k —— 已达价差上限（价差宽度 $15k − 净成本 $4k）</p>
+            <p class="text-xs text-green-700 mt-1">近月归零（保留 $2k 权利金），远月 ITM 增值 +$9k；组合盈利约 $11k —— 接近价差上限的近似估算（价差宽度 $15k − 净成本 $4k）</p>
           </div>
           <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
             <p class="text-sm font-bold text-yellow-800">⚠️ 横盘 $100k (0%)</p>

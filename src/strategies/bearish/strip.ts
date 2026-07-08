@@ -6,7 +6,7 @@ const strip: Strategy = {
   category: StrategyCategory.BEARISH,
   description: '买入1份Call，买入2份Put。看多波动率但更看跌。',
   setup: '买入 1x Call + 买入 2x Put (同Strike)',
-  riskProfile: '风险有限，收益无限 (下跌赚双倍)。',
+  riskProfile: '风险有限，上涨收益无限（Call端未加倍），下跌收益双倍但有限（2×Put，跌至$0封顶约$188k）。',
   idealScenario: '变盘在即，且向下破位概率大。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.04 },
@@ -128,7 +128,7 @@ const strip: Strategy = {
     text: '你确定天气要变极端，但更赌会下暴雨，于是买 2 件雨衣 + 1 顶遮阳帽。真下暴雨，两件雨衣发挥双倍作用；万一来了大太阳，遮阳帽也能顶一下、不至于白挨晒；唯独不冷不热的平淡天，三样东西全白买。',
   },
   pitfalls: [
-    '以为"只要跌就赚"——跌幅得盖过约 $12k 的总成本、越过盈亏平衡点才真赚，小跌照样亏。',
+    '以为"只要跌就赚"——因 2 份 Put 的双倍杠杆，BTC 只需跌破约 $94k（跌幅约 $6k/6%）即可覆盖 $12k 总成本、越过盈亏平衡点，但没跌够这个幅度照样亏。',
     '在 IV 已经高位时建仓——三份权利金本就贵，事件一过 IV 暴跌(Vega crush)，方向看对了也可能不赚。',
     '拖到临近到期才进场或迟迟不平仓——三份期权同时被 Theta 啃，横盘几天就大幅缩水。',
   ],

@@ -46,7 +46,7 @@ const shortStrangle: Strategy = {
           <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
             <div class="text-xs text-red-600 font-bold mb-1">最大亏损</div>
             <div class="text-2xl font-bold text-red-700 mb-2">无限</div>
-            <p class="text-xs text-slate-600">向上突破风险无限(卖出 Call 端);向下风险有限,最大约 $86k(= 下行权价 $90k − 净权利金 $4k)</p>
+            <p class="text-xs text-slate-600">向上突破风险无限（卖出 Call 端）；向下风险有限，最大约 $86k（= 下行权价 $90k − 净权利金 $4k）</p>
           </div>
           <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
             <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
@@ -64,8 +64,8 @@ const shortStrangle: Strategy = {
               <p class="text-xs text-green-700 mt-1">两腿作废，保留 $4k</p>
             </div>
             <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
-              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：$90k/$110k</p>
-              <p class="text-xs text-yellow-700 mt-1">剩余时间价值与波动率可能带来波动</p>
+              <p class="text-sm font-bold text-yellow-800">⚠️ 接近边界：跌至 $86k 或涨至 $114k（盈亏平衡点）</p>
+              <p class="text-xs text-yellow-700 mt-1">净收入 $4k 权利金被完全侵蚀，刚好打平；再往外突破就转为净亏损</p>
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 突破区间：涨到 $120k 或跌到 $85k</p>
@@ -124,7 +124,7 @@ const shortStrangle: Strategy = {
   plainSummary: '赌 BTC 在一个较宽的区间里来回晃、既不大涨也不大跌，这样你卖出的两份期权都作废、白收两笔钱；但万一价格冲出区间——尤其大涨——亏损可能没有上限。',
   analogy: {
     emoji: '🏦',
-    title: '当起不买再保险的保险公司',
+    title: '当一家不买再保险的保险公司',
     text: '你同时卖两份保险——一份赌"不会大涨"、一份赌"不会大跌"，平时稳收两笔保费。只要没出大事就白赚。但你没给自己买再保险：真碰上黑天鹅（暴涨暴跌），赔付可能把保费连本带利全吞掉，向上更是没有封顶。'
   },
   pitfalls: [

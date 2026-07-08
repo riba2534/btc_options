@@ -6,7 +6,7 @@ const seagull: Strategy = {
   category: StrategyCategory.INCOME,
   description: '低成本方向表达：买 Call + 卖更高 Call + 卖 Put。',
   setup: '买 ATM Call + 卖 OTM Call + 卖 OTM Put',
-  riskProfile: '下方风险较大，上方收益封顶；成本低或净收。',
+  riskProfile: '下方风险较大（暴跌跌破 $95k Put 行权价接盘，理论最大亏损约 $95k），上方收益封顶（最高约 $10k）；成本低或净收。',
   idealScenario: '轻微看涨、价格留在安全区间。',
   legs: [
     { type: 'Call', action: 'Buy', strikeOffset: 1.00, premiumRatio: 0.05 },
@@ -44,8 +44,8 @@ const seagull: Strategy = {
         </div>
         <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
           <div class="text-xs text-red-600 font-bold mb-1">下方风险</div>
-          <div class="text-2xl font-bold text-red-700 mb-2">较大</div>
-          <p class="text-xs text-slate-600">被 $95k Put 行权时接盘</p>
+          <div class="text-2xl font-bold text-red-700 mb-2">最大约 $95k</div>
+          <p class="text-xs text-slate-600">净成本≈$0，跌破 $95k 后亏损随价格线性放大，极端跌至 $0 时理论最大亏损≈$95k</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
           <div class="text-xs text-blue-600 font-bold mb-1">净成本</div>
@@ -91,7 +91,7 @@ const seagull: Strategy = {
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">⚠️ 风险提示</h4>
       <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6">
         <ul class="text-sm text-amber-900 space-y-2 list-disc pl-5">
-          <li><strong>下方风险</strong>：被行权接盘，暴跌时浮亏</li>
+          <li><strong>下方风险</strong>：被行权接盘，跌破 $95k 后浮亏随价格线性放大，极端归零情形下理论最大亏损约 $95k</li>
           <li><strong>Vega 风险</strong>：本组合净卖出期权（1 买 2 卖、整体偏空 Vega），IV 上升时卖出的 $95k Put 与 $110k Call 价值膨胀带来浮亏；故入场宜选 IV 偏高时卖权收金。</li>
         </ul>
       </div>

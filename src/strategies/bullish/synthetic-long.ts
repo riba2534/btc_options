@@ -83,7 +83,7 @@ const syntheticLong: Strategy = {
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ BTC跌到 $80k (-20%)</p>
-              <p class="text-xs text-red-700 mt-1">Put被行权，需按$100k买入BTC。亏损$20k，需追加保证金。杠杆策略的风险！</p>
+              <p class="text-xs text-red-700 mt-1">Put 被现金结算（经济效果≈以 $100k 接盘后又跌到 $80k）：Put 端收 $5k 权利金 − $20k 结算差额 = 净亏 $15k，加上 Call 亏掉的 $5k 权利金，合计亏损 $20k，需追加保证金。杠杆策略的风险！</p>
             </div>
           </div>
         </div>
@@ -161,7 +161,7 @@ const syntheticLong: Strategy = {
     theta: '≈0',
     vega: '≈0'
   },
-  cryptoNote: '卖出的 Put 在 Deribit 要占用保证金，到期前就可能被增量强平：哪怕现货没动，IV 单独飙升也会推高空头的 mark price 触发追保；币本位计价时一旦暴跌，浮亏与抵押品缩水会双杀。务必把仓位开小、多留保证金缓冲。'
+  cryptoNote: 'Deribit/OKX 主流 BTC 期权为欧式现金交割，到期不会真的买卖 1 枚 BTC，而是按结算差额现金交割。卖出的 Put 在 Deribit 要占用保证金，到期前就可能被增量强平：哪怕现货没动，IV 单独飙升也会推高空头的 mark price 触发追保；币本位计价时一旦暴跌，浮亏与抵押品缩水会双杀。务必把仓位开小、多留保证金缓冲。'
 };
 
 export default syntheticLong;

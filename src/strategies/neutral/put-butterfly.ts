@@ -50,9 +50,9 @@ const putButterfly: Strategy = {
           <p class="text-xs text-slate-600">净成本（风险极低）</p>
         </div>
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-          <div class="text-xs text-blue-600 font-bold mb-1">盈利区间</div>
-          <div class="text-lg font-bold text-blue-700 mb-2">窄区间</div>
-          <p class="text-xs text-slate-600">围绕中间价的窄区间</p>
+          <div class="text-xs text-blue-600 font-bold mb-1">盈亏平衡点</div>
+          <div class="text-lg font-bold text-blue-700 mb-2">$96k / $104k</div>
+          <p class="text-xs text-slate-600">价格需收于此区间内方可盈利，即中枢 $100k 两侧各约 4%</p>
         </div>
       </div>
       <h4 class="font-bold text-slate-900 mt-6 mb-3 text-lg">📊 实战案例</h4>

@@ -6,7 +6,7 @@ const shortStraddle: Strategy = {
   category: StrategyCategory.NEUTRAL,
   description: '卖出 ATM Call 和 Put。做空波动率，赌价格不动。',
   setup: '卖出 ATM Call + 卖出 ATM Put',
-  riskProfile: '收益有限 (限于双份权利金)，风险无限。',
+  riskProfile: '收益有限 (限于双份权利金)，风险（上行）无限，下行受 BTC 价格 0 下界限制（本例最大约 $90k）。',
   idealScenario: 'BTC价格死死钉在行权价。',
   legs: [
     { type: 'Call', action: 'Sell', strikeOffset: 1.00, premiumRatio: 0.05 },
@@ -70,7 +70,7 @@ const shortStraddle: Strategy = {
             </div>
             <div class="bg-red-100 border-l-4 border-red-500 p-3 rounded">
               <p class="text-sm font-bold text-red-800">❌ 单边强趋势：涨到 $130k 或跌到 $75k</p>
-              <p class="text-xs text-red-700 mt-1">风险极高，亏损无上限</p>
+              <p class="text-xs text-red-700 mt-1">涨到 $130k：净亏约 $20k，且随涨幅持续扩大，理论真正无上限；跌到 $75k：净亏约 $15k（Put 端亏 $20k，Call 端留存 $5k 权利金相抵），受价格 0 下界限制，理论最大亏损约 $90k 封顶，但同样相当可观</p>
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ const shortStraddle: Strategy = {
       'Theta收益：时间衰减速度极快，对卖方非常有利。'
     ],
     cons: [
-      '无限风险：一旦市场出现方向性突破（无论涨跌），亏损将迅速扩大且无上限。',
+      '方向性风险不对称：向上突破时对手方 Call 端理论亏损无上限；向下突破虽受 BTC 价格 0 下界限制（理论最大约 $90k，= 行权价 $100k − 已收 $10k 权利金），但仍可能是难以承受的巨额亏损，两个方向都足以严重侵蚀本金。',
       '管理难度大：需要极强的风控能力和动态对冲技巧。'
     ]
   },
